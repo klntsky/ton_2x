@@ -1,6 +1,7 @@
 import process from 'process'
 import 'dotenv/config'
 import { Telegraf } from 'telegraf'
+import { message } from 'telegraf/filters'
 import { session } from 'telegraf'
 import { getLogger, logUserAction } from '../utils'
 import type { TTelegrafContext } from '../types'
@@ -36,7 +37,18 @@ export const init = async (
   )
 
   bot.start(async ctx => {
-    await ctx.reply('Hi!')
+    await ctx.reply('Hi!', {
+      reply_markup: {
+        inline_keyboard: [[
+          {
+            text: 'Start',
+            web_app: {
+              url: process.env.TELEGRAM_BOT_WEB_APP,
+            }
+          }
+        ]],
+      }
+    })
     await logUserAction(ctx, {
       start: ctx.payload || 1,
     })
@@ -48,7 +60,9 @@ export const init = async (
 
 //   bot.on('inline_query', async ctx => {})
 
-//   bot.on(message('text'), async ctx => {})
+  bot.on(message('web_app_data'), async ctx => {
+    await ctx.reply(JSON.stringify(ctx.update.message.web_app_data, null, 2))
+  })
 
   bot.catch(async (err, ctx) => {
     const error =
