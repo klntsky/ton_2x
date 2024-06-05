@@ -22,10 +22,10 @@
     "amqplib": "^0.10.4",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.31.1",
     "express": "^4.19.2",
     "telegraf": "^4.16.3",
-    "tonapi-sdk-js": "^1.0.10"
+    "tonapi-sdk-js": "^1.0.10",
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
