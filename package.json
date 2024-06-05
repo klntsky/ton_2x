@@ -25,6 +25,7 @@
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.1",
+    "libsql": "^0.3.18",
     "telegraf": "^4.16.3",
     "tonapi-sdk-js": "^1.0.10",
     "winston": "^3.13.0"
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
     "@types/node": "^20.14.2",
+    "tsx": "^4.11.2",
     "typescript": "^5.4.5"
   }
 }
