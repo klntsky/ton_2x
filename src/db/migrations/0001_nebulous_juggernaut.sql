@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `user_id-address` ON `usernames` (`user_id`,`address`);

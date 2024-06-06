@@ -27,15 +27,16 @@
     "@tonconnect/ui": "^2.0.3",
     "amqplib": "^0.10.4",
     "axios": "^1.7.2",
+    "better-sqlite3": "^11.0.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.1",
-    "libsql": "^0.3.18",
     "telegraf": "^4.16.3",
     "tonapi-sdk-js": "^1.0.10",
     "winston": "^3.13.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
+    "@types/better-sqlite3": "^7.6.10",
     "@types/node": "^20.14.2",
     "drizzle-kit": "^0.22.2",
     "tsx": "^4.11.2",
