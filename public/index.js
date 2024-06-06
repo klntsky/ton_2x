@@ -9,12 +9,11 @@ const main = async () => {
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://ton2x.memeplex.pics/tonconnect-manifest.json',
             buttonRootId: 'wallet-connect-button',
-            restoreConnection: false,
+            // restoreConnection: false,
             uiPreferences: {
                 // theme: 'SYSTEM',
             },
         });
-        console.log(456, tonConnectUI)
 
         tonConnectUI.onModalStateChange(
             async state => {
@@ -29,9 +28,11 @@ const main = async () => {
                 const rawAddress = walletAndwalletInfo.account.address; // like '0:abcdef123456789...'
                 const bouncableUserFriendlyAddress = TonConnectSDK.toUserFriendlyAddress(rawAddress);
                 console.log(123, rawAddress, bouncableUserFriendlyAddress)
+                const rootDiv = document.getElementById('root')
+                rootDiv.style = 'display: block;'
                 window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
                 isWalletConnected = true;
-            } 
+            }
         );
         await tonConnectUI.openModal();
     } catch (error) {
