@@ -30,6 +30,7 @@ const main = async () => {
                 console.log(123, rawAddress, bouncableUserFriendlyAddress)
                 const rootDiv = document.getElementById('root')
                 rootDiv.style = 'display: block;'
+                window.userWalletAddress = walletAndwalletInfo.account.address
                 window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
                 isWalletConnected = true;
             }
