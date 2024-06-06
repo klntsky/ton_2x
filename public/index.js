@@ -3,23 +3,40 @@
 const main = async () => {
     window.Telegram.WebApp.ready()
 
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://ton2x.memeplex.pics/tonconnect-manifest.json',
-        buttonRootId: 'connect'
-    });
-    // const walletsList = await TonConnectUI.getWallets();
+    let isWalletConnected = false;
 
-    tonConnectUI.onStatusChange(
-        walletAndwalletInfo => {
+    try {
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://ton2x.memeplex.pics/tonconnect-manifest.json',
+            buttonRootId: 'wallet-connect-button',
+            restoreConnection: false,
+            uiPreferences: {
+                // theme: 'SYSTEM',
+            },
+        });
+        console.log(456, tonConnectUI)
 
-            const rawAddress = walletAndwalletInfo.account.address; // like '0:abcdef123456789...'
-            const bouncableUserFriendlyAddress = TonConnectSDK.toUserFriendlyAddress(rawAddress);
-            console.log(123, walletAndwalletInfo.account.address, bouncableUserFriendlyAddress)
-            window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
-            // update state/reactive variables to show updates in the ui
-        } 
-    );
-    await tonConnectUI.openModal();
+        tonConnectUI.onModalStateChange(
+            async state => {
+                if (state.status === "closed" && !isWalletConnected) {
+                    await tonConnectUI.openModal();
+                }
+            }
+        )
+
+        tonConnectUI.onStatusChange(
+            walletAndwalletInfo => {
+                const rawAddress = walletAndwalletInfo.account.address; // like '0:abcdef123456789...'
+                const bouncableUserFriendlyAddress = TonConnectSDK.toUserFriendlyAddress(rawAddress);
+                console.log(123, rawAddress, bouncableUserFriendlyAddress)
+                window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
+                isWalletConnected = true;
+            } 
+        );
+        await tonConnectUI.openModal();
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 // setTimeout(main, 5_000)
