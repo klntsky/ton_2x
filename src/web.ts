@@ -30,7 +30,7 @@ app.get('/getWalletData', async (req, res) => {
 })
 
 const start = async () => {
-    app.listen(3086, '127.0.0.1')
+    app.listen(Number(process.env.EXPRESS_PORT), '127.0.0.1')
     logger.info('Server started')
 }
   
