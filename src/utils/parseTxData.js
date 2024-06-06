@@ -137,13 +137,17 @@ const getJettonsByAddress = async address => {
 
   const jettons = (await (await fetch(url)).json()).balances
         .filter(x => x.balance !== '0')
-        .map(x => x.jetton.address);
+        .map(x => ({
+          address: x?.jetton?.address,
+          symbol: x?.jetton?.symbol,
+          image: x?.jetton?.image
+        }));
 
   return jettons;
 };
 
 // const main = async () => {
-//   const address = // address here
+//   const address = ''// address here
 //   const jettons = await getJettonsByAddress(address);
 //   console.log(jettons);
 // };
