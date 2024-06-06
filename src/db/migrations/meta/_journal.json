@@ -8,6 +8,13 @@
       "when": 1717662223995,
       "tag": "0000_lean_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1717667727592,
+      "tag": "0001_nebulous_juggernaut",
+      "breakpoints": true
     }
   ]
 }

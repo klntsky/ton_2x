@@ -1,0 +1,22 @@
+
+html {
+    background-color: var(--tg-theme-bg-color);
+}
+
+#root {
+    /* display: none; */
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+#wallet-connect-button {
+    /* transform: scale(4); */
+    display: none;
+}
+
+/* tc-root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+} */

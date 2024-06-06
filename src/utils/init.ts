@@ -3,7 +3,7 @@ import 'dotenv/config'
 import { Telegraf } from 'telegraf'
 import { message } from 'telegraf/filters'
 import { session } from 'telegraf'
-import { getDbConnection, getLogger, logUserAction } from '../utils'
+import { getDbConnection, getLogger, logError, logUserAction } from '../utils'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
 import { insertUserAdress } from './dbQueries'
@@ -38,16 +38,24 @@ export const init = async (
   )
 
   bot.start(async ctx => {
-    await ctx.reply('Hi!', {
+    const startMessage = await ctx.reply('Hi!', {
       reply_markup: {
         inline_keyboard: [[
           {
-            text: 'Start',
+            text: '➕ Кошелёк',
             web_app: {
               url: process.env.TELEGRAM_BOT_WEB_APP,
             }
           }
         ]],
+      }
+    })
+    await ctx.pinChatMessage(startMessage.message_id)
+    await ctx.setChatMenuButton({
+      type: 'web_app',
+      text: '➕ Кошелёк',
+      web_app: {
+        url: process.env.TELEGRAM_BOT_WEB_APP
       }
     })
     await logUserAction(ctx, {
@@ -62,14 +70,14 @@ export const init = async (
 //   bot.on('inline_query', async ctx => {})
 
   bot.on(message('web_app_data'), async ctx => {
-    await ctx.reply(JSON.stringify(ctx.update.message.web_app_data, null, 2))
+    // await ctx.reply(JSON.stringify(ctx.update.message.web_app_data, null, 2))
     const adresesses: {
       address: string
       friendlyAddress: string
     } = JSON.parse(ctx.update.message.web_app_data.data)
     const db = await getDbConnection()
     await insertUserAdress(db, ctx.from.id, adresesses.address)
-    await ctx.reply(ctx.update.message.web_app_data.data)
+    await ctx.reply(`🎉 Кошелек успешно привязан!`)
   })
 
   bot.catch(async (err, ctx) => {
@@ -83,7 +91,9 @@ export const init = async (
     // In case we catch errors when sending messages
     try {
       await ctx.reply(`Some error occured!`)
-    } finally {}
+    } finally {
+      await logError(ctx.logger, error, { ctx: JSON.stringify(ctx.update) })
+    }
   })
 
   return bot

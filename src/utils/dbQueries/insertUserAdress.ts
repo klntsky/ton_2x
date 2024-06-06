@@ -5,5 +5,5 @@ export const insertUserAdress = async (db: TDbConnection, userId: number, addres
     await db.insert(usernames).values({
         userId,
         address,
-    })
+    }).onConflictDoNothing()
 }
