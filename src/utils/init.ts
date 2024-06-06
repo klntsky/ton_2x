@@ -3,9 +3,10 @@ import 'dotenv/config'
 import { Telegraf } from 'telegraf'
 import { message } from 'telegraf/filters'
 import { session } from 'telegraf'
-import { getLogger, logUserAction } from '../utils'
+import { getDbConnection, getLogger, logUserAction } from '../utils'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
+import { insertUserAdress } from './dbQueries'
 
 export const init = async (
   token: string,
@@ -62,6 +63,13 @@ export const init = async (
 
   bot.on(message('web_app_data'), async ctx => {
     await ctx.reply(JSON.stringify(ctx.update.message.web_app_data, null, 2))
+    const adresesses: {
+      address: string
+      friendlyAddress: string
+    } = JSON.parse(ctx.update.message.web_app_data.data)
+    const db = await getDbConnection()
+    await insertUserAdress(db, ctx.from.id, adresesses.address)
+    await ctx.reply(ctx.update.message.web_app_data.data)
   })
 
   bot.catch(async (err, ctx) => {
