@@ -5,6 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx tsx ./src/index.ts",
+    "migrations": "npx drizzle-kit",
+    "drizzle:check-api-changes": "npm run migrations up",
+    "migrations:run": "npm run migrations migrate",
+    "migrations:generate": "npm run drizzle:check-api-changes && npm run migrations check && npm run migrations generate",
+    "migrations:down": "npm run migrations drop",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,6 +37,7 @@
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
     "@types/node": "^20.14.2",
+    "drizzle-kit": "^0.22.2",
     "tsx": "^4.11.2",
     "typescript": "^5.4.5"
   }
