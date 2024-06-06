@@ -6,7 +6,7 @@ import { session } from 'telegraf'
 import { getDbConnection, getLogger, logError, logUserAction } from '../utils'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
-import { insertUserAdress } from './dbQueries'
+import { insertUserAdress } from '../db/queries'
 
 export const init = async (
   token: string,
