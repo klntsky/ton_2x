@@ -145,7 +145,7 @@ const getAssetsByAddressFromSwapHistory = async address => {
 };
 
 // just the jetton id
-const getJettonsByAddress = async address => {
+export const getJettonsByAddress = async (address: string) => {
   const url = (
     'https://tonapi.io/v2/accounts/' + encodeURIComponent(address) +
       '/jettons'
