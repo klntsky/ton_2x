@@ -9,17 +9,17 @@ const main = async () => {
     });
     // const walletsList = await TonConnectUI.getWallets();
 
-    await tonConnectUI.openModal();
     tonConnectUI.onStatusChange(
         walletAndwalletInfo => {
 
             const rawAddress = walletAndwalletInfo.account.address; // like '0:abcdef123456789...'
             const bouncableUserFriendlyAddress = TonConnectSDK.toUserFriendlyAddress(rawAddress);
             console.log(123, walletAndwalletInfo.account.address, bouncableUserFriendlyAddress)
-            window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, bouncableUserFriendlyAddress }))
+            window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
             // update state/reactive variables to show updates in the ui
         } 
     );
+    await tonConnectUI.openModal();
 }
 
 // setTimeout(main, 5_000)
