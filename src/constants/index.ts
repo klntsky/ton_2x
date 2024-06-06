@@ -1,0 +1,1 @@
+export { getWalletDataMock } from './getWalletDataMock'
