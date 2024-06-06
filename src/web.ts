@@ -17,7 +17,7 @@ app.use(async (err, req, res, next) => {
     return res.status(500).send()
 })
 
-app.get('/getWalletData', async (req, res) => {
+app.get('/getJettonsByAddress', async (req, res) => {
     const { address } = req.query
     // if (typeof address !== 'string') {
     //     return res.status(422).send()
