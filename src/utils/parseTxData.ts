@@ -128,14 +128,28 @@ const getAssetsByAddressFromSwapHistory = async address => {
 };
 
 // just the jetton id
-const getJettonsByAddress = async address => {
+export const getJettonsByAddress = async (address: string) => {
   const url = (
     'https://tonapi.io/v2/accounts/' + encodeURIComponent(address) +
       '/jettons' +
-      '?token=' + process.env['TONAPI_TOKEN']
+      '?token=' + process.env.TONAPI_TOKEN
   );
 
-  const jettons = (await (await fetch(url)).json()).balances
+  const response = await fetch(url)
+  const json: {
+    balances: [
+      {
+        balance: string
+        jetton: {
+          address: string
+          symbol: string
+          image: string
+        }
+      }
+    ], 
+  } = await response.json()
+
+  const jettons = json.balances
         .filter(x => x.balance !== '0')
         .map(x => ({
           address: x?.jetton?.address,
