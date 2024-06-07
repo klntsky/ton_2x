@@ -82,7 +82,10 @@ export const init = async (
       friendlyAddress: string
     } = JSON.parse(ctx.update.message.web_app_data.data)
     const db = await getDbConnection()
+    await ctx.reply(adresesses.address)
     await insertUserAdress(db, ctx.from.id, adresesses.address)
+    const url = new URLSearchParams(process.env.TELEGRAM_BOT_WEB_APP)
+    url.set('address', adresesses.address)
     const successMessage = await ctx.reply(`
 🔥 Теперь ты можешь сразу увидеть прибыль по всему своему кошельку или выбранной монете 💎 и с легкостью вывести свою прибыль вовремя 🤩
 
@@ -96,7 +99,7 @@ export const init = async (
       {
         text: 'Открыть',
         web_app: {
-          url: process.env.TELEGRAM_BOT_WEB_APP,
+          url: url.toString(),
         }
       }
     ]],

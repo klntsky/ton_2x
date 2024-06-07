@@ -245,8 +245,7 @@ const getAddressPnL = async (account, jetton) => {
   };
 };
 
-const api = async (address) => {
-
+export const api = async (address) => {
   const jettons = await getJettonsByAddress(address);
   const res = [];
   for (const jettonInfo of jettons) {
