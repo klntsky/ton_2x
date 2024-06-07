@@ -1,15 +1,23 @@
 import 'dotenv/config';
+const delay = ms => new Promise((resolve, reject) => setTimeout(resolve, ms));
 
-const fetchWithAuth = url =>
-      fetch(
+const fetchWithAuth = async url => {
+  const resp = await fetch(
         url,
         {
           headers: {
             Authorization: 'Bearer ' + process.env['TONAPI_TOKEN']
           }
         }
-      );
+  ).then(x => x.json());
 
+  if (resp.error) {
+    await delay(1000);
+    console.info('im deboooooooooooooooouncccccinggggg');
+    return fetchWithAuth(url);
+  }
+  return { json: () => resp };
+};
 
 function collectFromGenerator(generatorFunc) {
     const result = [];
