@@ -34,9 +34,12 @@ const main = async () => {
                 console.log(1)
                 const bouncableUserFriendlyAddress = TonConnectSDK.toUserFriendlyAddress(rawAddress);
                 console.log(123, rawAddress, bouncableUserFriendlyAddress)
-                window.userWalletAddress = walletAndwalletInfo.account.address
-                window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
-                console.log(2)
+                const myURL = new URL(window.location.href);
+                myURL.searchParams.set('address', walletAndwalletInfo.account.address)
+                window.location.href = myURL.toString()
+                // window.userWalletAddress = walletAndwalletInfo.account.address
+                // window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
+                // console.log(2, tonConnectUI)
                 // isWalletConnected = true;
             }
         );
