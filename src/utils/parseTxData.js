@@ -143,15 +143,20 @@ const getJettonsByAddress = async address => {
       '/jettons'
   );
 
-  const jettons = (await (await fetchWithAuth(url)).json()).balances
-        .filter(x => x.balance !== '0')
-        .map(x => ({
-          address: x?.jetton?.address,
-          symbol: x?.jetton?.symbol,
-          image: x?.jetton?.image
-        }));
+  try {
+    const jettons = (await (await fetchWithAuth(url)).json()).balances
+          .filter(x => x.balance !== '0')
+          .map(x => ({
+            address: x?.jetton?.address,
+            symbol: x?.jetton?.symbol,
+            image: x?.jetton?.image
+          }));
 
-  return jettons;
+    return jettons;
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
 };
 
 const getAccountJettonHistory = async (account, jetton) => {
