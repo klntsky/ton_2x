@@ -43,8 +43,11 @@ export const init = async (
 
 Помогу тебе увидеть прибыль по всему твоему кошельку 👛 или выбранной монете 💎 без изучения сложных инструментов 📱
 
+Если у тебя возникнут какие-то вопросы, не стесняйся задавать их в [чате](https://t.me/+prK7rt-771VmZTAy) ❤️
+
 Подключи кошелек, чтобы начать 👇
 `, {
+      parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: [[
           {
@@ -82,7 +85,6 @@ export const init = async (
       friendlyAddress: string
     } = JSON.parse(ctx.update.message.web_app_data.data)
     const db = await getDbConnection()
-    await ctx.reply(adresesses.address)
     await insertUserAdress(db, ctx.from.id, adresesses.address)
     const url = new URLSearchParams(process.env.TELEGRAM_BOT_WEB_APP)
     url.set('address', adresesses.address)

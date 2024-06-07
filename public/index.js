@@ -31,9 +31,7 @@ const main = async () => {
         tonConnectUI.onStatusChange(
             walletAndwalletInfo => {
                 const rawAddress = walletAndwalletInfo.account.address; // like '0:abcdef123456789...'
-                console.log(1)
                 const bouncableUserFriendlyAddress = TonConnectSDK.toUserFriendlyAddress(rawAddress);
-                console.log(123, rawAddress, bouncableUserFriendlyAddress)
                 const myURL = new URL(window.location.href);
                 const hasAddress = myURL.searchParams.has('address')
                 if (hasAddress) return;
