@@ -3,7 +3,9 @@
 const main = async () => {
     window.Telegram.WebApp.ready()
 
-    let isWalletConnected = false;
+    // if (window.location.)
+
+    // let isWalletConnected = false;
 
     try {
         // const tonConnectUI = new TonConnectUI({
@@ -19,13 +21,12 @@ const main = async () => {
             twaReturnUrl: 'https://t.me/ton_2x_bot/app'
         }
 
-        tonConnectUI.onModalStateChange(
-            async state => {
-                if (state.status === "closed" && !isWalletConnected) {
-                    await tonConnectUI.openModal();
-                }
-            }
-        )
+        // tonConnectUI.onModalStateChange(
+        //     async state => {
+        //         if (state.status === "closed" && !isWalletConnected) {
+        //             await tonConnectUI.openModal();
+        //         }
+        //     }
 
         tonConnectUI.onStatusChange(
             walletAndwalletInfo => {
@@ -36,7 +37,7 @@ const main = async () => {
                 window.userWalletAddress = walletAndwalletInfo.account.address
                 window.Telegram.WebApp.sendData(JSON.stringify({ address: walletAndwalletInfo.account.address, friendlyAddress: bouncableUserFriendlyAddress }))
                 console.log(2)
-                isWalletConnected = true;
+                // isWalletConnected = true;
             }
         );
 
