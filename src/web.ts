@@ -27,7 +27,10 @@ app.get('/getWalletData', async (req, res) => {
     // if (addressInDb.count === 0) {
     //     return res.status(204).send()
     // }
-    const result = address && typeof address === 'string' ? await api(address) : apiMock
+    console.log({ address })
+    const result = address && typeof address === 'string'
+        ? await api(address)
+        : apiMock
     return res.send(result)
     // const jettons = await getJettonsByAddress(address)
     // const points = []
