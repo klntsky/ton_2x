@@ -26,7 +26,7 @@ const main = async () => {
                 }
             }
         )
-        console.log(999, tonConnectUI.connected)
+
         tonConnectUI.onStatusChange(
             walletAndwalletInfo => {
                 const rawAddress = walletAndwalletInfo.account.address; // like '0:abcdef123456789...'
