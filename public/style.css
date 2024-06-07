@@ -2,6 +2,10 @@ html {
     background-color: var(--tg-theme-bg-color);
 }
 
+body {
+    overflow-y: hidden;
+}
+
 #root {
     max-width: 560px;
     margin: 0 auto;
