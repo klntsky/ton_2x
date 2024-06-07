@@ -1,5 +1,16 @@
 import 'dotenv/config';
 
+const fetchWithAuth = url =>
+      fetch(
+        url,
+        {
+          headers: {
+            Authorization: 'Bearer ' + process.env['TONAPI_TOKEN']
+          }
+        }
+      );
+
+
 function collectFromGenerator(generatorFunc) {
     const result = [];
     const generator = generatorFunc();
@@ -61,11 +72,10 @@ export const getAllSwaps = (tx) => {
 // fetches traces to be parsed for us.
 export const getTracesByTxHash = async hash => {
   const url = (
-    'https://tonapi.io/v2/traces/' + hash +
-      '?token=' + process.env['TONAPI_TOKEN']
+    'https://tonapi.io/v2/traces/' + hash
   );
 
-  const traces = await (await fetch(url)).json();
+  const traces = await (await fetchWithAuth(url)).json();
   return traces;
 };
 
@@ -77,12 +87,11 @@ export const getTraceIdsByAddress = async address => {
   const url = (
     // TODO: do something with limit
     'https://tonapi.io/v2/accounts/' + encodeURIComponent(address) +
-      '/traces?limit=30' +
-      '&token=' + process.env['TONAPI_TOKEN']
+      '/traces?limit=30'
   );
 
-  const traces = (await (await fetch(url)).json()).traces;
-  console.info('getTraceIdsByAddress', traces);
+  const traces = (await (await fetchWithAuth(url)).json()).traces;
+  // console.info('getTraceIdsByAddress', traces);
   return traces;
 };
 
@@ -131,11 +140,10 @@ const getAssetsByAddressFromSwapHistory = async address => {
 const getJettonsByAddress = async address => {
   const url = (
     'https://tonapi.io/v2/accounts/' + encodeURIComponent(address) +
-      '/jettons' +
-      '?token=' + process.env['TONAPI_TOKEN']
+      '/jettons'
   );
 
-  const jettons = (await (await fetch(url)).json()).balances
+  const jettons = (await (await fetchWithAuth(url)).json()).balances
         .filter(x => x.balance !== '0')
         .map(x => ({
           address: x?.jetton?.address,
@@ -146,10 +154,107 @@ const getJettonsByAddress = async address => {
   return jettons;
 };
 
+const getAccountJettonHistory = async (account, jetton) => {
+  const url = (
+    'https://tonapi.io/v2/accounts/' + account +
+      '/jettons/' + jetton +
+      '/history?limit=100'
+  );
+  const resp = (await (await fetchWithAuth(url)).json());
+  return resp.events;
+};
+
+const getLastTimestampFromHistory = jettonHistory => {
+  try {
+    return jettonHistory[0].timestamp;
+  } catch (_) {
+    return null;
+  }
+};
+
+const getChart = async (jetton) => {
+  const timestamp = Math.floor(Date.now() / 1000 - 604800);
+
+  // console.info(timestamp);
+
+  const url = (
+    'https://tonapi.io/v2/rates/chart?token=' +
+      jetton +
+      '&currency=usd' +
+      '&start_date=' + timestamp +
+      '&points_count=100'
+  );
+
+  const chart = (await (await fetchWithAuth(url)).json());
+
+  return chart.points;
+};
+
+const getPriceAt = async (jetton, timestamp) => {
+  timestamp = Math.min(Math.floor(Date.now() / 1000 - 1000), timestamp);
+
+  // console.info(timestamp);
+
+  const url = (
+    'https://tonapi.io/v2/rates/chart?token=' +
+      jetton +
+      '&currency=usd' +
+      '&start_date=' + timestamp +
+      '&end_date=' + (timestamp + 1000) +
+      '&points_count=1'
+  );
+
+  const chart = (await (await fetchWithAuth(url)).json());
+
+  // console.info(chart);
+
+  return chart.points[0][1];
+};
+
+const getAddressPnL = async (account, jetton) => {
+  const jettonHistory = await getAccountJettonHistory(account, jetton);
+  // console.log('jettonHistory', jettonHistory);
+  const lastTimestamp = getLastTimestampFromHistory(jettonHistory);
+  // console.log('lastTimestamp', lastTimestamp);
+  if (!lastTimestamp) {
+    return 0;
+  }
+
+  const priceAtBuy = await getPriceAt(jetton, lastTimestamp);
+  const currentPrice = await getPriceAt(jetton, Math.floor(Date.now() / 1000));
+  return {
+    pnlPercentage: Math.floor((((currentPrice / priceAtBuy) - 1) * 100)),
+    lastBuyTime: lastTimestamp
+  };
+};
+
+const api = async (address) => {
+
+  const jettons = await getJettonsByAddress(address);
+  const res = [];
+  for (const jettonInfo of jettons) {
+    const { pnlPercentage, lastBuyTime } = await getAddressPnL(
+      address, jettonInfo.address
+    );
+    const chart = await getChart(jettonInfo.address);
+    const slicedChart = chart.filter(x => x[0] > lastBuyTime);
+    // console.log({ ...jettonInfo, pnl });
+    console.log(chart, lastBuyTime, slicedChart);
+    res.push({
+      ...jettonInfo,
+      pnlPercentage,
+      chart: (slicedChart.length >= 2 ? slicedChart : chart).reverse(),
+      lastBuyTime
+    });
+  }
+
+  return res;
+};
+
 // const main = async () => {
-//   const address = ''// address here
-//   const jettons = await getJettonsByAddress(address);
-//   console.log(jettons);
+//   const account = ''; // your account in 0:12345 format here
+//   const res = await api(account);
+//   console.log(account, JSON.stringify(res, false, 4));
 // };
 
 // main();
