@@ -2,9 +2,13 @@ html {
     background-color: var(--tg-theme-bg-color);
 }
 
-body {
-    overflow-y: hidden;
+h1 {
+    color: var(--tg-theme-text-color) !important;
 }
+
+/* body {
+    overflow-y: hidden;
+} */
 
 #root {
     max-width: 560px;
