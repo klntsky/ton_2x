@@ -221,7 +221,11 @@ const getPriceAt = async (jetton, timestamp) => {
 
   // console.info(chart);
 
-  return chart.points[0][1];
+  if (chart.points.length) {
+    return chart.points[0][1];
+  } else {
+    return 0;
+  }
 };
 
 const getAddressPnL = async (account, jetton) => {
