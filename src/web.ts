@@ -17,7 +17,7 @@ app.use(async (err, req, res, next) => {
     return res.status(500).send()
 })
 
-app.get('/getJettonsByAddress', async (req, res) => {
+app.get('/getWalletData', async (req, res) => {
     const { address } = req.query
     // if (typeof address !== 'string') {
     //     return res.status(422).send()
@@ -32,20 +32,6 @@ app.get('/getJettonsByAddress', async (req, res) => {
         ? await api(address)
         : apiMock
     return res.send(result)
-    // const jettons = await getJettonsByAddress(address)
-    // const points = []
-    // for (const jetton of jettons) {
-    //     const response = await fetch(`https://tonapi.io/v2/rates/chart?token=${jetton.address}&currency=ton`)
-    //     const json: {
-    //         points: [timestamp: number, price: number][]
-    //     } = await response.json()
-    //     points.push({
-    //         symbol: jetton.symbol,
-    //         image: jetton.image,
-    //         points: json.points,
-    //     })
-    // }
-    // return res.send(points)
 })
 
 const start = async () => {
