@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: var(--tg-theme-bg-color);
+}
+
+.App {
+  margin: 0 auto;
+  padding: 1rem;
+  max-width: 560px;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--tg-theme-text-color);
+}

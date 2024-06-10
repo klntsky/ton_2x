@@ -5,8 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:bot": "npx tsx ./src/bot.ts",
     "web": "npx tsx ./src/web.ts",
+    "dev:bot": "npx tsx ./src/bot.ts",
+    "dev:front": "npm --prefix ./front run dev",
+    "build:front": "npm --prefix ./front run build",
     "migrations": "npx drizzle-kit",
     "drizzle:check-api-changes": "npm run migrations up",
     "migrations:run": "npm run migrations migrate",
