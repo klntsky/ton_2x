@@ -23,9 +23,3 @@ export interface ChartData {
   date: number;
   Price: number;
 }
-export interface WalletData {
-  symbol: string;
-  image: string;
-  pnlPercentage: number;
-  chart: [number, number][];
-}

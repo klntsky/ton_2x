@@ -1,0 +1,1 @@
+export { usePostData } from './usePostData';

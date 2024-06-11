@@ -5,39 +5,61 @@ import {
   useTonConnectModal,
   useTonConnectUI,
 } from '@tonconnect/ui-react';
-import { useMiniApp } from '@tma.js/sdk-react';
+import {
+  bindMiniAppCSSVars,
+  bindThemeParamsCSSVars,
+  useMiniApp,
+  useThemeParams,
+} from '@tma.js/sdk-react';
+import { retrieveLaunchParams } from '@tma.js/sdk';
+import { usePostData } from './Hooks';
 
 function App() {
   const rawAddress = useTonAddress(false);
-  const userFriendlyAddress = useTonAddress();
   const modal = useTonConnectModal();
   const [tonConnectUI] = useTonConnectUI();
+  const themeParams = useThemeParams();
   const miniApp = useMiniApp();
+  const { mutate } = usePostData();
   miniApp.ready();
 
-  if (!rawAddress) {
-    modal.open();
-  }
+  useEffect(() => {
+    return bindMiniAppCSSVars(miniApp, themeParams);
+  }, [miniApp, themeParams]);
 
   useEffect(() => {
-    // tonConnectUI.onModalStateChange((state) => {
-    //   if (state.status === "closed" && !isWalletConnected.current) {
-    //       modal.open();
-    //   }
-    // })
+    return bindThemeParamsCSSVars(themeParams);
+  }, [themeParams]);
+
+  useEffect(() => {
+    if (!rawAddress) {
+      modal.open();
+    }
+
+    tonConnectUI.onModalStateChange(state => {
+      if (state.status === 'closed' && !rawAddress) {
+        modal.open();
+      }
+    });
 
     tonConnectUI.onStatusChange(wallet => {
-      console.log(123, rawAddress, userFriendlyAddress);
       const myURL = new URL(window.location.href);
       const hasAddress = myURL.searchParams.has('address');
+      const launchParams = retrieveLaunchParams();
+      console.log(123, {
+        id: launchParams.initData?.user?.id,
+        address: wallet?.account.address,
+      });
       if (hasAddress || !wallet?.account.address) return;
       myURL.searchParams.set('address', wallet.account.address);
       window.location.href = myURL.toString();
-      // const data = {
-      //   address: rawAddress,
-      //   friendlyAddress: userFriendlyAddress
-      // }
-      // miniApp.sendData(JSON.stringify(data))
+      mutate({
+        url: '/postUserWallet',
+        data: {
+          id: launchParams.initData?.user?.id,
+          address: wallet?.account.address,
+        },
+      });
     });
   }, []);
 

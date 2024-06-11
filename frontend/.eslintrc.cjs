@@ -18,5 +18,6 @@ module.exports = {
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
     'prettier/prettier': ['warn'],
+    "@typescript-eslint/no-unused-vars": ['warn'],
   },
 }

@@ -15,3 +15,7 @@ html {
   overflow-x: hidden;
   color: var(--tg-theme-text-color);
 }
+
+h1 {
+  color: var(--tg-theme-text-color) !important;
+}

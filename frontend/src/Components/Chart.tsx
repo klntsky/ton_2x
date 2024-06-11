@@ -1,7 +1,6 @@
 import { AreaChart, Badge, BadgeDelta, Card, Flex } from '@tremor/react';
 import { badgeType, chartColor, formatDataToChart, statusText } from '../utils';
-import { useFetchRates } from '../Hooks/useFetch';
-import { WalletData } from '../mock/ratesChart';
+import { useFetchRates } from '../Hooks/useFetchRates';
 import Loader from './Loader/Loader';
 
 // const valueFormatter = function (number: number) {
@@ -33,7 +32,7 @@ export function Chart() {
           Ваши жетоны
         </h1>
         {data
-          ? data.map((obj: WalletData) => (
+          ? data.map(obj => (
               <Card className="max-w-[550px] mt-4">
                 <Flex justifyContent="between" alignItems="center">
                   <Flex
