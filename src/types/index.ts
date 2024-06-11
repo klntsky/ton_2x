@@ -1,3 +1,5 @@
 export { TTelegrafContext } from './TTelegrafContext'
 export { TTelegrafSession } from './TTelegrafSession'
 export { TDbConnection } from './TDbConnection'
+export { TRequestHandler } from './TRequestHandler'
+export { TTransaction } from './TTransaction'

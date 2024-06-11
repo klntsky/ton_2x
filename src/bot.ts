@@ -1,11 +1,11 @@
 import process from 'process'
 import 'dotenv/config'
-import { init, sendMessageToBotUsers } from './utils'
+import { initBot, sendMessageToBotUsers } from './utils'
 import { getLogger } from './utils'
 
 const start = async () => {
   const logger = getLogger('tg-bot')
-  const bot = await init(
+  const bot = await initBot(
     process.env.TELEGRAM_BOT_TOKEN,
     {
       telegram: {

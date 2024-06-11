@@ -1,9 +1,9 @@
 import express from 'express'
-import { getDbConnection, getJettonsByAddress, getLogger, logError } from './utils'
-import { usernames } from './db/schema'
-import { count, eq } from 'drizzle-orm'
+import { getDbConnection, getLogger, logError } from './utils'
 import { api } from './utils/parseTxData'
 import { apiMock } from './constants'
+import { TRequestHandler } from './types'
+import { insertUserAdress } from './db/queries'
 
 const app = express()
 
@@ -12,27 +12,36 @@ app.set('trust proxy', true)
 
 const logger = getLogger('web')
 
+// @ts-expect-error
 app.use(async (err, req, res, next) => {
     await logError(logger, err)
     return res.status(500).send()
 })
 
-app.get('/getWalletData', async (req, res) => {
+const onGetWalletData: TRequestHandler<unknown, unknown, {
+    address?: string
+}> = async (req, res) => {
     const { address } = req.query
-    // if (typeof address !== 'string') {
-    //     return res.status(422).send()
-    // }
-    // const db = await getDbConnection()
-    // const [addressInDb] = await db.select({ count: count() }).from(usernames).where(eq(usernames.address, address))
-    // if (addressInDb.count === 0) {
-    //     return res.status(204).send()
-    // }
     console.log({ address })
     const result = address && typeof address === 'string'
         ? await api(address)
         : apiMock
     return res.send(result)
-})
+}
+
+const onPostUserWallet: TRequestHandler<{
+    id: number
+    address: string
+}> = async (req, res) => {
+    const { id, address } = req.body
+    const db = await getDbConnection()
+    await insertUserAdress(db, id, address)
+    return res.send()
+}
+
+app.get('/getWalletData', onGetWalletData)
+
+app.post('/postUserWallet', onPostUserWallet)
 
 const start = async () => {
     app.listen(Number(process.env.EXPRESS_PORT), '127.0.0.1')

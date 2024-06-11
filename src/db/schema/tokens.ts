@@ -1,6 +1,8 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { usernames } from "./usernames";
 
 export const tokens = sqliteTable('tokens', {
-    token: text('token'),
-    ticker: text('ticker'),
-  });
+  walletAddress: text('wallet_address').notNull().references(() => usernames.address),
+  token: text('token').primaryKey(),
+  ticker: text('ticker').notNull(),
+});

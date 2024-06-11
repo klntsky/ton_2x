@@ -2,13 +2,13 @@ import process from 'process'
 import 'dotenv/config'
 import { Telegraf } from 'telegraf'
 import { message } from 'telegraf/filters'
-import { session } from 'telegraf'
-import { getDbConnection, getLogger, logError, logUserAction } from '../utils'
+// import { session } from 'telegraf'
+import { getDbConnection, getLogger, handleNotifications, logError, logUserAction, loopRetrying } from '.'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
 import { insertUserAdress } from '../db/queries'
 
-export const init = async (
+export const initBot = async (
   token: string,
   options: Partial<Telegraf.Options<TTelegrafContext>>,
   logger: Logger = getLogger('tg-publisher-bot'),
@@ -22,20 +22,20 @@ export const init = async (
     next()
   })
 
-  bot.use(
-    session({
-      defaultSession: () => ({}),
-      // TODO: -> .json
-    //   store: MySQL<TTelegrafSession>({
-    //     host: process.env.DB_HOST,
-    //     port: Number(process.env.DB_PORT),
-    //     database: process.env.DB_DATABASE,
-    //     user: process.env.DB_USER,
-    //     password: process.env.DB_PASSWORD,
-    //     table: 'telegraf_sessions',
-    //   }),
-    }),
-  )
+  // bot.use(
+  //   session({
+  //     defaultSession: () => ({}),
+  //     // TODO: -> .json
+  //   //   store: MySQL<TTelegrafSession>({
+  //   //     host: process.env.DB_HOST,
+  //   //     port: Number(process.env.DB_PORT),
+  //   //     database: process.env.DB_DATABASE,
+  //   //     user: process.env.DB_USER,
+  //   //     password: process.env.DB_PASSWORD,
+  //   //     table: 'telegraf_sessions',
+  //   //   }),
+  //   }),
+  // )
 
   bot.start(async ctx => {
     const startMessage = await ctx.reply(`
@@ -131,6 +131,12 @@ export const init = async (
     } finally {
       await logError(ctx.logger, error, { ctx: JSON.stringify(ctx.update) })
     }
+  })
+
+  loopRetrying(() => handleNotifications(bot), {
+    logger: logger,
+    afterCallbackDelayMs: 10_000,
+    catchDelayMs: 10_000,
   })
 
   return bot
