@@ -58,6 +58,3 @@ export const badgeType = (input: number) => {
     return 'unchanged';
   }
 };
-
-export const statusText = (input: number) =>
-  input > 0 ? 'Прибыль:' : 'Убыток:';

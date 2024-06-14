@@ -7,6 +7,8 @@ import { getDbConnection, getLogger, handleNotifications, logError, logUserActio
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
 import { insertUserAdress } from '../db/queries'
+import { userSettings } from '../db/schema'
+import { i18n } from '../i18n'
 
 export const initBot = async (
   token: string,
@@ -18,6 +20,9 @@ export const initBot = async (
   bot.use(async (ctx, next) => {
     if (!ctx.logger) {
       ctx.logger = logger
+    }
+    if (!ctx.i18n) {
+      ctx.i18n = ctx.from.language_code === 'ru' ? i18n.ru : i18n.en
     }
     next()
   })
@@ -38,20 +43,19 @@ export const initBot = async (
   // )
 
   bot.start(async ctx => {
-    const startMessage = await ctx.reply(`
-Привет, я ждал тебя 👋
-
-Помогу тебе увидеть прибыль по всему твоему кошельку (TODO) 👛 или выбранной монете 💎 без изучения сложных инструментов 📱
-
-Если у тебя возникнут какие-то вопросы, не стесняйся задавать их в [чате](https://t.me/+prK7rt-771VmZTAy) ❤️
-
-Подключи кошелек, чтобы начать 👇
-`, {
+    if (ctx.from.language_code) {
+      const db = await getDbConnection()
+      await db.insert(userSettings).values({
+        userId: ctx.from.id,
+        languageCode: ctx.from.language_code,
+      })
+    }
+    const startMessage = await ctx.reply(ctx.i18n.message.start(), {
       parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: [[
           {
-            text: 'Подключить кошелёк',
+            text: ctx.i18n.button.linkWallet(),
             web_app: {
               url: process.env.TELEGRAM_BOT_WEB_APP,
             }
@@ -62,7 +66,7 @@ export const initBot = async (
     await ctx.pinChatMessage(startMessage.message_id)
     await ctx.setChatMenuButton({
       type: 'web_app',
-      text: 'Подключить',
+      text: ctx.i18n.button.link(),
       web_app: {
         url: process.env.TELEGRAM_BOT_WEB_APP
       }

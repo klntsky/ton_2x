@@ -1,16 +1,19 @@
 import { Telegraf } from "telegraf"
 import { getJettonsByAddress } from "."
-import { tokens, userPurchases, usernames } from "../db/schema"
+import { tokens, userPurchases, userSettings, usernames } from "../db/schema"
 import { getDbConnection } from "./getDbConnection"
 import { TTelegrafContext } from "../types"
 import { desc, eq } from "drizzle-orm"
 import { getTraceIdsByAddress, getTracesByTxHash } from "./parseTxData"
 import { userNotifications } from "../db/schema/userNotifications"
+import { i18n } from "../i18n"
 
 export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
     const db = await getDbConnection()
     const users = await db.select().from(usernames)
     for (const user of users) {
+        const [userLanguageCode] = await db.select().from(userSettings).where(eq(userSettings.userId, user.userId))
+        const languageCode = userLanguageCode && userLanguageCode.languageCode === 'ru' ? 'ru' : 'en'
         const jettonsActual = await getJettonsByAddress(user.address);
         const jettonsActualObj = jettonsActual.reduce<Record<string, (typeof jettonsActual)[number]>>((obj, jetton) => {
             obj[jetton.address] = jetton
@@ -22,7 +25,7 @@ export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
                 await db.delete(tokens).where(eq(tokens.token, jetton.token))
                 await bot.telegram.sendMessage(
                     user.userId,
-                    `Вы больше их не холдите жетоны «${jetton.ticker}», уведомления по ним остановлены.`
+                    i18n[languageCode].message.youNoLongerHaveJetton(jetton.ticker),
                 )
                 continue
             }
@@ -37,7 +40,9 @@ export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
             if (txTrace.transaction.utime > newestTransaction.timestamp) {
                 const rate = value / newestTransaction.price
                 if (rate >= 2 || rate <= 0.5) {
-                    await bot.telegram.sendMessage(user.userId, `«${jetton.ticker}» x${+rate.toFixed(2)} на кошельке «${user.address}».`)
+                    await bot.telegram.sendMessage(user.userId, i18n[languageCode].message.notification.x2(jetton.ticker, rate, user.address))
+                } else if (rate <= 0.5) {
+                    await bot.telegram.sendMessage(user.userId, i18n[languageCode].message.notification.x05(jetton.ticker, rate, user.address))
                 }
                 await db.insert(userNotifications).values({
                     timestamp: txTrace.transaction.utime,

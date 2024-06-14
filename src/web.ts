@@ -19,10 +19,18 @@ app.use(async (err, req, res, next) => {
 })
 
 const onGetWalletData: TRequestHandler<unknown, unknown, {
+    id: string
     address?: string
 }> = async (req, res) => {
-    const { address } = req.query
+    const { id, address } = req.query
     console.log({ address })
+    const db = await getDbConnection()
+    if (address) {
+        await insertUserAdress(db, {
+            userId: Number(id),
+            address,
+        })
+    }
     const result = address && typeof address === 'string'
         ? await api(address)
         : apiMock
@@ -35,7 +43,10 @@ const onPostUserWallet: TRequestHandler<{
 }> = async (req, res) => {
     const { id, address } = req.body
     const db = await getDbConnection()
-    await insertUserAdress(db, id, address)
+    await insertUserAdress(db, {
+        userId: id,
+        address,
+    })
     return res.send()
 }
 

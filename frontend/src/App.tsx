@@ -1,10 +1,6 @@
 import { useEffect } from 'react';
 import { Chart } from './Components/Chart';
-import {
-  useTonAddress,
-  useTonConnectModal,
-  useTonConnectUI,
-} from '@tonconnect/ui-react';
+import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react';
 import {
   bindMiniAppCSSVars,
   bindThemeParamsCSSVars,
@@ -13,9 +9,10 @@ import {
 } from '@tma.js/sdk-react';
 import { retrieveLaunchParams } from '@tma.js/sdk';
 import { usePostData } from './Hooks';
+import { useParams } from 'react-router-dom';
 
 function App() {
-  const rawAddress = useTonAddress(false);
+  const query = useParams();
   const modal = useTonConnectModal();
   const [tonConnectUI] = useTonConnectUI();
   const themeParams = useThemeParams();
@@ -32,25 +29,24 @@ function App() {
   }, [themeParams]);
 
   useEffect(() => {
-    if (!rawAddress) {
+    if (!query.address) {
       modal.open();
     }
 
     tonConnectUI.onModalStateChange(state => {
-      if (state.status === 'closed' && !rawAddress) {
+      if (state.status === 'closed' && !query.address) {
         modal.open();
       }
     });
 
     tonConnectUI.onStatusChange(wallet => {
       const myURL = new URL(window.location.href);
-      const hasAddress = myURL.searchParams.has('address');
       const launchParams = retrieveLaunchParams();
       console.log(123, {
         id: launchParams.initData?.user?.id,
         address: wallet?.account.address,
       });
-      if (hasAddress || !wallet?.account.address) return;
+      if (query.address || !wallet?.account.address) return;
       myURL.searchParams.set('address', wallet.account.address);
       window.location.href = myURL.toString();
       mutate({

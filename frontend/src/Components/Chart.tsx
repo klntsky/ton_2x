@@ -1,13 +1,15 @@
 import { AreaChart, Badge, BadgeDelta, Card, Flex } from '@tremor/react';
-import { badgeType, chartColor, formatDataToChart, statusText } from '../utils';
+import { badgeType, chartColor, formatDataToChart } from '../utils';
 import { useFetchRates } from '../Hooks/useFetchRates';
 import Loader from './Loader/Loader';
+import { useTranslation } from 'react-i18next';
 
 // const valueFormatter = function (number: number) {
 //   return '$' + new Intl.NumberFormat('us').format(number).toString();
 // };
 
 export function Chart() {
+  const { t } = useTranslation();
   const { data, isLoading } = useFetchRates();
 
   if (isLoading) {
@@ -20,7 +22,7 @@ export function Chart() {
   if (!data?.length) {
     return (
       <Flex justifyContent="center" alignItems="center" className="h-screen">
-        <h2 className="text-2xl text-slate-600">У вас пока нет жетонов</h2>
+        <h2 className="text-2xl text-slate-600">{t('label.noJettons')}</h2>
       </Flex>
     );
   }
@@ -29,7 +31,7 @@ export function Chart() {
     return (
       <div>
         <h1 className="w-full text-3xl text-slate-700 text-center">
-          Ваши жетоны
+          {t('label.yourJettons')}
         </h1>
         {data
           ? data.map(obj => (
@@ -57,13 +59,15 @@ export function Chart() {
                       <BadgeDelta
                         size="lg"
                         deltaType={badgeType(obj.pnlPercentage)}
-                      >{`${statusText(
-                        obj.pnlPercentage,
-                      )} ${obj.pnlPercentage.toString()}%`}</BadgeDelta>
+                      >
+                        {obj.pnlPercentage > 0
+                          ? t('label.profit', { percent: obj.pnlPercentage })
+                          : t('label.loss', { percent: obj.pnlPercentage })}
+                      </BadgeDelta>
                     </div>
                   ) : (
                     <Badge size="lg" color="cyan">
-                      Без изменений
+                      {t('label.withoutChanges')}
                     </Badge>
                   )}
                 </Flex>

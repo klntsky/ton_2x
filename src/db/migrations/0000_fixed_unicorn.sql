@@ -25,8 +25,7 @@ CREATE TABLE `swaps` (
 CREATE TABLE `tokens` (
 	`wallet_address` text NOT NULL,
 	`token` text PRIMARY KEY NOT NULL,
-	`ticker` text NOT NULL,
-	FOREIGN KEY (`wallet_address`) REFERENCES `usernames`(`address`) ON UPDATE no action ON DELETE no action
+	`ticker` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `user_notifications` (
@@ -34,7 +33,7 @@ CREATE TABLE `user_notifications` (
 	`jetton` text NOT NULL,
 	`timestamp` integer NOT NULL,
 	`price` integer NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `usernames`(`user_id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`user_id`) REFERENCES `usernames`(`user_id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `user_purchases` (
@@ -42,7 +41,7 @@ CREATE TABLE `user_purchases` (
 	`jetton` text NOT NULL,
 	`timestamp` integer NOT NULL,
 	`price` integer NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `usernames`(`user_id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`user_id`) REFERENCES `usernames`(`user_id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `usernames` (
@@ -50,4 +49,5 @@ CREATE TABLE `usernames` (
 	`address` text NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `wallet_address-token` ON `tokens` (`wallet_address`,`token`);--> statement-breakpoint
 CREATE UNIQUE INDEX `user_id-address` ON `usernames` (`user_id`,`address`);
