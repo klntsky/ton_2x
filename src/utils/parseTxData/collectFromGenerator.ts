@@ -1,10 +1,12 @@
-export function collectFromGenerator<GGenerator = unknown>(generatorFunc: () => Generator<GGenerator>) {
-    const result: GGenerator[] = [];
-    const generator = generatorFunc();
+export function collectFromGenerator<GGenerator = unknown>(
+  generatorFunc: () => Generator<GGenerator>,
+) {
+  const result: GGenerator[] = []
+  const generator = generatorFunc()
 
-    for (let value of generator) {
-        result.push(value);
-    }
+  for (const value of generator) {
+    result.push(value)
+  }
 
-    return result;
+  return result
 }

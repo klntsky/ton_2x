@@ -1,6 +1,9 @@
-import { usernames } from "../../db/schema";
-import { TDbConnection } from "../../types";
+import { usernames } from '../../db/schema'
+import type { TDbConnection } from '../../types'
 
-export const insertUserAdress = async (db: TDbConnection, values: typeof usernames.$inferInsert) => {
-    await db.insert(usernames).values(values).onConflictDoNothing()
+export const insertUserAdress = async (
+  db: TDbConnection,
+  values: typeof usernames.$inferInsert,
+) => {
+  await db.insert(usernames).values(values).onConflictDoNothing()
 }

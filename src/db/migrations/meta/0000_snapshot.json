@@ -42,12 +42,8 @@
           "name": "notifications_swap_id_swaps_uuid_fk",
           "tableFrom": "notifications",
           "tableTo": "swaps",
-          "columnsFrom": [
-            "swap_id"
-          ],
-          "columnsTo": [
-            "uuid"
-          ],
+          "columnsFrom": ["swap_id"],
+          "columnsTo": ["uuid"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -171,10 +167,7 @@
       "indexes": {
         "wallet_address-token": {
           "name": "wallet_address-token",
-          "columns": [
-            "wallet_address",
-            "token"
-          ],
+          "columns": ["wallet_address", "token"],
           "isUnique": true
         }
       },
@@ -220,12 +213,8 @@
           "name": "user_notifications_user_id_usernames_user_id_fk",
           "tableFrom": "user_notifications",
           "tableTo": "usernames",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["user_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -271,12 +260,8 @@
           "name": "user_purchases_user_id_usernames_user_id_fk",
           "tableFrom": "user_purchases",
           "tableTo": "usernames",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["user_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -305,10 +290,7 @@
       "indexes": {
         "user_id-address": {
           "name": "user_id-address",
-          "columns": [
-            "user_id",
-            "address"
-          ],
+          "columns": ["user_id", "address"],
           "isUnique": true
         }
       },

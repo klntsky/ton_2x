@@ -1,4 +1,4 @@
-import { blob, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { blob, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const swaps = sqliteTable('swaps', {
   address: text('address').notNull(),
@@ -8,4 +8,4 @@ export const swaps = sqliteTable('swaps', {
   amountB: blob('amount_b', { mode: 'bigint' }).notNull(),
   timestamp: text('timestamp').notNull(),
   uuid: text('uuid').primaryKey().notNull(),
-});
+})

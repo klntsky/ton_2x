@@ -1,6 +1,6 @@
-import { TDbConnection } from "../../types";
-import { tokens } from "../schema";
+import type { TDbConnection } from '../../types'
+import { tokens } from '../schema'
 
 export const insertToken = async (db: TDbConnection, values: typeof tokens.$inferInsert) => {
-    await db.insert(tokens).values(values).onConflictDoNothing()
+  await db.insert(tokens).values(values).onConflictDoNothing()
 }

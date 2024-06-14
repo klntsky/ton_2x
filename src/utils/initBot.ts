@@ -3,7 +3,14 @@ import 'dotenv/config'
 import { Telegraf } from 'telegraf'
 import { message } from 'telegraf/filters'
 // import { session } from 'telegraf'
-import { getDbConnection, getLogger, handleNotifications, logError, logUserAction, loopRetrying } from '.'
+import {
+  getDbConnection,
+  getLogger,
+  handleNotifications,
+  logError,
+  logUserAction,
+  loopRetrying,
+} from '.'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
 import { insertUserAdress } from '../db/queries'
@@ -53,73 +60,75 @@ export const initBot = async (
     const startMessage = await ctx.reply(ctx.i18n.message.start(), {
       parse_mode: 'Markdown',
       reply_markup: {
-        inline_keyboard: [[
-          {
-            text: ctx.i18n.button.linkWallet(),
-            web_app: {
-              url: process.env.TELEGRAM_BOT_WEB_APP,
-            }
-          }
-        ]],
-      }
+        inline_keyboard: [
+          [
+            {
+              text: ctx.i18n.button.linkWallet(),
+              web_app: {
+                url: process.env.TELEGRAM_BOT_WEB_APP,
+              },
+            },
+          ],
+        ],
+      },
     })
     await ctx.pinChatMessage(startMessage.message_id)
     await ctx.setChatMenuButton({
       type: 'web_app',
       text: ctx.i18n.button.link(),
       web_app: {
-        url: process.env.TELEGRAM_BOT_WEB_APP
-      }
+        url: process.env.TELEGRAM_BOT_WEB_APP,
+      },
     })
     await logUserAction(ctx, {
       start: ctx.payload || 1,
     })
   })
 
-//   bot.command('help', async ctx => {})
+  //   bot.command('help', async ctx => {})
 
-//   bot.on('callback_query', async ctx => {})
+  //   bot.on('callback_query', async ctx => {})
 
-//   bot.on('inline_query', async ctx => {})
+  //   bot.on('inline_query', async ctx => {})
 
-//   bot.on(message('web_app_data'), async ctx => {
-//     // await ctx.reply(JSON.stringify(ctx.update.message.web_app_data, null, 2))
-//     const adresesses: {
-//       address: string
-//       friendlyAddress: string
-//     } = JSON.parse(ctx.update.message.web_app_data.data)
-//     const db = await getDbConnection()
-//     await insertUserAdress(db, ctx.from.id, adresesses.address)
-//     const url = new URLSearchParams(process.env.TELEGRAM_BOT_WEB_APP)
-//     url.set('address', adresesses.address)
-//     const successMessage = await ctx.reply(`
-// 🔥 Теперь ты можешь сразу увидеть прибыль по всему своему кошельку или выбранной монете 💎 и с легкостью вывести свою прибыль вовремя 🤩
+  //   bot.on(message('web_app_data'), async ctx => {
+  //     // await ctx.reply(JSON.stringify(ctx.update.message.web_app_data, null, 2))
+  //     const adresesses: {
+  //       address: string
+  //       friendlyAddress: string
+  //     } = JSON.parse(ctx.update.message.web_app_data.data)
+  //     const db = await getDbConnection()
+  //     await insertUserAdress(db, ctx.from.id, adresesses.address)
+  //     const url = new URLSearchParams(process.env.TELEGRAM_BOT_WEB_APP)
+  //     url.set('address', adresesses.address)
+  //     const successMessage = await ctx.reply(`
+  // 🔥 Теперь ты можешь сразу увидеть прибыль по всему своему кошельку или выбранной монете 💎 и с легкостью вывести свою прибыль вовремя 🤩
 
-// Я пришлю тебе сообщение как только одна из твоих монет сделает x2 🔜
+  // Я пришлю тебе сообщение как только одна из твоих монет сделает x2 🔜
 
-// Если у тебя возникнут какие-то вопросы, не стесняйся задавать их в [чате](https://t.me/+prK7rt-771VmZTAy) ❤️
-// `, {
-//   parse_mode: 'Markdown',
-//   reply_markup: {
-//     inline_keyboard: [[
-//       {
-//         text: 'Открыть',
-//         web_app: {
-//           url: process.env.TELEGRAM_BOT_WEB_APP,
-//         }
-//       }
-//     ]],
-//   }
-// })
-//     await ctx.pinChatMessage(successMessage.message_id)
-//     await ctx.setChatMenuButton({
-//       type: 'web_app',
-//       text: 'Открыть',
-//       web_app: {
-//         url: process.env.TELEGRAM_BOT_WEB_APP
-//       }
-//     })
-//   })
+  // Если у тебя возникнут какие-то вопросы, не стесняйся задавать их в [чате](https://t.me/+prK7rt-771VmZTAy) ❤️
+  // `, {
+  //   parse_mode: 'Markdown',
+  //   reply_markup: {
+  //     inline_keyboard: [[
+  //       {
+  //         text: 'Открыть',
+  //         web_app: {
+  //           url: process.env.TELEGRAM_BOT_WEB_APP,
+  //         }
+  //       }
+  //     ]],
+  //   }
+  // })
+  //     await ctx.pinChatMessage(successMessage.message_id)
+  //     await ctx.setChatMenuButton({
+  //       type: 'web_app',
+  //       text: 'Открыть',
+  //       web_app: {
+  //         url: process.env.TELEGRAM_BOT_WEB_APP
+  //       }
+  //     })
+  //   })
 
   bot.catch(async (err, ctx) => {
     const error =

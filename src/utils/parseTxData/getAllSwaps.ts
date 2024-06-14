@@ -1,6 +1,6 @@
-import { collectFromGenerator, parseTransactionSwaps } from ".";
-import { TTransaction } from "../../types";
+import { collectFromGenerator, parseTransactionSwaps } from '.'
+import type { TTransaction } from '../../types'
 
 export const getAllSwaps = (tx: TTransaction) => {
-    return collectFromGenerator(parseTransactionSwaps.bind(null, tx));
-  };
+  return collectFromGenerator(parseTransactionSwaps.bind(null, tx))
+}

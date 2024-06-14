@@ -1,1 +1,1 @@
-export type TTelegrafSession = {}
+export type TTelegrafSession = object

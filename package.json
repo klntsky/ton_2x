@@ -9,6 +9,8 @@
     "dev:bot": "npx tsx ./src/bot.ts",
     "dev:front": "npm --prefix ./frontend run dev",
     "build:front": "npm --prefix ./frontend run build",
+    "pretty": "npx prettier --write ./src",
+    "lint": "eslint ./src --fix",
     "migrations": "npx drizzle-kit",
     "drizzle:check-api-changes": "npm run migrations up",
     "migrations:run": "npm run migrations migrate",
@@ -43,7 +45,14 @@
     "@types/amqplib": "^0.10.5",
     "@types/better-sqlite3": "^7.6.10",
     "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "@typescript-eslint/utils": "^7.13.0",
     "drizzle-kit": "^0.22.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-drizzle": "^0.2.3",
+    "prettier": "^3.3.2",
     "tsx": "^4.11.2",
     "typescript": "^5.4.5"
   }
