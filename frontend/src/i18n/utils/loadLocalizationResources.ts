@@ -1,5 +1,5 @@
 import { ru } from '..';
-import { TDeepTypeInObject } from '../../types';
+import type { TDeepTypeInObject } from '../../types';
 
 export const loadLocalizationResources = async (
   language: string,

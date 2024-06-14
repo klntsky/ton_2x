@@ -28,16 +28,22 @@ function App() {
     return bindThemeParamsCSSVars(themeParams);
   }, [themeParams]);
 
+  // useEffect(() => {
+  //   if (modal.state.status === 'closed') {
+  //     if (!query.address) {
+  //       modal.open();
+  //     }
+  //   } else {
+  //     if (query.address) {
+  //       modal.close();
+  //     }
+  //   }
+  // }, [modal, modal.state.status, query.address]);
+
   useEffect(() => {
     if (!query.address) {
       modal.open();
     }
-
-    tonConnectUI.onModalStateChange(state => {
-      if (state.status === 'closed' && !query.address) {
-        modal.open();
-      }
-    });
 
     tonConnectUI.onStatusChange(wallet => {
       const myURL = new URL(window.location.href);

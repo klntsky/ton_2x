@@ -1,1 +1,1 @@
-export { TI18nLocalization } from './TI18nLocalization'
+export type { TI18nLocalization } from './TI18nLocalization'
