@@ -1,6 +1,6 @@
 import process from 'process'
 import 'dotenv/config'
-import { initBot, sendMessageToBotUsers } from './utils'
+import { initBot } from './utils'
 import { getLogger } from './utils'
 
 const start = async () => {
@@ -36,14 +36,6 @@ const start = async () => {
   process.once('SIGTERM', async () => {
     bot.stop('SIGTERM')
   })
-
-  //   sendMessageToBotUsers(bot, `
-  // Мы были приятно удивлены тем, сколько людей залетело в бота прямо с питча, и решили продолжить развивать этот проект!
-
-  // Цель номер один - доделать нашу киллер-фичу - алерты, когда монета делает 2x от цены покупки (на хакатоне было мало времени и мы не успели, но у нас почти всё готово).
-
-  // Подписывайтесь на наш канал с анонсами - @ton_2x_ru.
-  // `)
 }
 
 start()
