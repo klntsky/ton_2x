@@ -1,4 +1,4 @@
-import { getAccountJettonHistory, getLastTimestampFromHistory, getPriceAt } from '.'
+import { getAccountJettonHistory, getLastTimestampFromHistory, getPriceAtTimestamp } from '.'
 
 export const getAddressPnL = async (account: string, jetton: string) => {
   const jettonHistory = await getAccountJettonHistory(account, jetton)
@@ -9,8 +9,8 @@ export const getAddressPnL = async (account: string, jetton: string) => {
     return 0
   }
 
-  const priceAtBuy = await getPriceAt(jetton, lastTimestamp)
-  const currentPrice = await getPriceAt(jetton, Math.floor(Date.now() / 1000))
+  const priceAtBuy = await getPriceAtTimestamp(jetton, lastTimestamp)
+  const currentPrice = await getPriceAtTimestamp(jetton, Math.floor(Date.now() / 1000))
   return {
     pnlPercentage: Math.floor((currentPrice / priceAtBuy - 1) * 100),
     lastBuyTime: lastTimestamp,

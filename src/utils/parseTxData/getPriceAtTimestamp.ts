@@ -1,6 +1,6 @@
 import { fetchWithAuth } from '.'
 
-export const getPriceAt = async (jetton: string, timestamp: number) => {
+export const getPriceAtTimestamp = async (jetton: string, timestamp: number) => {
   timestamp = Math.min(Math.floor(Date.now() / 1000 - 1000), timestamp)
 
   // console.info(timestamp);

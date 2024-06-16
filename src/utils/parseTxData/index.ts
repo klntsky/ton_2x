@@ -1,6 +1,6 @@
 export { api } from './api'
 export { getAddressPnL } from './getAddressPnL'
-export { getPriceAt } from './getPriceAt'
+export { getPriceAtTimestamp } from './getPriceAt'
 export { getChart } from './getChart'
 export { getLastTimestampFromHistory } from './getLastTimestampFromHistory'
 export { getAccountJettonHistory } from './getAccountJettonHistory'
