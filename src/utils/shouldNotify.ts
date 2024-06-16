@@ -1,4 +1,4 @@
-export const shouldNotificate = async (
+export const shouldNotify = async (
   transactionPrice: number,
   dexPrice: number,
   rate: number,
