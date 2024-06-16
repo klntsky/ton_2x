@@ -1,6 +1,10 @@
 import 'dotenv/config'
 import { delay } from '..'
 
+let debouncerDelay = 1000;
+let debouncerDelayBase = 1.5;
+let debouncerDelayExponent = 0;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const fetchWithAuth = async (url: string): Promise<{ json: () => any }> => {
   const resp = await fetch(url, {
@@ -10,9 +14,13 @@ export const fetchWithAuth = async (url: string): Promise<{ json: () => any }> =
   }).then(x => x.json())
 
   if (resp.error) {
-    await delay(1000)
-    console.info('im deboooooooooooooooouncccccinggggg')
+    debouncerDelayExponent++;
+    let currentDelay = debouncerDelay * debouncerDelayBase ** debouncerDelayExponent;
+    await delay(currentDelay);
+    console.info('debouncing, ', currentDelay, url)
     return fetchWithAuth(url)
+  } else {
+      debouncerDelayExponent = 0;
   }
   return { json: () => resp }
 }
