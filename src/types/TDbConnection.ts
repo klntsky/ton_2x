@@ -1,3 +1,3 @@
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
+import type { PgliteDatabase } from 'drizzle-orm/pglite'
 
-export type TDbConnection = BetterSQLite3Database
+export type TDbConnection = PgliteDatabase

@@ -1,13 +1,16 @@
-import { sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
+import { pgTable, unique, varchar } from 'drizzle-orm/pg-core'
+import { wallets } from '.'
 
-export const tokens = sqliteTable(
+export const tokens = pgTable(
   'tokens',
   {
-    walletAddress: text('wallet_address').notNull(),
-    token: text('token').primaryKey(),
-    ticker: text('ticker').notNull(),
+    token: varchar('token', { length: 128 }).primaryKey(),
+    wallet: varchar('wallet', { length: 128 })
+      .notNull()
+      .references(() => wallets.address, { onDelete: 'cascade' }),
+    ticker: varchar('ticker', { length: 16 }).notNull(),
   },
   table => ({
-    unique: unique('wallet_address-token').on(table.walletAddress, table.token),
+    unique: unique('wallet-token').on(table.wallet, table.token),
   }),
 )

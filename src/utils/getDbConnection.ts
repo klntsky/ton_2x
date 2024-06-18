@@ -1,8 +1,16 @@
-import Database from 'better-sqlite3'
-import { drizzle } from 'drizzle-orm/better-sqlite3'
+import { PGlite } from '@electric-sql/pglite'
+import { drizzle } from 'drizzle-orm/pglite'
 
 export const getDbConnection = async () => {
-  const libsql = new Database('main.db')
-  const db = drizzle(libsql)
-  return db
+  const pglite = new PGlite('./main.db')
+  const connection = drizzle(pglite)
+  return {
+    connection,
+    [Symbol.asyncDispose]: async () => {
+      if (pglite.closed) {
+        return
+      }
+      await pglite.close()
+    },
+  }
 }

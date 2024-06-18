@@ -1,6 +1,6 @@
 import type { Telegraf } from 'telegraf'
 import { getJettonsByAddress } from '.'
-import { tokens, userPurchases, userSettings, usernames } from '../db/schema'
+import { tokens, userPurchases, userSettings, wallets } from '../db/schema'
 import { getDbConnection } from './getDbConnection'
 import type { TTelegrafContext } from '../types'
 import { desc, eq } from 'drizzle-orm'
@@ -9,10 +9,10 @@ import { userNotifications } from '../db/schema/userNotifications'
 import { i18n } from '../i18n'
 
 export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
-  const db = await getDbConnection()
-  const users = await db.select().from(usernames)
-  for (const user of users) {
-    const [userLanguageCode] = await db
+  await using db = await getDbConnection()
+  const walletsInDb = await db.connection.select().from(wallets)
+  for (const user of walletsInDb) {
+    const [userLanguageCode] = await db.connection
       .select()
       .from(userSettings)
       .where(eq(userSettings.userId, user.userId))
@@ -25,10 +25,13 @@ export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
       },
     {},
     )
-    const jettonsInDb = await db.select().from(tokens).where(eq(tokens.walletAddress, user.address))
+    const jettonsInDb = await db.connection
+      .select()
+      .from(tokens)
+      .where(eq(tokens.wallet, user.address))
     for (const jetton of jettonsInDb) {
       if (!jettonsActualObj[jetton.token]) {
-        await db.delete(tokens).where(eq(tokens.token, jetton.token))
+        await db.connection.delete(tokens).where(eq(tokens.token, jetton.token))
         await bot.telegram.sendMessage(
           user.userId,
           i18n[languageCode].message.youNoLongerHaveJetton(jetton.ticker),
@@ -38,13 +41,13 @@ export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
       const [trace] = await getTraceIdsByAddress(jetton.token, 1)
       const txTrace = await getTracesByTxHash(trace.id)
       const value = txTrace.transaction.out_msgs[0].value
-      const [lastPurchase] = await db
+      const [lastPurchase] = await db.connection
         .select()
         .from(userPurchases)
         .where(eq(userPurchases.jetton, jetton.token))
         .orderBy(desc(userPurchases.timestamp))
         .limit(1)
-      const [lastNotification] = await db
+      const [lastNotification] = await db.connection
         .select()
         .from(userNotifications)
         .where(eq(userPurchases.jetton, jetton.token))
@@ -65,24 +68,24 @@ export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
             i18n[languageCode].message.notification.x05(jetton.ticker, rate, user.address),
           )
         }
-        await db.insert(userNotifications).values({
+        await db.connection.insert(userNotifications).values({
           timestamp: txTrace.transaction.utime,
           price: value,
-          userId: user.userId,
+          walletId: user.address,
           jetton: jetton.token,
         })
       }
-      await db.insert(userPurchases).values({
+      await db.connection.insert(userPurchases).values({
         timestamp: txTrace.transaction.utime,
         price: value,
-        userId: user.userId,
+        walletId: user.address,
         jetton: jetton.token,
       })
       delete jettonsActualObj[jetton.token]
     }
     for (const [address, { symbol }] of Object.entries(jettonsActualObj)) {
-      await db.insert(tokens).values({
-        walletAddress: user.address,
+      await db.connection.insert(tokens).values({
+        wallet: user.address,
         token: address,
         ticker: symbol,
       })
