@@ -6,7 +6,7 @@ export const selectLastUserNotificationByWalletAndJetton = async (
   db: TDbConnection,
   wallet: string,
   jetton: string,
-): Promise<typeof userNotifications.$inferSelect | undefined> => {
+) => {
   const [lastNotification] = await db
     .select()
     .from(userNotifications)
