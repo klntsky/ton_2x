@@ -34,14 +34,14 @@ export const initBot = async (
 
   bot.start(async ctx => {
     const { user } = getTelegramUser(ctx.from)
-    await using db = await getDbConnection()
-    await db.connection.insert(users).values({
+    const db = await getDbConnection()
+    await db.insert(users).values({
       id: ctx.from.id,
       timestamp: Math.floor(Date.now() / 1000),
       username: user,
     })
     if (ctx.from.language_code) {
-      await db.connection.insert(userSettings).values({
+      await db.insert(userSettings).values({
         userId: ctx.from.id,
         languageCode: ctx.from.language_code,
       })

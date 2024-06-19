@@ -1,0 +1,1 @@
+export { applyMigrations } from './applyMigrations'

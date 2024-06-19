@@ -1,5 +1,5 @@
 {
-  "id": "4a4baff8-fb1a-4d2a-98d5-00cf20c27bc4",
+  "id": "59d62833-8be5-4a6c-a877-906f813e04d5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -218,15 +218,15 @@
       "name": "wallets",
       "schema": "",
       "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "address": {
           "name": "address",
           "type": "varchar(128)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }

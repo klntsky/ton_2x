@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "wallets" (
+	"address" varchar(128) PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
-	"address" varchar(128) NOT NULL,
 	CONSTRAINT "user_id-address" UNIQUE("user_id","address")
 );
 --> statement-breakpoint

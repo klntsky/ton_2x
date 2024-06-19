@@ -13,7 +13,7 @@
     "lint": "eslint ./src --fix",
     "migrations": "npx drizzle-kit",
     "drizzle:check-api-changes": "npm run migrations up",
-    "migrations:run": "npm run migrations migrate",
+    "migrations:run": "npx tsx ./src/scripts/applyMigrations.ts",
     "migrations:generate": "npm run drizzle:check-api-changes && npm run migrations check && npm run migrations generate",
     "migrations:down": "npm run migrations drop",
     "test": "echo \"Error: no test specified\" && exit 1"

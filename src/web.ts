@@ -28,9 +28,9 @@ unknown,
 > = async (req, res) => {
   const { id, address } = req.query
   console.log({ address })
-  await using db = await getDbConnection()
+  const db = await getDbConnection()
   if (address) {
-    await insertUserAdress(db.connection, {
+    await insertUserAdress(db, {
       userId: Number(id),
       address,
     })
@@ -44,8 +44,8 @@ const onPostUserWallet: TRequestHandler<{
   address: string
 }> = async (req, res) => {
   const { id, address } = req.body
-  await using db = await getDbConnection()
-  await insertUserAdress(db.connection, {
+  const db = await getDbConnection()
+  await insertUserAdress(db, {
     userId: id,
     address,
   })

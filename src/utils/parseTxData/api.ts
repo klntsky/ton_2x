@@ -9,9 +9,9 @@ export const api = async (address: string) => {
     chart: [timestamp: number, price: number][]
     lastBuyTime: number
   })[] = []
-  await using db = await getDbConnection()
+  const db = await getDbConnection()
   for (const jettonInfo of jettons) {
-    await insertToken(db.connection, {
+    await insertToken(db, {
       token: jettonInfo.address,
       ticker: jettonInfo.symbol,
       wallet: address,
