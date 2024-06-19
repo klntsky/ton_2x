@@ -3,7 +3,7 @@ import { getJettonsByAddress } from '.'
 import { tokens, userPurchases, userSettings, wallets } from '../db/schema'
 import { getDbConnection } from './getDbConnection'
 import type { TTelegrafContext } from '../types'
-import { desc, eq, and } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { getTraceIdsByAddress, getTracesByTxHash } from './parseTxData'
 import { userNotifications } from '../db/schema/userNotifications'
 import { i18n } from '../i18n'
@@ -18,6 +18,8 @@ import { i18n } from '../i18n'
 //   timestamp: number,
 //   jetton: JettonAddress
 // };
+
+// type DBPurchase = typeof userPurchases.$inferSelect
 
 // type User = {
 //   id: UserId,
@@ -40,31 +42,34 @@ import { i18n } from '../i18n'
 //     address: JettonAddress,
 //     symbol?: string
 //   }[]>,
+//   // selectLastUserPurchaseByWalletAndJetton.ts
 //   getLastAddressJettonPurchaseFromDB: (
 //     address: UserAddress,
 //     jetton: JettonAddress
 //   ) => Promise<DBPurchase | null>,
+//   // selectLastUserNotificationByWalletAndJetton.ts
 //   getLastAddressNotificationFromDB: (
 //     user: UserAddress,
 //     jetton: JettonAddress
 //   ) => Promise<DBNotification | null>,
+//   // deleteJettonByWallet.ts
 //   deleteUserJetton: (
 //     user: UserAddress,
 //     jetton: JettonAddress
-//   ) => Promise,
+//   ) => Promise<void>,
 // };
 
-// type Notification = {
+// type Notification = object
 
-// }
-
-// export async function* getNotifications(handle: NotificationHandle): Generator<Notification> {
-//   const { getLastPurchase, getLastNotification, getJettonsFromChain } = handle;
+// export async function* getNotifications(handle: NotificationHandle): AsyncGenerator<Notification> {
+//   const { getLastPurchase, getLastNotification, getJettonsFromChain } = handle
 //   for await (const user of handle.users) {
-//     const addressJettons = await getJettonsFromChain(user.address);
+//     const addressJettons = await getJettonsFromChain(user.address)
 //     for (const jetton of addressJettons) {
 //       const lastPurchase = await getLastPurchase(user.address, jetton.address)
 //       const lastNotification = await getLastNotification(user.address, jetton.address)
+//       // TODO: this yield just to shut linter
+//       yield {}
 //     }
 //   }
 // };
@@ -129,14 +134,14 @@ export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
         await db.insert(userNotifications).values({
           timestamp: txTrace.transaction.utime,
           price: value,
-          walletId: user.address,
+          wallet: user.address,
           jetton: jetton.token,
         })
       }
       await db.insert(userPurchases).values({
         timestamp: txTrace.transaction.utime,
         price: value,
-        walletId: user.address,
+        wallet: user.address,
         jetton: jetton.token,
       })
       delete jettonsActualObj[jetton.token]

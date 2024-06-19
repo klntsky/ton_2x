@@ -1,2 +1,5 @@
 export { insertUserAdress } from './insertUserAdress'
 export { insertToken } from './insertToken'
+export { selectLastUserNotificationByWalletAndJetton } from './selectLastUserNotificationByWalletAndJetton'
+export { selectLastUserPurchaseByWalletAndJetton } from './selectLastUserPurchaseByWalletAndJetton'
+export { deleteJettonByWallet } from './deleteJettonByWallet'
