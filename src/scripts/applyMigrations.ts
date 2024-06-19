@@ -6,6 +6,7 @@ import { drizzle } from 'drizzle-orm/pglite'
 import { eq } from 'drizzle-orm'
 
 const migrationsDirectory = './src/db/migrations'
+const databaseUrl = 'file://data/postgresql'
 
 const createDrizzleMigrationsTable = `
 CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
@@ -22,7 +23,7 @@ const drizzleMigrations = pgTable('__drizzle_migrations', {
 })
 
 export const applyMigrations = async () => {
-  const database = new PGlite('file://data/postgresql')
+  const database = new PGlite(databaseUrl)
   const db = drizzle(database)
   await database.query(createDrizzleMigrationsTable)
   const migrations = fs.readdirSync(migrationsDirectory).sort()
