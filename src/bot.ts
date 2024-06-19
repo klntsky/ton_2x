@@ -6,7 +6,8 @@ import { getLogger } from './utils'
 const start = async () => {
   const logger = getLogger('tg-bot')
   const bot = await initBot(
-    process.env.TELEGRAM_BOT_TOKEN,
+    process.env.TELEGRAM_BOT_TOKEN ||
+      (() => { throw "set TELEGRAM_BOT_TOKEN" })(),
     {
       telegram: {
         webhookReply: false,

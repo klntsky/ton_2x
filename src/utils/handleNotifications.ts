@@ -3,10 +3,71 @@ import { getJettonsByAddress } from '.'
 import { tokens, userPurchases, userSettings, wallets } from '../db/schema'
 import { getDbConnection } from './getDbConnection'
 import type { TTelegrafContext } from '../types'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, and } from 'drizzle-orm'
 import { getTraceIdsByAddress, getTracesByTxHash } from './parseTxData'
 import { userNotifications } from '../db/schema/userNotifications'
 import { i18n } from '../i18n'
+
+// type UserAddress = string;
+// type UserId = number;
+// type JettonAddress = string
+
+// type DBNotification = {
+//   user: UserId,
+//   address: UserAddress,
+//   timestamp: number,
+//   jetton: JettonAddress
+// };
+
+// type User = {
+//   id: UserId,
+//   languageCode: string;
+// };
+
+// // A jetton that exists on some wallet
+// type WalletJetton = {
+//   amount: number;
+// };
+
+// type NotificationHandle = {
+//   getPrice: (jetton: JettonAddress) => Promise<number | undefined>,
+//   users: AsyncIterableIterator<{
+//     address: UserAddress,
+//     jettons: WalletJetton[],
+//     users: User[],
+//   }>,
+//   getJettonsFromChain: (user: UserAddress) => Promise<{
+//     address: JettonAddress,
+//     symbol?: string
+//   }[]>,
+//   getLastAddressJettonPurchaseFromDB: (
+//     address: UserAddress,
+//     jetton: JettonAddress
+//   ) => Promise<DBPurchase | null>,
+//   getLastAddressNotificationFromDB: (
+//     user: UserAddress,
+//     jetton: JettonAddress
+//   ) => Promise<DBNotification | null>,
+//   deleteUserJetton: (
+//     user: UserAddress,
+//     jetton: JettonAddress
+//   ) => Promise,
+// };
+
+// type Notification = {
+
+// }
+
+// export async function* getNotifications(handle: NotificationHandle): Generator<Notification> {
+//   const { getLastPurchase, getLastNotification, getJettonsFromChain } = handle;
+//   for await (const user of handle.users) {
+//     const addressJettons = await getJettonsFromChain(user.address);
+//     for (const jetton of addressJettons) {
+//       const lastPurchase = await getLastPurchase(user.address, jetton.address)
+//       const lastNotification = await getLastNotification(user.address, jetton.address)
+//     }
+//   }
+// };
 
 export const handleNotifications = async (bot: Telegraf<TTelegrafContext>) => {
   const db = await getDbConnection()
