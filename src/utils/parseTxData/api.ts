@@ -1,6 +1,6 @@
 import { getAddressPnL, getChart, getJettonsByAddress } from '.'
 import { getDbConnection } from '..'
-import { insertToken } from '../../db/queries'
+import { upsertToken } from '../../db/queries'
 
 export const api = async (address: string) => {
   const jettons = await getJettonsByAddress(address)
@@ -11,7 +11,7 @@ export const api = async (address: string) => {
   })[] = []
   const db = await getDbConnection()
   for (const jettonInfo of jettons) {
-    await insertToken(db, {
+    await upsertToken(db, {
       token: jettonInfo.address,
       ticker: jettonInfo.symbol,
       wallet: address,

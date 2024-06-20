@@ -9,8 +9,12 @@ import { userNotifications } from '../db/schema/userNotifications'
 import { i18n } from '../i18n'
 import {
   deleteJettonByWallet,
+  insertUserNotification,
+  insertUserPurchase,
   selectLastUserNotificationByWalletAndJetton,
   selectLastUserPurchaseByWalletAndJetton,
+  selectUserSettings,
+  upsertToken,
 } from '../db/queries'
 
 type UserAddress = string
@@ -22,6 +26,7 @@ type WalletJetton = {
 }
 
 type NotificationHandle = {
+  users: AsyncIterableIterator<typeof users.$inferSelect>
   getPrice: (jetton: JettonAddress) => Promise<
   | {
     price: number
@@ -30,13 +35,16 @@ type NotificationHandle = {
   | undefined
   >
   // wallets: AsyncIterableIterator<typeof wallets.$inferSelect>,
-  users: AsyncIterableIterator<typeof users.$inferSelect>
+  addTokenToDb: (token: typeof tokens.$inferInsert) => Promise<void>
+  addUserPurchase: (purchase: typeof userPurchases.$inferInsert) => Promise<void>
+  getWalletsInDb: (userId: number) => Promise<(typeof wallets.$inferSelect)[]>
   getJettonsFromChain: (user: UserAddress) => Promise<
   {
     address: JettonAddress
     symbol?: string // Why it can be undefined?
   }[]
   >
+  getUserSettings: (userId: number) => Promise<typeof userSettings.$inferSelect | null>
   getLastAddressJettonPurchaseFromDB: (
     address: UserAddress,
     jetton: JettonAddress,
@@ -53,10 +61,17 @@ export async function* getNotifications(handle: NotificationHandle) {
     getLastAddressJettonPurchaseFromDB,
     getLastAddressNotificationFromDB,
     getJettonsFromChain,
+    getUserSettings,
+    addUserPurchase,
+    getWalletsInDb,
+    addTokenToDb,
     getPrice,
   } = handle
   for await (const user of handle.users) {
-    for await (const wallet of getWallets({ userId: user.id })) {
+    const userSettingsInDb = await getUserSettings(user.id)
+    for await (const wallet of getWallets({
+      getWalletsInDb: () => getWalletsInDb(user.id),
+    })) {
       const addressJettons = await getJettonsFromChain(wallet.address)
       for (const jetton of addressJettons) {
         const tokenOnChain = await getPrice(jetton.address)
@@ -71,16 +86,30 @@ export async function* getNotifications(handle: NotificationHandle) {
           wallet.address,
           jetton.address,
         )
-        const newestTransaction =
+        const newestTransactionInDb =
           lastPurchase && lastNotification
             ? lastPurchase.timestamp > lastNotification.timestamp
               ? lastPurchase
               : lastNotification
             : lastPurchase || lastNotification
-        if (!newestTransaction || tokenOnChain.timestamp <= newestTransaction.timestamp) {
+        if (!newestTransactionInDb) {
+          await addTokenToDb({
+            token: jetton.address,
+            wallet: wallet.address,
+            ticker: jetton.symbol || 'UNKNOWN TOCKER',
+          })
+          await addUserPurchase({
+            wallet: wallet.address,
+            timestamp: tokenOnChain.timestamp,
+            jetton: jetton.address,
+            price: tokenOnChain.price,
+          })
           continue
         }
-        const rate = tokenOnChain.price / newestTransaction.price
+        if (tokenOnChain.timestamp <= newestTransactionInDb.timestamp) {
+          continue
+        }
+        const rate = tokenOnChain.price / newestTransactionInDb.price
         const rateDirection = rate >= 2 ? 'up' : rate <= 0.5 ? 'down' : undefined
         if (!rateDirection) {
           continue
@@ -93,26 +122,31 @@ export async function* getNotifications(handle: NotificationHandle) {
           price: tokenOnChain.price,
           rate: rateDirection,
           timestamp: tokenOnChain.timestamp,
-          languageCode: undefined,
+          languageCode:
+            userSettingsInDb && userSettingsInDb.languageCode === 'ru'
+              ? ('ru' as const)
+              : ('en' as const),
         }
       }
     }
   }
 }
 
-export async function* getUsers() {
-  const db = await getDbConnection()
-  const usersInDb = await db.select().from(users)
-  // drizzle orm .iterator() for PostgreSQL WIP
+export async function* getUsers(handle: {
+  getUsersInDb: () => Promise<(typeof users.$inferSelect)[]>
+}) {
+  const { getUsersInDb } = handle
+  const usersInDb = await getUsersInDb()
   for (const user of usersInDb) {
     yield user
   }
 }
 
-export async function* getWallets(handle: { userId: number }) {
-  const { userId } = handle
-  const db = await getDbConnection()
-  const walletsInDb = await db.select().from(wallets).where(eq(wallets.userId, userId))
+export async function* getWallets(handle: {
+  getWalletsInDb: () => Promise<(typeof wallets.$inferSelect)[]>
+}) {
+  const { getWalletsInDb } = handle
+  const walletsInDb = await getWalletsInDb()
   for await (const wallet of walletsInDb) {
     yield wallet
   }
@@ -120,7 +154,7 @@ export async function* getWallets(handle: { userId: number }) {
 
 export const newHandleNotification = async (bot: Telegraf<TTelegrafContext>) => {
   const db = await getDbConnection()
-  for await (const notification of getNotifications({
+  const handle: NotificationHandle = {
     getPrice: async (jetton: JettonAddress) => {
       const [trace] = await getTraceIdsByAddress(jetton, 1)
       if (!trace) {
@@ -136,21 +170,33 @@ export const newHandleNotification = async (bot: Telegraf<TTelegrafContext>) => 
         timestamp: txTrace.transaction.utime,
       }
     },
-    users: getUsers(),
+    users: getUsers({
+      getUsersInDb: () => db.select().from(users),
+    }),
+    addTokenToDb: token => upsertToken(db, token),
+    addUserPurchase: purchase => insertUserPurchase(db, purchase),
+    getWalletsInDb: userId => db.select().from(wallets).where(eq(wallets.userId, userId)),
+    getUserSettings: userId => selectUserSettings(db, userId),
     getJettonsFromChain: getJettonsByAddress,
     getLastAddressJettonPurchaseFromDB: (address: string, jetton: string) =>
       selectLastUserPurchaseByWalletAndJetton(db, address, jetton),
     getLastAddressNotificationFromDB: (address: string, jetton: string) =>
       selectLastUserNotificationByWalletAndJetton(db, address, jetton),
     deleteUserJetton: (user: string, jetton: string) => deleteJettonByWallet(db, jetton, user),
-  })) {
-    const languageCode = notification.languageCode === 'ru' ? 'ru' : 'en'
+  }
+  for await (const notification of getNotifications(handle)) {
     const text =
       notification.rate === 'up'
-        ? i18n[languageCode].message.notification.x2(notification.symbol, notification.wallet)
-        : i18n[languageCode].message.notification.x05(notification.symbol, notification.wallet)
+        ? i18n[notification.languageCode].message.notification.x2(
+          notification.symbol,
+          notification.wallet,
+        )
+        : i18n[notification.languageCode].message.notification.x05(
+          notification.symbol,
+          notification.wallet,
+        )
     await bot.telegram.sendMessage(notification.userId, text)
-    await db.insert(userNotifications).values({
+    await insertUserNotification(db, {
       timestamp: notification.timestamp,
       price: notification.price,
       wallet: notification.wallet,
