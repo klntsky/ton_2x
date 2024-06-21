@@ -5,7 +5,7 @@ import {
   getDbConnection,
   getLogger,
   getTelegramUser,
-  handleNotifications,
+  handleNotification,
   logError,
   logUserAction,
   loopRetrying,
@@ -23,12 +23,8 @@ export const initBot = async (
   const bot = new Telegraf<TTelegrafContext>(token, options)
 
   bot.use(async (ctx, next) => {
-    if (!ctx.logger) {
-      ctx.logger = logger
-    }
-    if (!ctx.i18n) {
-      ctx.i18n = ctx.from.language_code === 'ru' ? i18n.ru : i18n.en
-    }
+    ctx.logger ??= logger
+    ctx.i18n ??= i18n(ctx.from.language_code)
     next()
   })
 
@@ -90,7 +86,7 @@ export const initBot = async (
     }
   })
 
-  loopRetrying(() => handleNotifications(bot), {
+  loopRetrying(() => handleNotification(bot), {
     logger: logger,
     afterCallbackDelayMs: 10_000,
     catchDelayMs: 10_000,

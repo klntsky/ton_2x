@@ -7,7 +7,7 @@ export const getJettonsByAddress = async (address: string) => {
     const jettons: {
       address: string
       symbol: string
-      image: string
+      image?: string
     }[] = (await (await fetchWithAuth(url)).json()).balances
       .filter((x: { balance: string }) => x.balance !== '0')
       .map(

@@ -13,11 +13,12 @@ Connect your wallet to get started 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
       `You no longer hold tokens of "${ticker}", notifications for them have been stopped.`,
+    detectedNewJetton: (ticker: string) =>
+      `A new jetton “${ticker}” has been detected, notifications will now be sent about it.`,
     notification: {
-      x2: (ticker: string, rate: number, wallet: string) =>
-        `"${ticker}" x${+rate.toFixed(2)} in the wallet "${wallet}".`,
-      x05: (ticker: string, rate: number, wallet: string) =>
-        `"${ticker}" x${+rate.toFixed(2)} in the wallet "${wallet}".`,
+      x2: (ticker: string, wallet: string) => `"${ticker}" made x2! (Wallet "${wallet}")`,
+      x05: (ticker: string, wallet: string) =>
+        `"${ticker}" has dropped in price by half. (Wallet "${wallet}")`,
     },
   },
   button: {

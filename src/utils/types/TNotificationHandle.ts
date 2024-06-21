@@ -1,0 +1,29 @@
+import type { tokens, userNotifications, userPurchases, users, wallets } from '../../db/schema'
+
+export type TNotificationHandle = {
+  getUsersInDb: () => Promise<(typeof users.$inferSelect)[]>
+  getPrice: (jetton: string) => Promise<
+  | {
+    price: number
+    timestamp: number
+  }
+  | undefined
+  >
+  getWalletsInDb: (userId: number) => Promise<(typeof wallets.$inferSelect)[]>
+  getJettonsFromDB: (wallet: string) => Promise<(typeof tokens.$inferSelect)[]>
+  getJettonsFromChain: (wallet: string) => Promise<
+  {
+    address: string
+    symbol: string
+  }[]
+  >
+  getLastAddressJettonPurchaseFromDB: (
+    address: string,
+    jetton: string,
+  ) => Promise<typeof userPurchases.$inferSelect | undefined>
+  getLastAddressNotificationFromDB: (
+    user: string,
+    jetton: string,
+  ) => Promise<typeof userNotifications.$inferSelect | undefined>
+  deleteUserJetton: (user: string, jetton: string) => Promise<void>
+}

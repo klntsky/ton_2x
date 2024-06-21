@@ -11,6 +11,8 @@ export const ru = {
 `,
     youNoLongerHaveJetton: (ticker: string) =>
       `Вы больше не холдите жетоны «${ticker}», уведомления по ним остановлены.`,
+    detectedNewJetton: (ticker: string) =>
+      `Обнаружен новый жетон «${ticker}», теперь о нем будут приходить уведомления.`,
     notification: {
       x2: (ticker: string, wallet: string) => `«${ticker}» сделал x2! (Кошелек «${wallet}»)`,
       x05: (ticker: string, wallet: string) => `«${ticker}» подешевел вдвое. (Кошелек «${wallet}»)`,
