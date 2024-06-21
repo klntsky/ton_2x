@@ -8,6 +8,13 @@
       "when": 1718803235050,
       "tag": "0000_mature_dorian_gray",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1718987794549,
+      "tag": "0001_illegal_shadow_king",
+      "breakpoints": true
     }
   ]
 }
