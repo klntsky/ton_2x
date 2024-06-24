@@ -20,3 +20,8 @@ export type TNewJettonNotification = TBaseNotification & {
 export type TNotHoldedJettonNotification = TBaseNotification & {
   action: ENotificationType.NOT_HOLD_JETTON_ANYMORE
 }
+
+export type TNotification =
+  | TJettonRateNotification
+  | TNewJettonNotification
+  | TNotHoldedJettonNotification

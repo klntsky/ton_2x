@@ -15,7 +15,7 @@
     "migrations:run": "npx tsx ./src/scripts/applyMigrations.ts",
     "migrations:generate": "npm run drizzle:check-api-changes && npm run migrations check && npm run migrations generate",
     "migrations:down": "npm run migrations drop",
-    "test": "jest"
+    "test": "tsx --test --test-reporter spec '**/tests/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -44,7 +44,6 @@
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
     "@types/better-sqlite3": "^7.6.10",
-    "@types/jest": "^29.5.12",
     "@types/node": "^20.14.2",
     "@typescript-eslint/eslint-plugin": "^7.13.0",
     "@typescript-eslint/parser": "^7.13.0",
@@ -53,18 +52,8 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-drizzle": "^0.2.3",
-    "jest": "^29.7.0",
     "prettier": "^3.3.2",
-    "ts-jest": "^29.1.5",
     "tsx": "^4.11.2",
     "typescript": "^5.4.5"
-  },
-  "jest": {
-    "testMatch": [
-      "**/tests/**/*.test.ts"
-    ],
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "maxWorkers": "1"
   }
 }

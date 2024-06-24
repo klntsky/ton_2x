@@ -1,14 +1,10 @@
 import { ENotificationType } from '../constants'
 import type { TNotificationHandle } from './types'
-import type {
-  TJettonRateNotification,
-  TNewJettonNotification,
-  TNotHoldedJettonNotification,
-} from './types/TNotifications'
+import type { TNotification } from './types/TNotifications'
 
 export async function* getNotifications(
   handle: TNotificationHandle,
-): AsyncGenerator<TJettonRateNotification | TNewJettonNotification | TNotHoldedJettonNotification> {
+): AsyncGenerator<TNotification> {
   const {
     getLastAddressJettonPurchaseFromDB,
     getLastAddressNotificationFromDB,

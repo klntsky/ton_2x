@@ -33,12 +33,8 @@
           "name": "tokens_wallet_wallets_address_fk",
           "tableFrom": "tokens",
           "tableTo": "wallets",
-          "columnsFrom": [
-            "wallet"
-          ],
-          "columnsTo": [
-            "address"
-          ],
+          "columnsFrom": ["wallet"],
+          "columnsTo": ["address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -48,10 +44,7 @@
         "wallet-token": {
           "name": "wallet-token",
           "nullsNotDistinct": false,
-          "columns": [
-            "wallet",
-            "token"
-          ]
+          "columns": ["wallet", "token"]
         }
       }
     },
@@ -90,12 +83,8 @@
           "name": "user_notifications_wallet_wallets_address_fk",
           "tableFrom": "user_notifications",
           "tableTo": "wallets",
-          "columnsFrom": [
-            "wallet"
-          ],
-          "columnsTo": [
-            "address"
-          ],
+          "columnsFrom": ["wallet"],
+          "columnsTo": ["address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -103,12 +92,8 @@
           "name": "user_notifications_jetton_tokens_token_fk",
           "tableFrom": "user_notifications",
           "tableTo": "tokens",
-          "columnsFrom": [
-            "jetton"
-          ],
-          "columnsTo": [
-            "token"
-          ],
+          "columnsFrom": ["jetton"],
+          "columnsTo": ["token"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -151,12 +136,8 @@
           "name": "user_purchases_wallet_wallets_address_fk",
           "tableFrom": "user_purchases",
           "tableTo": "wallets",
-          "columnsFrom": [
-            "wallet"
-          ],
-          "columnsTo": [
-            "address"
-          ],
+          "columnsFrom": ["wallet"],
+          "columnsTo": ["address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -164,12 +145,8 @@
           "name": "user_purchases_jetton_tokens_token_fk",
           "tableFrom": "user_purchases",
           "tableTo": "tokens",
-          "columnsFrom": [
-            "jetton"
-          ],
-          "columnsTo": [
-            "token"
-          ],
+          "columnsFrom": ["jetton"],
+          "columnsTo": ["token"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -200,12 +177,8 @@
           "name": "user_settings_user_id_users_id_fk",
           "tableFrom": "user_settings",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -264,12 +237,8 @@
           "name": "wallets_user_id_users_id_fk",
           "tableFrom": "wallets",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -279,10 +248,7 @@
         "user_id-address": {
           "name": "user_id-address",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "address"
-          ]
+          "columns": ["user_id", "address"]
         }
       }
     }
