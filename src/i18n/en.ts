@@ -19,9 +19,9 @@ Connect your wallet to get started 👇
     detectedNewJetton: (ticker: string) =>
       `New jetton found: $${ticker}. I will notify you when the price moves up or down by 2x`,
     notification: {
-      x2: (ticker: string, wallet: string) => `$${ticker} made 2x! wallet: \`${wallet}\``,
+      x2: (ticker: string, wallet: string) => `$${ticker} made 2x! Wallet: \`${wallet}\``,
       x05: (ticker: string, wallet: string) =>
-        `$${ticker} has dropped in price by half from the moment you purchased it. wallet: \`${wallet}\``,
+        `$${ticker} has dropped in price by half from the moment you purchased it. Wallet: \`${wallet}\``,
     },
   },
   button: {

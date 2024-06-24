@@ -17,8 +17,8 @@ export const ru = {
     detectedNewJetton: (ticker: string) =>
       `Обнаружен новый жетон $${ticker}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое`,
     notification: {
-      x2: (ticker: string, wallet: string) => `Жетон $${ticker} сделал x2! адрес: \`${wallet}\``,
-      x05: (ticker: string, wallet: string) => `Жетон $${ticker} подешевел вдвое. адрес: \`${wallet}\``,
+      x2: (ticker: string, wallet: string) => `Жетон $${ticker} сделал x2! Адрес: \`${wallet}\``,
+      x05: (ticker: string, wallet: string) => `Жетон $${ticker} подешевел вдвое. Адрес: \`${wallet}\``,
     },
   },
   button: {
