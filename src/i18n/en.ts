@@ -5,20 +5,23 @@ export const en: TI18nLocalization = {
     start: () => `
 Hello, I've been waiting for you 👋
 
-I'll help you see the profit for your entire wallet (TODO) 👛 or selected coin 💎 without using complicated tools 📱
+What I do:
 
-If you have any questions, feel free to ask them in the [chat](https://t.me/+prK7rt-771VmZTAy) ❤️
+- I'll notify you whenever a token you hold in your TON wallet makes x2 from the purchase price
+- I'll help you see the profit for your entire wallet (TODO) or selected coin
+
+If you have any questions, feel free to ask in the [chat](https://t.me/+mwwKEfMAbtQ3ZjNi)
 
 Connect your wallet to get started 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
-      `You no longer hold tokens of "${ticker}", notifications for them have been stopped.`,
+      `You no longer hold $${ticker}, notifications for them have been stopped.`,
     detectedNewJetton: (ticker: string) =>
-      `A new jetton “${ticker}” has been detected, notifications will now be sent about it.`,
+      `New jetton found: $${ticker}. I will notify you when the price moves up or down by 2x`,
     notification: {
-      x2: (ticker: string, wallet: string) => `"${ticker}" made x2! (Wallet "${wallet}")`,
+      x2: (ticker: string, wallet: string) => `$${ticker} made 2x! Wallet: \`${wallet}\``,
       x05: (ticker: string, wallet: string) =>
-        `"${ticker}" has dropped in price by half. (Wallet "${wallet}")`,
+        `$${ticker} has dropped in price by half from the moment you purchased it. Wallet: \`${wallet}\``,
     },
   },
   button: {
