@@ -1,4 +1,4 @@
 export type TChartData = {
-  date: string;
-  Price: number | string;
-};
+  date: string
+  Price: number | string
+}

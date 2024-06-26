@@ -1,4 +1,4 @@
-import type { TDeepTypeInObject } from '../../types';
-import { ru } from '../ru';
+import type { TDeepTypeInObject } from '../../types'
+import { ru } from '../ru'
 
-export type TI18nLocalization = TDeepTypeInObject<typeof ru, string>;
+export type TI18nLocalization = TDeepTypeInObject<typeof ru, string>

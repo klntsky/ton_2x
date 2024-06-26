@@ -1,1 +1,1 @@
-export { usePostData } from './usePostData';
+export { usePostData } from './usePostData'

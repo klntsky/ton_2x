@@ -3,5 +3,5 @@ export type TDeepTypeInObject<GObjectType, GDeepType> = {
     ? GDeepType
     : GObjectType[K] extends Record<string, unknown>
       ? TDeepTypeInObject<GObjectType[K], GDeepType>
-      : never;
-};
+      : never
+}

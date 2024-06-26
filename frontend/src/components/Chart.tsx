@@ -1,26 +1,26 @@
-import { AreaChart, Badge, BadgeDelta, Card, Flex } from '@tremor/react';
-import { badgeType, chartColor, formatDataToChart } from '../utils';
-import { useFetchRates } from '../hooks/useFetchRates';
-import { Loader } from './Loader';
-import { useTranslation } from 'react-i18next';
+import { AreaChart, Badge, BadgeDelta, Card, Flex } from '@tremor/react'
+import { badgeType, chartColor, formatDataToChart } from '../utils'
+import { useFetchRates } from '../hooks/useFetchRates'
+import { Loader } from './Loader'
+import { useTranslation } from 'react-i18next'
 
 export const Chart = (props: { address: string; userId: number }) => {
-  const { t } = useTranslation();
-  const { data, isLoading } = useFetchRates(props);
+  const { t } = useTranslation()
+  const { data, isLoading } = useFetchRates(props)
 
   if (isLoading) {
     return (
       <Flex justifyContent="center" alignItems="center" className="h-screen">
         <Loader />
       </Flex>
-    );
+    )
   }
   if (!data?.length) {
     return (
       <Flex justifyContent="center" alignItems="center" className="h-screen">
         <h2 className="text-2xl text-slate-600">{t('label.noJettons')}</h2>
       </Flex>
-    );
+    )
   }
 
   if (data) {
@@ -87,6 +87,6 @@ export const Chart = (props: { address: string; userId: number }) => {
             ))
           : null}
       </div>
-    );
+    )
   }
-};
+}

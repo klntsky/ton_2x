@@ -1,4 +1,4 @@
-import { useMutation } from 'react-query';
+import { useMutation } from 'react-query'
 
 const postData = async ({ url, data }: { url: string; data: object }) => {
   const response = await fetch(url, {
@@ -7,15 +7,15 @@ const postData = async ({ url, data }: { url: string; data: object }) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error('error posting data.');
+    throw new Error('error posting data.')
   }
 
-  return response.json();
-};
+  return response.json()
+}
 
 export const usePostData = () => {
-  return useMutation(postData);
-};
+  return useMutation(postData)
+}

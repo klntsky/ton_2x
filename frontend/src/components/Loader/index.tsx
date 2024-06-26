@@ -1,5 +1,5 @@
-import s from './styles.module.css';
+import s from './styles.module.css'
 
 export const Loader = () => {
-  return <div className={s.loader}></div>;
-};
+  return <div className={s.loader}></div>
+}

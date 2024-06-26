@@ -1,35 +1,35 @@
-import { useEffect } from 'react';
-import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react';
+import { useEffect } from 'react'
+import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react'
 import {
   bindMiniAppCSSVars,
   bindThemeParamsCSSVars,
   useMiniApp,
   useThemeParams,
-} from '@tma.js/sdk-react';
-import { retrieveLaunchParams } from '@tma.js/sdk';
+} from '@tma.js/sdk-react'
+import { retrieveLaunchParams } from '@tma.js/sdk'
 
-import { Chart } from './components/Chart';
-import { usePostData } from './hooks';
+import { Chart } from './components/Chart'
+import { usePostData } from './hooks'
 
 export const App = () => {
-  const launchParams = retrieveLaunchParams();
+  const launchParams = retrieveLaunchParams()
   if (!launchParams.initData?.user?.id) {
-    throw new Error(`There is no user id in launchParams`);
+    throw new Error(`There is no user id in launchParams`)
   }
-  const modal = useTonConnectModal();
-  const [tonConnectUI] = useTonConnectUI();
-  const themeParams = useThemeParams();
-  const miniApp = useMiniApp();
-  const { mutate } = usePostData();
-  miniApp.ready();
+  const modal = useTonConnectModal()
+  const [tonConnectUI] = useTonConnectUI()
+  const themeParams = useThemeParams()
+  const miniApp = useMiniApp()
+  const { mutate } = usePostData()
+  miniApp.ready()
 
   useEffect(() => {
-    return bindMiniAppCSSVars(miniApp, themeParams);
-  }, [miniApp, themeParams]);
+    return bindMiniAppCSSVars(miniApp, themeParams)
+  }, [miniApp, themeParams])
 
   useEffect(() => {
-    return bindThemeParamsCSSVars(themeParams);
-  }, [themeParams]);
+    return bindThemeParamsCSSVars(themeParams)
+  }, [themeParams])
 
   // useEffect(() => {
   //   if (modal.state.status === 'closed' && !tonConnectUI.account?.address) {
@@ -38,24 +38,24 @@ export const App = () => {
   // }, [modal.state.status]);
 
   useEffect(() => {
-    modal.open();
+    modal.open()
 
     tonConnectUI.onStatusChange(wallet => {
-      const launchParams = retrieveLaunchParams();
+      const launchParams = retrieveLaunchParams()
       console.log(123, {
         id: launchParams.initData?.user?.id,
         address: wallet?.account.address,
-      });
-      if (!wallet?.account.address) return;
+      })
+      if (!wallet?.account.address) return
       mutate({
         url: '/postUserWallet',
         data: {
           id: launchParams.initData?.user?.id,
           address: wallet?.account.address,
         },
-      });
-    });
-  }, []);
+      })
+    })
+  }, [])
 
   return (
     <div className="App">
@@ -66,5 +66,5 @@ export const App = () => {
         />
       ) : null}
     </div>
-  );
-};
+  )
+}

@@ -1,1 +1,1 @@
-export { loadLocalizationResources } from './loadLocalizationResources';
+export { loadLocalizationResources } from './loadLocalizationResources'
