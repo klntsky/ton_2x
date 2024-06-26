@@ -1,11 +1,11 @@
-import { integer, pgTable, unique, varchar } from 'drizzle-orm/pg-core'
+import { bigint, integer, pgTable, unique, varchar } from 'drizzle-orm/pg-core'
 import { users } from '.'
 
 export const wallets = pgTable(
   'wallets',
   {
     address: varchar('address', { length: 128 }).primaryKey(),
-    userId: integer('user_id')
+    userId: bigint('user_id', { mode: 'number' })
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },

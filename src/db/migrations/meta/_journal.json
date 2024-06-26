@@ -15,6 +15,13 @@
       "when": 1718987794549,
       "tag": "0001_illegal_shadow_king",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1719403374093,
+      "tag": "0002_ordinary_puck",
+      "breakpoints": true
     }
   ]
 }
