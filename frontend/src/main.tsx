@@ -1,12 +1,12 @@
 import i18n from 'i18next';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { SDKProvider } from '@tma.js/sdk-react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { QueryClient, QueryClientProvider } from 'react-query';
+
+import { App } from './App.tsx';
 import { loadLocalizationResources } from './i18n/utils';
 
 import './index.css';

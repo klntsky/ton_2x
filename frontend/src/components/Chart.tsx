@@ -1,16 +1,12 @@
 import { AreaChart, Badge, BadgeDelta, Card, Flex } from '@tremor/react';
 import { badgeType, chartColor, formatDataToChart } from '../utils';
-import { useFetchRates } from '../Hooks/useFetchRates';
-import Loader from './Loader/Loader';
+import { useFetchRates } from '../hooks/useFetchRates';
+import { Loader } from './Loader';
 import { useTranslation } from 'react-i18next';
 
-// const valueFormatter = function (number: number) {
-//   return '$' + new Intl.NumberFormat('us').format(number).toString();
-// };
-
-export function Chart() {
+export const Chart = (props: { address: string; userId: number }) => {
   const { t } = useTranslation();
-  const { data, isLoading } = useFetchRates();
+  const { data, isLoading } = useFetchRates(props);
 
   if (isLoading) {
     return (
@@ -45,7 +41,7 @@ export function Chart() {
                     <div className="w-[2rem]">
                       <img
                         src={obj.image}
-                        alt="..."
+                        alt={obj.symbol}
                         className="shadow rounded-full max-w-full h-auto align-middle border-none"
                       />
                     </div>
@@ -93,4 +89,4 @@ export function Chart() {
       </div>
     );
   }
-}
+};

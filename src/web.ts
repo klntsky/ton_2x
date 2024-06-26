@@ -1,7 +1,6 @@
 import express from 'express'
 import { getDbConnection, getLogger, logError } from './utils'
 import { api } from './utils/parseTxData'
-import { apiMock } from './constants'
 import type { TRequestHandler } from './types'
 import { insertUserAdress } from './db/queries'
 
@@ -23,19 +22,17 @@ unknown,
 unknown,
 {
   id: string
-  address?: string
+  address: string
 }
 > = async (req, res) => {
   const { id, address } = req.query
   console.log({ address })
   const db = await getDbConnection()
-  if (address) {
-    await insertUserAdress(db, {
-      userId: Number(id),
-      address,
-    })
-  }
-  const result = address && typeof address === 'string' ? await api(address) : apiMock
+  await insertUserAdress(db, {
+    userId: Number(id),
+    address,
+  })
+  const result = await api(address)
   return res.send(result)
 }
 

@@ -1,4 +1,4 @@
-import { bigint, integer, pgTable, varchar } from 'drizzle-orm/pg-core'
+import { bigint, pgTable, varchar } from 'drizzle-orm/pg-core'
 import { users } from '.'
 
 export const userSettings = pgTable('user_settings', {

@@ -1,4 +1,4 @@
-import { bigint, integer, pgTable, unique, varchar } from 'drizzle-orm/pg-core'
+import { bigint, pgTable, unique, varchar } from 'drizzle-orm/pg-core'
 import { users } from '.'
 
 export const wallets = pgTable(
