@@ -13,6 +13,7 @@ export async function* getNotifications(
     getWalletsInDb,
     getUsersInDb,
     getPrice,
+    rates,
   } = handle
   for (const user of await getUsersInDb()) {
     for (const wallet of await getWalletsInDb(user.id)) {
@@ -58,11 +59,12 @@ export async function* getNotifications(
           continue
         }
         const rate = tokenOnChain.price / newestTransactionInDb.price
-        const rateDirection = rate >= Number(process.env.NOTIFICATION_RATE_UP)
-          ? ENotificationType.UP
-          : rate <= Number(process.env.NOTIFICATION_RATE_DOWN)
-            ? ENotificationType.DOWN
-            : undefined
+        const rateDirection =
+          rate >= rates.top
+            ? ENotificationType.UP
+            : rate <= rates.bottom
+              ? ENotificationType.DOWN
+              : undefined
         if (!rateDirection) {
           continue
         }

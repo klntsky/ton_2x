@@ -18,27 +18,14 @@ import {
 import { ENotificationType } from '../constants'
 import type { TNotificationHandle } from './types'
 
-type JettonAddress = string
-
-// A jetton that exists on some wallet
-type WalletJetton = {
-  amount: number
-}
-
-export async function* getUsers(handle: {
-  getUsersInDb: () => Promise<(typeof users.$inferSelect)[]>
-}) {
-  const { getUsersInDb } = handle
-  const usersInDb = await getUsersInDb()
-  for (const user of usersInDb) {
-    yield user
-  }
-}
-
 export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
   const db = await getDbConnection()
   const handle: TNotificationHandle = {
-    getPrice: async (jetton: JettonAddress) => {
+    rates: {
+      top: Number(process.env.NOTIFICATION_RATE_UP),
+      bottom: Number(process.env.NOTIFICATION_RATE_DOWN),
+    },
+    getPrice: async (jetton: string) => {
       const [trace] = await getTraceIdsByAddress(jetton, 1)
       if (!trace) {
         return undefined

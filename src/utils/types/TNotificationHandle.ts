@@ -1,6 +1,10 @@
 import type { tokens, userNotifications, userPurchases, users, wallets } from '../../db/schema'
 
 export type TNotificationHandle = {
+  rates: {
+    top: number
+    bottom: number
+  }
   getUsersInDb: () => Promise<(typeof users.$inferSelect)[]>
   getPrice: (jetton: string) => Promise<
   | {

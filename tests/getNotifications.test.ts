@@ -6,12 +6,20 @@ import type { TNotification } from '../src/utils/types/TNotifications'
 import type { Mock } from 'node:test'
 import { describe, it, beforeEach, mock } from 'node:test'
 
+type THandleCallbackKeys = keyof Omit<TNotificationHandle, 'rates'>
+
 describe('getNotifications', () => {
-  let handle: Record<string, Mock<TNotificationHandle[keyof TNotificationHandle]>>
+  let handle: Record<THandleCallbackKeys, Mock<TNotificationHandle[THandleCallbackKeys]>> & {
+    rates: TNotificationHandle['rates']
+  }
   const notifications: TNotification[] = []
 
   beforeEach(() => {
     handle = {
+      rates: {
+        top: 2,
+        bottom: 0.5,
+      },
       getPrice: mock.fn<TNotificationHandle['getPrice']>(),
       getUsersInDb: mock.fn<TNotificationHandle['getUsersInDb']>(),
       getWalletsInDb: mock.fn<TNotificationHandle['getWalletsInDb']>(),
