@@ -12,8 +12,8 @@ import {
 } from '.'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
-import { userSettings, users } from '../db/schema'
 import { i18n } from '../i18n'
+import { insertUser, upsertUserSettings } from '../db/queries'
 
 export const initBot = async (
   token: string,
@@ -31,17 +31,18 @@ export const initBot = async (
   bot.start(async ctx => {
     const { user } = getTelegramUser(ctx.from)
     const db = await getDbConnection()
-    await db.insert(users).values({
+    await insertUser(db, {
       id: ctx.from.id,
       timestamp: Math.floor(Date.now() / 1000),
       username: user,
     })
     if (ctx.from.language_code) {
-      await db.insert(userSettings).values({
+      await upsertUserSettings(db, {
         userId: ctx.from.id,
         languageCode: ctx.from.language_code,
       })
     }
+    await db.close()
     const startMessage = await ctx.reply(ctx.i18n.message.start(), {
       parse_mode: 'Markdown',
       reply_markup: {

@@ -58,8 +58,11 @@ export async function* getNotifications(
           continue
         }
         const rate = tokenOnChain.price / newestTransactionInDb.price
-        const rateDirection =
-          rate >= 2 ? ENotificationType.UP : rate <= 0.5 ? ENotificationType.DOWN : undefined
+        const rateDirection = rate >= Number(process.env.NOTIFICATION_RATE_UP)
+          ? ENotificationType.UP
+          : rate <= Number(process.env.NOTIFICATION_RATE_DOWN)
+            ? ENotificationType.DOWN
+            : undefined
         if (!rateDirection) {
           continue
         }
