@@ -24,7 +24,7 @@
           "htmlWhitespaceSensitivity": "ignore",
           "printWidth": 100,
           "arrowParens": "avoid",
-          "jsxBracketSameLine": false,
+          "bracketSameLine": false,
           "singleAttributePerLine": true
         }
       }

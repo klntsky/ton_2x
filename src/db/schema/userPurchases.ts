@@ -1,11 +1,13 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
-import { usernames } from '.'
+import { integer, pgTable, varchar } from 'drizzle-orm/pg-core'
+import { tokens, wallets } from '.'
 
-export const userPurchases = sqliteTable('user_purchases', {
-  userId: integer('user_id')
+export const userPurchases = pgTable('user_purchases', {
+  wallet: varchar('wallet', { length: 128 })
     .notNull()
-    .references(() => usernames.userId, { onDelete: 'cascade' }),
-  jetton: text('jetton').notNull(),
+    .references(() => wallets.address, { onDelete: 'cascade' }),
+  jetton: varchar('jetton', { length: 128 })
+    .notNull()
+    .references(() => tokens.token),
   timestamp: integer('timestamp').notNull(),
   price: integer('price').notNull(),
 })

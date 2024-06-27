@@ -5,6 +5,8 @@ type EnvKeys =
   | 'TELEGRAM_BOT_WEBHOOK_PATH'
   | 'TELEGRAM_BOT_WEB_APP'
   | 'EXPRESS_PORT'
+  | 'NOTIFICATION_RATE_UP'
+  | 'NOTIFICATION_RATE_DOWN'
 
 declare global {
   namespace NodeJS {

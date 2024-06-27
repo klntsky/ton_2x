@@ -1,26 +1,26 @@
-import i18n from 'i18next';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
-import { TonConnectUIProvider } from '@tonconnect/ui-react';
-import { SDKProvider } from '@tma.js/sdk-react';
-import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { loadLocalizationResources } from './i18n/utils';
+import i18n from 'i18next'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { TonConnectUIProvider } from '@tonconnect/ui-react'
+import { SDKProvider } from '@tma.js/sdk-react'
+import { I18nextProvider, initReactI18next } from 'react-i18next'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
-import './index.css';
-import './constants/mockEnv.ts';
+import { App } from './App.tsx'
+import { loadLocalizationResources } from './i18n/utils'
 
-const queryClient = new QueryClient();
+import './index.css'
+import './constants/mockEnv.ts'
+
+const queryClient = new QueryClient()
 
 const manifestURL = new URL(
   'tonconnect-manifest.json',
   window.location.href,
-).toString();
+).toString()
 
-const root = document.getElementById('root');
-const langCode = navigator?.language?.split?.('-')?.[0] === 'ru' ? 'ru' : 'en';
+const root = document.getElementById('root')
+const langCode = navigator?.language?.split?.('-')?.[0] === 'ru' ? 'ru' : 'en'
 
 const init = async () => {
   await i18n.use(initReactI18next).init({
@@ -33,9 +33,9 @@ const init = async () => {
     interpolation: {
       escapeValue: false,
     },
-  });
+  })
 
-  if (!root) return;
+  if (!root) return
 
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
@@ -49,7 +49,7 @@ const init = async () => {
         </TonConnectUIProvider>
       </I18nextProvider>
     </React.StrictMode>,
-  );
-};
+  )
+}
 
-void init();
+void init()

@@ -6,4 +6,4 @@ export const ru = {
     profit: 'Прибыль {{percent}}%',
     loss: 'Убыток {{percent}}%',
   },
-};
+}

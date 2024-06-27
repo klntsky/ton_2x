@@ -6,4 +6,4 @@ export const en = {
     profit: 'Profit {{percent}}%',
     loss: 'Loss {{percent}}%',
   },
-};
+}

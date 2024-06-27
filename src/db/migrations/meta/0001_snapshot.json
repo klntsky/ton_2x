@@ -1,53 +1,99 @@
 {
-  "version": "6",
-  "dialect": "sqlite",
-  "id": "ce7be93c-b67c-48c4-bb74-620586cf3fd3",
-  "prevId": "c03baa09-e0c5-40f0-919a-24f7dfffa52d",
+  "id": "af4b5fd1-7b00-40d2-a144-81549ba65ad4",
+  "prevId": "59d62833-8be5-4a6c-a877-906f813e04d5",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "notifications": {
-      "name": "notifications",
+    "public.tokens": {
+      "name": "tokens",
+      "schema": "",
       "columns": {
-        "is_deleted": {
-          "name": "is_deleted",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+        "token": {
+          "name": "token",
+          "type": "varchar(128)",
+          "primaryKey": true,
+          "notNull": true
         },
-        "swap_id": {
-          "name": "swap_id",
-          "type": "text",
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar(128)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "side": {
-          "name": "side",
-          "type": "integer",
+        "ticker": {
+          "name": "ticker",
+          "type": "varchar(16)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "notifications_swap_id_swaps_uuid_fk": {
-          "name": "notifications_swap_id_swaps_uuid_fk",
-          "tableFrom": "notifications",
-          "tableTo": "swaps",
-          "columnsFrom": [
-            "swap_id"
-          ],
-          "columnsTo": [
-            "uuid"
-          ],
+        "tokens_wallet_wallets_address_fk": {
+          "name": "tokens_wallet_wallets_address_fk",
+          "tableFrom": "tokens",
+          "tableTo": "wallets",
+          "columnsFrom": ["wallet"],
+          "columnsTo": ["address"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "wallet-token": {
+          "name": "wallet-token",
+          "nullsNotDistinct": false,
+          "columns": ["wallet", "token"]
+        }
+      }
+    },
+    "public.user_notifications": {
+      "name": "user_notifications",
+      "schema": "",
+      "columns": {
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jetton": {
+          "name": "jetton",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_notifications_wallet_wallets_address_fk": {
+          "name": "user_notifications_wallet_wallets_address_fk",
+          "tableFrom": "user_notifications",
+          "tableTo": "wallets",
+          "columnsFrom": ["wallet"],
+          "columnsTo": ["address"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_notifications_jetton_tokens_token_fk": {
+          "name": "user_notifications_jetton_tokens_token_fk",
+          "tableFrom": "user_notifications",
+          "tableTo": "tokens",
+          "columnsFrom": ["jetton"],
+          "columnsTo": ["token"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -55,251 +101,112 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "pairs": {
-      "name": "pairs",
-      "columns": {
-        "pair": {
-          "name": "pair",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "token_a": {
-          "name": "token_a",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "token_b": {
-          "name": "token_b",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "swaps": {
-      "name": "swaps",
-      "columns": {
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "pair": {
-          "name": "pair",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "direction": {
-          "name": "direction",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "amount_a": {
-          "name": "amount_a",
-          "type": "blob",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "amount_b": {
-          "name": "amount_b",
-          "type": "blob",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "uuid": {
-          "name": "uuid",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "tokens": {
-      "name": "tokens",
-      "columns": {
-        "wallet_address": {
-          "name": "wallet_address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "ticker": {
-          "name": "ticker",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "wallet_address-token": {
-          "name": "wallet_address-token",
-          "columns": [
-            "wallet_address",
-            "token"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "user_notifications": {
-      "name": "user_notifications",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "jetton": {
-          "name": "jetton",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "price": {
-          "name": "price",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_notifications_user_id_usernames_user_id_fk": {
-          "name": "user_notifications_user_id_usernames_user_id_fk",
-          "tableFrom": "user_notifications",
-          "tableTo": "usernames",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "user_purchases": {
+    "public.user_purchases": {
       "name": "user_purchases",
+      "schema": "",
       "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar(128)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "jetton": {
           "name": "jetton",
-          "type": "text",
+          "type": "varchar(128)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "timestamp": {
           "name": "timestamp",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "price": {
           "name": "price",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "user_purchases_user_id_usernames_user_id_fk": {
-          "name": "user_purchases_user_id_usernames_user_id_fk",
+        "user_purchases_wallet_wallets_address_fk": {
+          "name": "user_purchases_wallet_wallets_address_fk",
           "tableFrom": "user_purchases",
-          "tableTo": "usernames",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
+          "tableTo": "wallets",
+          "columnsFrom": ["wallet"],
+          "columnsTo": ["address"],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_purchases_jetton_tokens_token_fk": {
+          "name": "user_purchases_jetton_tokens_token_fk",
+          "tableFrom": "user_purchases",
+          "tableTo": "tokens",
+          "columnsFrom": ["jetton"],
+          "columnsTo": ["token"],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "user_settings": {
+    "public.user_settings": {
       "name": "user_settings",
+      "schema": "",
       "columns": {
         "user_id": {
           "name": "user_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "language_code": {
           "name": "language_code",
-          "type": "text",
+          "type": "varchar(2)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_settings_user_id_users_id_fk": {
+          "name": "user_settings_user_id_users_id_fk",
+          "tableFrom": "user_settings",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -307,46 +214,50 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "usernames": {
-      "name": "usernames",
+    "public.wallets": {
+      "name": "wallets",
+      "schema": "",
       "columns": {
+        "address": {
+          "name": "address",
+          "type": "varchar(128)",
+          "primaryKey": true,
+          "notNull": true
+        },
         "user_id": {
           "name": "user_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
-      "indexes": {
+      "indexes": {},
+      "foreignKeys": {
+        "wallets_user_id_users_id_fk": {
+          "name": "wallets_user_id_users_id_fk",
+          "tableFrom": "wallets",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
         "user_id-address": {
           "name": "user_id-address",
-          "columns": [
-            "user_id",
-            "address"
-          ],
-          "isUnique": true
+          "nullsNotDistinct": false,
+          "columns": ["user_id", "address"]
         }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      }
     }
   },
   "enums": {},
+  "schemas": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "internal": {
-    "indexes": {}
+    "tables": {}
   }
 }

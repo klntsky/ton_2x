@@ -1,75 +1,70 @@
-import { useEffect } from 'react';
-import { Chart } from './Components/Chart';
-import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react';
+import { useEffect } from 'react'
+import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react'
 import {
   bindMiniAppCSSVars,
   bindThemeParamsCSSVars,
   useMiniApp,
   useThemeParams,
-} from '@tma.js/sdk-react';
-import { retrieveLaunchParams } from '@tma.js/sdk';
-import { usePostData } from './Hooks';
-import { useParams } from 'react-router-dom';
+} from '@tma.js/sdk-react'
+import { retrieveLaunchParams } from '@tma.js/sdk'
 
-function App() {
-  const query = useParams();
-  const modal = useTonConnectModal();
-  const [tonConnectUI] = useTonConnectUI();
-  const themeParams = useThemeParams();
-  const miniApp = useMiniApp();
-  const { mutate } = usePostData();
-  miniApp.ready();
+import { Chart } from './components/Chart'
+import { usePostData } from './hooks'
+
+export const App = () => {
+  const launchParams = retrieveLaunchParams()
+  if (!launchParams.initData?.user?.id) {
+    throw new Error(`There is no user id in launchParams`)
+  }
+  const modal = useTonConnectModal()
+  const [tonConnectUI] = useTonConnectUI()
+  const themeParams = useThemeParams()
+  const miniApp = useMiniApp()
+  const { mutate } = usePostData()
+  miniApp.ready()
 
   useEffect(() => {
-    return bindMiniAppCSSVars(miniApp, themeParams);
-  }, [miniApp, themeParams]);
+    return bindMiniAppCSSVars(miniApp, themeParams)
+  }, [miniApp, themeParams])
 
   useEffect(() => {
-    return bindThemeParamsCSSVars(themeParams);
-  }, [themeParams]);
+    return bindThemeParamsCSSVars(themeParams)
+  }, [themeParams])
 
   // useEffect(() => {
-  //   if (modal.state.status === 'closed') {
-  //     if (!query.address) {
-  //       modal.open();
-  //     }
-  //   } else {
-  //     if (query.address) {
-  //       modal.close();
-  //     }
+  //   if (modal.state.status === 'closed' && !tonConnectUI.account?.address) {
+  //     modal.open();
   //   }
-  // }, [modal, modal.state.status, query.address]);
+  // }, [modal.state.status]);
 
   useEffect(() => {
-    if (!query.address) {
-      modal.open();
-    }
+    modal.open()
 
     tonConnectUI.onStatusChange(wallet => {
-      const myURL = new URL(window.location.href);
-      const launchParams = retrieveLaunchParams();
+      const launchParams = retrieveLaunchParams()
       console.log(123, {
         id: launchParams.initData?.user?.id,
         address: wallet?.account.address,
-      });
-      if (query.address || !wallet?.account.address) return;
-      myURL.searchParams.set('address', wallet.account.address);
-      window.location.href = myURL.toString();
+      })
+      if (!wallet?.account.address) return
       mutate({
         url: '/postUserWallet',
         data: {
           id: launchParams.initData?.user?.id,
           address: wallet?.account.address,
         },
-      });
-    });
-  }, []);
+      })
+    })
+  }, [])
 
   return (
     <div className="App">
-      <Chart />
+      {tonConnectUI.account?.address ? (
+        <Chart
+          address={tonConnectUI.account.address}
+          userId={launchParams.initData.user.id}
+        />
+      ) : null}
     </div>
-  );
+  )
 }
-
-export default App;
