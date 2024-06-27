@@ -1,8 +1,10 @@
+import type { ErrorRequestHandler } from 'express'
 import express from 'express'
+import type { ParamsDictionary, Query } from 'express-serve-static-core'
 import { getDbConnection, getLogger, logError } from './utils'
 import { api } from './utils/parseTxData'
 import type { TRequestHandler } from './types'
-import { insertUserAdress } from './db/queries'
+import { upsertUser, insertUserAdress } from './db/queries'
 
 const app = express()
 
@@ -11,11 +13,16 @@ app.set('trust proxy', true)
 
 const logger = getLogger('web')
 
-// @ts-expect-error no types
-app.use(async (err, req, res, next) => {
+const onError: ErrorRequestHandler<
+ParamsDictionary,
+unknown,
+unknown,
+Query,
+Record<string, unknown>
+> = async (err, _req, res, _next) => {
   await logError(logger, err)
   return res.status(500).send()
-})
+}
 
 const onGetWalletData: TRequestHandler<
 unknown,
@@ -32,6 +39,7 @@ unknown,
     userId: Number(id),
     address,
   })
+  await db.close()
   const result = await api(address)
   return res.send(result)
 }
@@ -46,8 +54,11 @@ const onPostUserWallet: TRequestHandler<{
     userId: id,
     address,
   })
+  await db.close()
   return res.send()
 }
+
+app.use(onError)
 
 app.get('/getWalletData', onGetWalletData)
 

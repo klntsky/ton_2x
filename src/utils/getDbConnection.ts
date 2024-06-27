@@ -7,6 +7,6 @@ export const getDbConnection = async () => {
   const connection = drizzle(db)
 
   // @ts-expect-error object restructuring didn't work that easy for types
-  connection.close = db.close
+  connection.close = () => db.close()
   return connection as TDbConnection
 }

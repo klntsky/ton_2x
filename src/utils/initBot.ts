@@ -13,7 +13,7 @@ import {
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
 import { i18n } from '../i18n'
-import { insertUser, upsertUserSettings } from '../db/queries'
+import { upsertUser, upsertUserSettings } from '../db/queries'
 
 export const initBot = async (
   token: string,
@@ -31,7 +31,7 @@ export const initBot = async (
   bot.start(async ctx => {
     const { user } = getTelegramUser(ctx.from)
     const db = await getDbConnection()
-    await insertUser(db, {
+    await upsertUser(db, {
       id: ctx.from.id,
       timestamp: Math.floor(Date.now() / 1000),
       username: user,
@@ -81,7 +81,7 @@ export const initBot = async (
         }
     // In case we catch errors when sending messages
     try {
-      await ctx.reply(`Some error occured!`)
+      await ctx.reply(ctx.i18n.message.error())
     } finally {
       await logError(ctx.logger, error, { ctx: JSON.stringify(ctx.update) })
     }

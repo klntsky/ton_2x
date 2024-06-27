@@ -30,6 +30,7 @@ export const api = async (address: string) => {
       lastBuyTime,
     })
   }
+  await db.close()
 
   return res
 }

@@ -21,6 +21,7 @@ export const ru = {
       x05: (ticker: string, wallet: string) =>
         `Жетон $${ticker} подешевел вдвое. Адрес: \`${wallet}\``,
     },
+    error: () => `Что-то пошло не так. Пожалуйста, повторите попытку позже.`,
   },
   button: {
     linkWallet: () => 'Подключить кошелёк',

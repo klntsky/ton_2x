@@ -96,4 +96,5 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
       jetton: notification.jetton,
     })
   }
+  await db.close()
 }

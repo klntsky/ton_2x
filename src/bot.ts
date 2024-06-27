@@ -27,10 +27,8 @@ const start = async () => {
   })
 
   // bot.telegram.setMyCommands([])
-  // bot.telegram.setMyDescription(`
-  //   Это description
-  // `)
-  // bot.telegram.setMyShortDescription(`Это short description`)
+  // bot.telegram.setMyDescription(`Description`)
+  // bot.telegram.setMyShortDescription(`Short description`)
   logger.info({ info: 'Telegram bot started' })
 
   process.once('SIGINT', async () => {

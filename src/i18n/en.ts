@@ -23,6 +23,7 @@ Connect your wallet to get started 👇
       x05: (ticker: string, wallet: string) =>
         `$${ticker} has dropped in price by half from the moment you purchased it. Wallet: \`${wallet}\``,
     },
+    error: () => `Something went wrong. Please try again later.`,
   },
   button: {
     linkWallet: () => 'Connect Wallet',
