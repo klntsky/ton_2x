@@ -1,0 +1,1 @@
+ALTER TABLE "user_settings" ADD PRIMARY KEY ("user_id");

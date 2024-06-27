@@ -4,6 +4,9 @@ import { users } from '.'
 export const userSettings = pgTable('user_settings', {
   userId: bigint('user_id', { mode: 'number' })
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => users.id, {
+      onDelete: 'cascade',
+    })
+    .primaryKey(),
   languageCode: varchar('language_code', { length: 2 }).notNull(),
 })

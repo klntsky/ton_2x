@@ -6,7 +6,7 @@ export const upsertUserSettings = (db: TDbConnection, values: typeof userSetting
     .insert(userSettings)
     .values(values)
     .onConflictDoUpdate({
-      target: userSettings.languageCode,
+      target: userSettings.userId,
       set: { languageCode: values.languageCode },
     })
 }

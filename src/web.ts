@@ -4,7 +4,7 @@ import type { ParamsDictionary, Query } from 'express-serve-static-core'
 import { getDbConnection, getLogger, logError } from './utils'
 import { api } from './utils/parseTxData'
 import type { TRequestHandler } from './types'
-import { upsertUser, insertUserAdress } from './db/queries'
+import { insertUserAdress } from './db/queries'
 
 const app = express()
 
