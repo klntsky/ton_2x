@@ -1,6 +1,8 @@
 export type TWalletData = {
+  address: string
   symbol: string
-  image: string
+  image?: string
   pnlPercentage: number
-  chart: [number, number][]
+  chart: [timestamp: number, price: number][]
+  firstBuyTime: number
 }

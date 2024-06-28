@@ -15,6 +15,7 @@ export const Chart = (props: { address: string; userId: number }) => {
       </Flex>
     )
   }
+
   if (!data?.length) {
     return (
       <Flex justifyContent="center" alignItems="center" className="h-screen">
@@ -31,7 +32,7 @@ export const Chart = (props: { address: string; userId: number }) => {
         </h1>
         {data
           ? data.map(obj => (
-              <Card className="max-w-[550px] mt-4">
+              <Card className="max-w-[550px] mt-4" key={obj.address}>
                 <Flex justifyContent="between" alignItems="center">
                   <Flex
                     justifyContent="start"
