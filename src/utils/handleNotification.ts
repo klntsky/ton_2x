@@ -1,10 +1,9 @@
 import type { Telegraf } from 'telegraf'
 import { getJettonsByAddress, getNotifications } from '.'
-import { tokens, users, wallets } from '../db/schema'
+import { tokens, userPurchases, users, wallets } from '../db/schema'
 import { getDbConnection } from './getDbConnection'
 import type { TTelegrafContext } from '../types'
 import { eq } from 'drizzle-orm'
-import { getTraceIdsByAddress, getTracesByTxHash } from './parseTxData'
 import { i18n } from '../i18n'
 import {
   deleteJettonByWallet,
@@ -15,7 +14,7 @@ import {
   selectUserSettings,
   upsertToken,
 } from '../db/queries'
-import { ENotificationType } from '../constants'
+import { ENotificationType, tonApiClient } from '../constants'
 import type { TNotificationHandle } from './types'
 
 export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
@@ -26,19 +25,12 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
       bottom: Number(process.env.NOTIFICATION_RATE_DOWN),
     },
     getPrice: async (jetton: string) => {
-      const [trace] = await getTraceIdsByAddress(jetton, 1)
-      if (!trace) {
-        return undefined
-      }
-      const txTrace = await getTracesByTxHash(trace.id)
-      const price = txTrace.transaction.out_msgs[0]?.value
-      if (!price) {
-        return undefined
-      }
-      return {
-        price,
-        timestamp: txTrace.transaction.utime,
-      }
+      const { rates } = await tonApiClient.rates.getRates({
+        tokens: [jetton],
+        currencies: ['usd'],
+      })
+      const price = rates[jetton].prices?.['USD']
+      return price
     },
     getUsersInDb: () => db.select().from(users),
     getWalletsInDb: userId => db.select().from(wallets).where(eq(wallets.userId, userId)),
@@ -51,19 +43,23 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
     deleteUserJetton: (user: string, jetton: string) => deleteJettonByWallet(db, jetton, user),
   }
   for await (const notification of getNotifications(handle)) {
+    console.log({ notification })
     const userSettings = await selectUserSettings(db, notification.userId)
     if (notification.action === ENotificationType.NEW_JETTON) {
       await upsertToken(db, {
         token: notification.jetton,
         wallet: notification.wallet,
         ticker: notification.symbol,
+        decimals: notification.decimals,
       })
+      console.log('new_tokken', notification.price.toString())
       await insertUserPurchase(db, {
         wallet: notification.wallet,
         timestamp: notification.timestamp,
         jetton: notification.jetton,
-        price: notification.price,
+        price: notification.price.toString(),
       })
+      console.log(await db.select().from(tokens))
       await bot.telegram.sendMessage(
         notification.userId,
         i18n(userSettings?.languageCode).message.detectedNewJetton(notification.symbol),
@@ -88,10 +84,11 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
           notification.symbol,
           notification.wallet,
         )
-    await bot.telegram.sendMessage(notification.userId, text)
+    await bot.telegram.sendMessage(notification.userId, text, { parse_mode: 'Markdown' })
+    console.log('rates', notification.price.toString())
     await insertUserNotification(db, {
       timestamp: notification.timestamp,
-      price: notification.price,
+      price: notification.price.toString(),
       wallet: notification.wallet,
       jetton: notification.jetton,
     })

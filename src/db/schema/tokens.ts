@@ -1,4 +1,4 @@
-import { pgTable, unique, varchar } from 'drizzle-orm/pg-core'
+import { integer, pgTable, unique, varchar } from 'drizzle-orm/pg-core'
 import { wallets } from '.'
 
 export const tokens = pgTable(
@@ -9,6 +9,7 @@ export const tokens = pgTable(
       .notNull()
       .references(() => wallets.address, { onDelete: 'cascade' }),
     ticker: varchar('ticker', { length: 16 }).notNull(),
+    decimals: integer('decimals').notNull(),
   },
   table => ({
     unique: unique('wallet-token').on(table.wallet, table.token),

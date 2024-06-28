@@ -5,7 +5,7 @@ import type { TDbConnection } from '../types'
 export const getDbConnection = async () => {
   const db = new PGlite('file://data/postgresql')
   const connection = drizzle(db, {
-    logger: true,
+    // logger: true,
   })
 
   // @ts-expect-error object restructuring didn't work that easy for types

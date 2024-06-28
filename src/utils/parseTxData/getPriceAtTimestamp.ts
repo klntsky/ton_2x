@@ -1,27 +1,18 @@
-import { fetchWithAuth } from '.'
+import { tonApiClient } from '../../constants'
 
 export const getPriceAtTimestamp = async (jetton: string, timestamp: number) => {
-  timestamp = Math.min(Math.floor(Date.now() / 1000 - 1000), timestamp)
+  // TODO: culprit of the wrong .pnlPercentage (1000 -> 604800, as in src/utils/parseTxData/getChart.ts)
+  const newTimestamp = Math.min(Math.floor(Date.now() / 1000 - 604800), timestamp)
 
-  // console.info(timestamp);
+  const chart: {
+    points: [timestamp: number, price: number][]
+  } = await tonApiClient.rates.getChartRates({
+    token: jetton,
+    currency: 'usd',
+    start_date: newTimestamp,
+    end_date: newTimestamp + 1000,
+    points_count: 1,
+  })
 
-  const url =
-    'https://tonapi.io/v2/rates/chart?token=' +
-    jetton +
-    '&currency=usd' +
-    '&start_date=' +
-    timestamp +
-    '&end_date=' +
-    (timestamp + 1000) +
-    '&points_count=1'
-
-  const chart = await (await fetchWithAuth(url)).json()
-
-  // console.info(chart);
-
-  if (chart.points.length) {
-    return chart.points[0][1]
-  } else {
-    return 0
-  }
+  return chart.points.length ? chart.points[0][1] : undefined
 }

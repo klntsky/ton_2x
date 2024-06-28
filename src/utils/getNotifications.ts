@@ -37,8 +37,9 @@ export async function* getNotifications(
           continue
         }
         delete addressJettonsFromChainObj[jetton.token]
-        const tokenOnChain = await getPrice(jetton.token)
-        if (!tokenOnChain) {
+        const timestamp = Math.floor(Date.now() / 1000)
+        const price = await getPrice(jetton.token)
+        if (!price) {
           continue
         }
         const lastPurchase = await getLastAddressJettonPurchaseFromDB(wallet.address, jetton.token)
@@ -46,6 +47,7 @@ export async function* getNotifications(
           wallet.address,
           jetton.token,
         )
+        console.log({ lastNotification, lastPurchase })
         const newestTransactionInDb =
           lastPurchase && lastNotification
             ? lastPurchase.timestamp > lastNotification.timestamp
@@ -55,10 +57,12 @@ export async function* getNotifications(
         if (!newestTransactionInDb) {
           continue
         }
-        if (tokenOnChain.timestamp <= newestTransactionInDb.timestamp) {
-          continue
-        }
-        const rate = tokenOnChain.price / newestTransactionInDb.price
+        const rate = price / Number(newestTransactionInDb.price)
+        console.log(123, {
+          rate,
+          price,
+          newestTransactionInDb: newestTransactionInDb.price,
+        })
         const rateDirection =
           rate >= rates.top
             ? ENotificationType.UP
@@ -73,14 +77,15 @@ export async function* getNotifications(
           wallet: wallet.address,
           jetton: jetton.token,
           symbol: jetton.ticker,
-          price: tokenOnChain.price,
+          price: price,
           action: rateDirection,
-          timestamp: tokenOnChain.timestamp,
+          timestamp,
         }
       }
-      for (const [address, { symbol }] of Object.entries(addressJettonsFromChainObj)) {
-        const tokenOnChain = await getPrice(address)
-        if (!tokenOnChain) {
+      for (const [address, { symbol, decimals }] of Object.entries(addressJettonsFromChainObj)) {
+        const timestamp = Math.floor(Date.now() / 1000)
+        const price = await getPrice(address)
+        if (!price) {
           continue
         }
         yield {
@@ -88,8 +93,9 @@ export async function* getNotifications(
           wallet: wallet.address,
           jetton: address,
           symbol: symbol,
-          price: tokenOnChain.price,
-          timestamp: tokenOnChain.timestamp,
+          price: price,
+          timestamp,
+          decimals: decimals,
           action: ENotificationType.NEW_JETTON,
         }
       }
