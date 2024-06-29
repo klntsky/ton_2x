@@ -1,8 +1,8 @@
-import { fetchWithAuth } from '.'
+import { tonApiClient } from '../../constants'
 
 export const getAccountJettonHistory = async (account: string, jetton: string) => {
-  const url =
-    'https://tonapi.io/v2/accounts/' + account + '/jettons/' + jetton + '/history?limit=100'
-  const resp = await (await fetchWithAuth(url)).json()
+  const resp = await tonApiClient.accounts.getAccountJettonHistoryById(account, jetton, {
+    limit: 100,
+  })
   return resp.events
 }

@@ -33,7 +33,7 @@ unknown,
 }
 > = async (req, res) => {
   const { id, address } = req.query
-  console.log({ address })
+  console.log({ id, address })
   const db = await getDbConnection()
   await insertUserAdress(db, {
     userId: Number(id),

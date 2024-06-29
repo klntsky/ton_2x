@@ -6,19 +6,14 @@ export type TNotificationHandle = {
     bottom: number
   }
   getUsersInDb: () => Promise<(typeof users.$inferSelect)[]>
-  getPrice: (jetton: string) => Promise<
-  | {
-    price: number
-    timestamp: number
-  }
-  | undefined
-  >
+  getPrice: (jetton: string) => Promise<number | undefined>
   getWalletsInDb: (userId: number) => Promise<(typeof wallets.$inferSelect)[]>
   getJettonsFromDB: (wallet: string) => Promise<(typeof tokens.$inferSelect)[]>
   getJettonsFromChain: (wallet: string) => Promise<
   {
     address: string
     symbol: string
+    decimals: number
   }[]
   >
   getLastAddressJettonPurchaseFromDB: (

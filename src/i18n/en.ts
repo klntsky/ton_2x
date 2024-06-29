@@ -15,7 +15,7 @@ If you have any questions, feel free to ask in the [chat](https://t.me/+mwwKEfMA
 Connect your wallet to get started 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
-      `You no longer hold $${ticker}, notifications for them have been stopped.`,
+      `You no longer hold $${ticker}, notifications for this jetton have been stopped.`,
     detectedNewJetton: (ticker: string) =>
       `New jetton found: $${ticker}. I will notify you when the price moves up or down by 2x`,
     notification: {

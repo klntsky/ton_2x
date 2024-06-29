@@ -9,8 +9,4 @@ export const getSwapPair = (
   }[],
 ) => {
   return swaps.slice().pop()
-  // res.asset_in = swaps[0].asset_in;
-  // res.amount_in = swaps[0].amount_in;
-  // res.asset_out = swaps[swaps.length - 1].asset_out;
-  // res.amount_out = swaps[swaps.length - 1].amount_out;
 }

@@ -1,10 +1,6 @@
-import { fetchWithAuth } from '.'
-import type { TTransaction } from '../../types'
+import { tonApiClient } from '../../constants'
 
-// fetches traces to be parsed for us.
 export const getTracesByTxHash = async (hash: string) => {
-  const url = 'https://tonapi.io/v2/traces/' + hash
-
-  const traces: TTransaction = await (await fetchWithAuth(url)).json()
+  const traces = await tonApiClient.traces.getTrace(hash)
   return traces
 }

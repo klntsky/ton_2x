@@ -1,6 +1,6 @@
-import type { TTransaction } from '../../types'
+import type { Trace } from 'tonapi-sdk-js'
 
-export function* parseTransactionSwaps(tx?: TTransaction): Generator<{
+export function* parseTransactionSwaps(tx?: Trace): Generator<{
   asset_in: string
   asset_out: string
   amount_in: number
@@ -9,13 +9,7 @@ export function* parseTransactionSwaps(tx?: TTransaction): Generator<{
   if (typeof tx === 'undefined') {
     return
   }
-  // console.log('parseTransactionSwaps', tx.interfaces);
   if (typeof tx.transaction === 'object') {
-    // iterate over in messages
-    const in_msg = tx.transaction.in_msg
-    //    console.log('in', in_msg.decoded_op_name, in_msg.decoded_body);
-
-    // iterate over out messages
     for (const out_msg of tx.transaction.out_msgs) {
       if (out_msg.decoded_op_name === 'dedust_swap') {
         const asset_in =
@@ -37,7 +31,6 @@ export function* parseTransactionSwaps(tx?: TTransaction): Generator<{
     throw 'not an object'
   }
 
-  // iterate over children
   if (tx.children instanceof Array) {
     for (const child of tx.children) {
       yield* parseTransactionSwaps(child)

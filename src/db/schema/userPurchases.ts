@@ -1,4 +1,4 @@
-import { integer, pgTable, varchar } from 'drizzle-orm/pg-core'
+import { integer, numeric, pgTable, varchar } from 'drizzle-orm/pg-core'
 import { tokens, wallets } from '.'
 
 export const userPurchases = pgTable('user_purchases', {
@@ -9,5 +9,5 @@ export const userPurchases = pgTable('user_purchases', {
     .notNull()
     .references(() => tokens.token),
   timestamp: integer('timestamp').notNull(),
-  price: integer('price').notNull(),
+  price: numeric('price').notNull(),
 })
