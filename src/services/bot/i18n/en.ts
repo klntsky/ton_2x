@@ -1,3 +1,4 @@
+import { getEmojiForWallet } from '../../../utils'
 import type { TI18nLocalization } from './types'
 
 export const en: TI18nLocalization = {
@@ -19,12 +20,12 @@ Send an address you want to watch or connect your own 👇
     detectedNewJetton: (ticker: string) =>
       `🆕 New jetton found: $${ticker}. I will notify you when the price moves up or down by 2x`,
     notification: {
-      x2: (ticker: string, wallet: string) => `📈 $${ticker} made 2x! Wallet: \`${wallet}\``,
+      x2: (ticker: string, wallet: string) => `📈 $${ticker} made 2x! Wallet: ${getEmojiForWallet(wallet)} \`${wallet}\``,
       x05: (ticker: string, wallet: string) =>
-        `📉 $${ticker} has dropped in price by half from the moment you purchased it. Wallet: \`${wallet}\``,
+        `📉 $${ticker} has dropped in price by half from the moment you purchased it. Wallet: ${getEmojiForWallet(wallet)} \`${wallet}\``,
     },
     newWalletConnected: (address: string, tickers: string[]) => `
-✨ New wallet connected: \`${address}\`
+✨ New wallet connected: ${getEmojiForWallet(address)} \`${address}\`
 
 ${
   tickers.length

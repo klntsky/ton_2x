@@ -1,3 +1,5 @@
+import { getEmojiForWallet } from "../../../utils"
+
 export const ru = {
   message: {
     start: () => `
@@ -17,12 +19,12 @@ export const ru = {
     detectedNewJetton: (ticker: string) =>
       `🆕 Обнаружен новый жетон $${ticker}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое`,
     notification: {
-      x2: (ticker: string, wallet: string) => `📈 Жетон $${ticker} сделал x2! Адрес: \`${wallet}\``,
+      x2: (ticker: string, wallet: string) => `📈 Жетон $${ticker} сделал x2! Адрес: ${getEmojiForWallet(wallet)} \`${wallet}\``,
       x05: (ticker: string, wallet: string) =>
-        `📉 Жетон $${ticker} подешевел вдвое. Адрес: \`${wallet}\``,
+        `📉 Жетон $${ticker} подешевел вдвое. Адрес: ${getEmojiForWallet(wallet)} \`${wallet}\``,
     },
     newWalletConnected: (address: string, tickers: string[]) => `
-✨ Кошелёк привязан: \`${address}\`
+✨ Кошелёк привязан: ${getEmojiForWallet(address)} \`${address}\`
 
 ${
   tickers.length
