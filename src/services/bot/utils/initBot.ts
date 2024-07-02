@@ -86,7 +86,7 @@ export const initBot = async (
       const jettons = await getJettonsByAddress(rawAddress)
       const userFriendlyAddress = address.toString(true, true, true)
       await ctx.reply(
-        i18n(ctx.from.language_code).message.newWalletConnected(
+        ctx.i18n.message.newWalletConnected(
           userFriendlyAddress,
           jettons.map(jetton => jetton.symbol),
         ),
@@ -96,6 +96,8 @@ export const initBot = async (
           },
         },
       )
+    } else {
+      await ctx.reply(ctx.i18n.message.walletConnectedAlready())
     }
     await db.close()
   })
