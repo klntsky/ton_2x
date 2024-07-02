@@ -1,0 +1,1 @@
+export const successfulWalletLinkNotificationCh = 'successful_wallet_link_notification_ch'

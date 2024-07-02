@@ -1,4 +1,4 @@
-import type { tokens, userNotifications, userPurchases, users, wallets } from '../../db/schema'
+import type { tokens, userNotifications, userPurchases, users, wallets } from '../../../db/schema'
 
 export type TNotificationHandle = {
   rates: {

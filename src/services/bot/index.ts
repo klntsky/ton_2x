@@ -1,7 +1,7 @@
 import process from 'process'
 import 'dotenv/config'
 import { initBot } from './utils'
-import { getLogger } from './utils'
+import { getLogger } from '../../utils'
 
 const start = async () => {
   const logger = getLogger('tg-bot')

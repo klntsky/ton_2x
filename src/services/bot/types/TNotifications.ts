@@ -1,4 +1,4 @@
-import type { ENotificationType } from '../../constants'
+import type { ENotificationType } from '../constants'
 
 type TBaseNotification = {
   userId: number

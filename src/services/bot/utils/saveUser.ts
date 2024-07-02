@@ -1,6 +1,7 @@
-import { getTelegramUser } from '.'
-import { upsertUser, upsertUserSettings } from '../db/queries'
-import type { TDbConnection, TTelegrafContext } from '../types'
+import { upsertUser, upsertUserSettings } from '../../../db/queries'
+import type { TDbConnection } from '../../../types'
+import { getTelegramUser } from '../../../utils'
+import type { TTelegrafContext } from '../types'
 
 export const saveUser = async (db: TDbConnection, ctx: TTelegrafContext) => {
   const { user } = getTelegramUser(ctx.from)

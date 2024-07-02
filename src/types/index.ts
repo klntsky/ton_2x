@@ -1,6 +1,3 @@
-export type { TTelegrafContext } from './TTelegrafContext'
-export type { TTelegrafSession } from './TTelegrafSession'
 export type { TDbConnection } from './TDbConnection'
-export type { TRequestHandler } from './TRequestHandler'
-export type { TTransaction } from './TTransaction'
 export type { TDeepTypeInObject } from './TDeepTypeInObject'
+export type { TSuccessfulWalletLinkNotificationCh } from './TSuccessfulWalletLinkNotificationCh'

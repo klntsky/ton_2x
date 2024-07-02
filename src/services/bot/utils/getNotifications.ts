@@ -1,6 +1,6 @@
 import { ENotificationType } from '../constants'
-import type { TNotificationHandle } from './types'
-import type { TNotification } from './types/TNotifications'
+import type { TNotificationHandle } from '../types'
+import type { TNotification } from '../types/TNotifications'
 
 export async function* getNotifications(
   handle: TNotificationHandle,

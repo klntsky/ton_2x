@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/bot.ts",
   "scripts": {
-    "dev:web": "npx tsx ./src/web.ts",
-    "dev:bot": "npx tsx ./src/bot.ts",
+    "dev:web": "npx tsx ./src/services/web/index.ts",
+    "dev:bot": "npx tsx ./src/services/bot/index.ts",
     "dev:front": "npm --prefix ./frontend run dev",
     "build:front": "npm --prefix ./frontend run build",
     "pretty": "npx prettier --write ./src ./tests",
@@ -28,12 +28,10 @@
   },
   "homepage": "https://github.com/klntsky/ton_2x#readme",
   "dependencies": {
-    "@electric-sql/pglite": "^0.1.5",
     "@tonconnect/ui": "^2.0.3",
     "@types/express": "^4.17.21",
     "amqplib": "^0.10.4",
     "axios": "^1.7.2",
-    "better-sqlite3": "^11.0.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
     "express": "^4.19.2",
@@ -45,7 +43,6 @@
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
-    "@types/better-sqlite3": "^7.6.10",
     "@types/node": "^20.14.2",
     "@typescript-eslint/eslint-plugin": "^7.13.0",
     "@typescript-eslint/parser": "^7.13.0",

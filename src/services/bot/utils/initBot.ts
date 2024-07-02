@@ -4,21 +4,23 @@ import { Markup, Telegraf } from 'telegraf'
 import { message } from 'telegraf/filters'
 import TonWeb from 'tonweb'
 import {
+  InfoMessage,
   getDbConnection,
+  getJettonsByAddress,
   getLogger,
-  handleNotification,
   logError,
+  logInfo,
   logUserAction,
   loopRetrying,
-  saveUser,
-} from '.'
+} from '../../../utils'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
 import { i18n } from '../i18n'
-import { insertUserAdress } from '../db/queries'
-import { ECallback } from '../constants'
-import { typeGuardByFields } from '../typeguards'
 import type { CallbackQuery } from 'telegraf/typings/core/types/typegram'
+import { typeGuardByFields } from '../../../typeguards'
+import { ECallback } from '../../../constants'
+import { insertUserAdress, selectUserAdress } from '../../../db/queries'
+import { handleNotification, saveUser } from '.'
 
 export const initBot = async (
   token: string,
@@ -69,24 +71,40 @@ export const initBot = async (
   bot.on(message('text'), async ctx => {
     const text = ctx.update.message.text
     if (![48, 64, 66].includes(text.length)) {
-      throw new Error(`Not valid TON address: «${text}»`)
+      await ctx.reply(`Invalid TON address`)
+      return
     }
     const address = new TonWeb.utils.Address(text)
     const rawAddress = address.toString(false)
     const db = await getDbConnection()
-    await insertUserAdress(db, {
-      userId: ctx.from.id,
-      address: rawAddress,
-    })
+    const [wallet] = await selectUserAdress(db, rawAddress, ctx.from.id)
+    if (!wallet) {
+      await insertUserAdress(db, {
+        userId: ctx.from.id,
+        address: rawAddress,
+      })
+      const jettons = await getJettonsByAddress(rawAddress)
+      const userFriendlyAddress = address.toString(true, true, true)
+      await ctx.reply(
+        i18n(ctx.from.language_code).message.newWalletConnected(
+          userFriendlyAddress,
+          jettons.map(jetton => jetton.symbol),
+        ),
+        {
+          reply_parameters: {
+            message_id: ctx.update.message.message_id,
+          },
+        },
+      )
+    }
     await db.close()
-    await ctx.reply('Wallet was linked successfully!', {
-      reply_parameters: {
-        message_id: ctx.update.message.message_id,
-      },
-    })
   })
 
   bot.catch(async (err, ctx) => {
+    if (err instanceof InfoMessage) {
+      await logInfo(ctx.logger, err)
+      return
+    }
     const error =
       err instanceof Error
         ? err

@@ -1,10 +1,10 @@
 import assert from 'node:assert'
-import { ENotificationType } from '../src/constants'
-import { getNotifications } from '../src/utils'
-import type { TNotificationHandle } from '../src/utils/types/TNotificationHandle'
-import type { TNotification } from '../src/utils/types/TNotifications'
 import type { Mock } from 'node:test'
 import { describe, it, beforeEach, mock } from 'node:test'
+import type { TNotificationHandle } from '../src/services/bot/types'
+import type { TNotification } from '../src/services/bot/types/TNotifications'
+import { ENotificationType } from '../src/services/bot/constants'
+import { getNotifications } from '../src/services/bot/utils'
 
 type THandleCallbackKeys = keyof Omit<TNotificationHandle, 'rates'>
 
@@ -130,26 +130,35 @@ describe('getNotifications', () => {
   })
 
   it('should notify when price increased by 2', async () => {
-    handle.getUsersInDb.mock.mockImplementation(() => [
-      {
-        id: 1,
-        username: 'testUser',
-        timestamp: 1,
-      },
-    ])
-    handle.getWalletsInDb.mock.mockImplementation(() => [{ id: 1, address: 'wallet1' }])
-    handle.getJettonsFromDB.mock.mockImplementation(() => [
-      { id: 1, token: 'jetton1', ticker: 'JET', walletId: 1 },
-    ])
-    handle.getJettonsFromChain.mock.mockImplementation(() => [
-      { address: 'jetton1', symbol: 'JET', decimals: 9 },
-    ])
-    handle.getPrice.mock.mockImplementation(() => 200)
-    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
-      timestamp: Date.now() - 10000,
-      price: 100,
-    }))
-    handle.getLastAddressNotificationFromDB.mock.mockImplementation(() => undefined)
+    handle.getUsersInDb.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          username: 'testUser',
+          timestamp: 1,
+        },
+      ]),
+    )
+    handle.getWalletsInDb.mock.mockImplementation(() =>
+      Promise.resolve([{ id: 1, userId: 1, address: 'wallet1' }]),
+    )
+    handle.getJettonsFromDB.mock.mockImplementation(() =>
+      Promise.resolve([{ id: 1, token: 'jetton1', ticker: 'JET', walletId: 1 }]),
+    )
+    handle.getJettonsFromChain.mock.mockImplementation(() =>
+      Promise.resolve([{ address: 'jetton1', symbol: 'JET', decimals: 9 }]),
+    )
+    handle.getPrice.mock.mockImplementation(() => Promise.resolve(200))
+    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() - 10000,
+        price: 100,
+      }),
+    )
+    handle.getLastAddressNotificationFromDB.mock.mockImplementation(() =>
+      Promise.resolve(undefined),
+    )
 
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
@@ -169,18 +178,22 @@ describe('getNotifications', () => {
   })
 
   it('should not notify when price increased by 1.5, sold, then price increased by 2', async () => {
-    handle.getUsersInDb.mock.mockImplementation(() => [
-      {
-        id: 1,
-        username: 'testUser',
-        timestamp: 1,
-      },
-    ])
-    handle.getWalletsInDb.mock.mockImplementation(() => [{ id: 1, address: 'wallet1' }])
-    handle.getJettonsFromDB.mock.mockImplementation(() => [
-      { id: 1, token: 'jetton1', ticker: 'JET', walletId: 1 },
-    ])
-    handle.getJettonsFromChain.mock.mockImplementation(() => [])
+    handle.getUsersInDb.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          username: 'testUser',
+          timestamp: 1,
+        },
+      ]),
+    )
+    handle.getWalletsInDb.mock.mockImplementation(() =>
+      Promise.resolve([{ id: 1, userId: 1, address: 'wallet1' }]),
+    )
+    handle.getJettonsFromDB.mock.mockImplementation(() =>
+      Promise.resolve([{ id: 1, token: 'jetton1', ticker: 'JET', walletId: 1 }]),
+    )
+    handle.getJettonsFromChain.mock.mockImplementation(() => Promise.resolve([]))
     handle.getPrice.mock.mockImplementation(() => 150)
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
       timestamp: Date.now() - 20000,
@@ -206,61 +219,79 @@ describe('getNotifications', () => {
   })
 
   it('should notify when price increased by 2, sold, then price increased by 2 again without notification', async () => {
-    handle.getUsersInDb.mock.mockImplementation(() => [
-      {
-        id: 1,
-        username: 'testUser',
-        timestamp: 1,
-      },
-    ])
-    handle.getWalletsInDb.mock.mockImplementation(() => [{ address: 'wallet1' }])
-    handle.getJettonsFromDB.mock.mockImplementation(() => [
-      {
-        id: 1,
-        token: 'jetton1',
-        walletId: 1,
-        ticker: 'JET',
-      },
-    ])
-    handle.getJettonsFromChain.mock.mockImplementation(() => [
-      {
-        address: 'jetton1',
-        symbol: 'JET',
-        decimals: 9,
-      },
-    ])
-    handle.getPrice.mock.mockImplementation(() => 200)
-    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
-      timestamp: Date.now() - 20000,
-      price: 100,
-    }))
-    handle.getLastAddressNotificationFromDB.mock.mockImplementation(() => ({
-      timestamp: Date.now() - 10000,
-      price: 100,
-    }))
+    handle.getUsersInDb.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          username: 'testUser',
+          timestamp: 1,
+        },
+      ]),
+    )
+    handle.getWalletsInDb.mock.mockImplementation(() =>
+      Promise.resolve([{ id: 1, userId: 1, address: 'wallet1' }]),
+    )
+    handle.getJettonsFromDB.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          token: 'jetton1',
+          walletId: 1,
+          ticker: 'JET',
+        },
+      ]),
+    )
+    handle.getJettonsFromChain.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          address: 'jetton1',
+          symbol: 'JET',
+          decimals: 9,
+        },
+      ]),
+    )
+    handle.getPrice.mock.mockImplementation(() => Promise.resolve(200))
+    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() - 20000,
+        price: 100,
+      }),
+    )
+    handle.getLastAddressNotificationFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() - 10000,
+        price: 100,
+      }),
+    )
 
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getJettonsFromChain.mock.mockImplementation(() => [])
+    handle.getJettonsFromChain.mock.mockImplementation(() => Promise.resolve([]))
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getJettonsFromDB.mock.mockImplementation(() => [])
-    handle.getJettonsFromChain.mock.mockImplementation(() => [
-      {
-        address: 'jetton1',
-        symbol: 'JET',
-        decimals: 9,
-      },
-    ])
+    handle.getJettonsFromDB.mock.mockImplementation(() => Promise.resolve([]))
+    handle.getJettonsFromChain.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          address: 'jetton1',
+          symbol: 'JET',
+          decimals: 9,
+        },
+      ]),
+    )
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getPrice.mock.mockImplementation(() => 600)
-    handle.getJettonsFromDB.mock.mockImplementation(() => [])
-    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => undefined)
-    handle.getJettonsFromChain.mock.mockImplementation(() => [])
+    handle.getPrice.mock.mockImplementation(() => Promise.resolve(600))
+    handle.getJettonsFromDB.mock.mockImplementation(() => Promise.resolve([]))
+    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve(undefined),
+    )
+    handle.getJettonsFromChain.mock.mockImplementation(() => Promise.resolve([]))
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
@@ -277,67 +308,87 @@ describe('getNotifications', () => {
   })
 
   it('buy, price increase by 2, sell, buy, price increase by 2 again', async () => {
-    handle.getUsersInDb.mock.mockImplementation(() => [
-      {
-        id: 1,
-        username: 'testUser',
-        timestamp: 1,
-      },
-    ])
-    handle.getWalletsInDb.mock.mockImplementation(() => [{ address: 'wallet1' }])
-    handle.getJettonsFromDB.mock.mockImplementation(() => [
-      {
-        id: 1,
-        token: 'jetton1',
-        walletId: 1,
-        ticker: 'JET',
-      },
-    ])
-    handle.getJettonsFromChain.mock.mockImplementation(() => [
-      {
-        address: 'jetton1',
-        symbol: 'JET',
-        decimals: 9,
-      },
-    ])
-    handle.getPrice.mock.mockImplementation(() => 200)
-    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
-      timestamp: Date.now() - 20000,
-      price: 100,
-    }))
-    handle.getLastAddressNotificationFromDB.mock.mockImplementation(() => ({
-      timestamp: Date.now() - 10000,
-      price: 100,
-    }))
+    handle.getUsersInDb.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          username: 'testUser',
+          timestamp: 1,
+        },
+      ]),
+    )
+    handle.getWalletsInDb.mock.mockImplementation(() =>
+      Promise.resolve([{ id: 1, userId: 1, address: 'wallet1' }]),
+    )
+    handle.getJettonsFromDB.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          token: 'jetton1',
+          walletId: 1,
+          ticker: 'JET',
+        },
+      ]),
+    )
+    handle.getJettonsFromChain.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          address: 'jetton1',
+          symbol: 'JET',
+          decimals: 9,
+        },
+      ]),
+    )
+    handle.getPrice.mock.mockImplementation(() => Promise.resolve(200))
+    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() - 20000,
+        price: 100,
+      }),
+    )
+    handle.getLastAddressNotificationFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() - 10000,
+        price: 100,
+      }),
+    )
 
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getJettonsFromChain.mock.mockImplementation(() => [])
+    handle.getJettonsFromChain.mock.mockImplementation(() => Promise.resolve([]))
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getJettonsFromDB.mock.mockImplementation(() => [])
-    handle.getJettonsFromChain.mock.mockImplementation(() => [
-      {
-        address: 'jetton1',
-        symbol: 'JET',
-        decimals: 9,
-      },
-    ])
+    handle.getJettonsFromDB.mock.mockImplementation(() => Promise.resolve([]))
+    handle.getJettonsFromChain.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          address: 'jetton1',
+          symbol: 'JET',
+          decimals: 9,
+        },
+      ]),
+    )
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getPrice.mock.mockImplementation(() => 600)
-    handle.getJettonsFromDB.mock.mockImplementation(() => [
-      {
-        id: 1,
-        token: 'jetton1',
-        walletId: 1,
-        ticker: 'JET',
-      },
-    ])
-    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => undefined)
+    handle.getPrice.mock.mockImplementation(() => Promise.resolve(600))
+    handle.getJettonsFromDB.mock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          id: 1,
+          token: 'jetton1',
+          walletId: 1,
+          ticker: 'JET',
+        },
+      ]),
+    )
+    handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve(undefined),
+    )
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }

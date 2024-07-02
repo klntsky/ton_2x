@@ -12,6 +12,7 @@ type EnvKeys =
   | 'POSTGRES_USER'
   | 'POSTGRES_PASSWORD'
   | 'POSTGRES_DB'
+  | 'AMQP_ENDPOINT'
 
 declare global {
   namespace NodeJS {

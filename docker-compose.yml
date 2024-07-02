@@ -7,3 +7,13 @@ services:
       - 5432:5432
     volumes:
       - ./data/postgres:/var/lib/postgresql/data/
+
+  rabbitmq:
+    image: rabbitmq:3
+    hostname: rabbitmq
+    container_name: ton2x-rabbitmq
+    restart: unless-stopped
+    ports:
+      - 5672:5673
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia

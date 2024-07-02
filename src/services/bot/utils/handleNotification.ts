@@ -1,11 +1,6 @@
 import type { Telegraf } from 'telegraf'
-import { getJettonsByAddress, getNotifications } from '.'
-import { tokens, users, wallets } from '../db/schema'
-import { getDbConnection } from './getDbConnection'
-import type { TTelegrafContext } from '../types'
 import { and, eq } from 'drizzle-orm'
 import TonWeb from 'tonweb'
-import { i18n } from '../i18n'
 import {
   insertUserNotification,
   insertUserPurchase,
@@ -13,9 +8,13 @@ import {
   selectLastUserPurchaseByWalletAndJetton,
   selectUserSettings,
   upsertToken,
-} from '../db/queries'
+} from '../../../db/queries'
 import { ENotificationType, tonApiClient } from '../constants'
-import type { TNotificationHandle } from './types'
+import type { TNotificationHandle, TTelegrafContext } from '../types'
+import { getDbConnection, getJettonsByAddress } from '../../../utils'
+import { tokens, users, wallets } from '../../../db/schema'
+import { i18n } from '../i18n'
+import { getNotifications } from '.'
 
 export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
   const db = await getDbConnection()

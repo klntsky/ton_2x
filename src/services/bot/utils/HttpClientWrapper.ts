@@ -1,6 +1,6 @@
 import type { FullRequestParams } from 'tonapi-sdk-js'
 import { HttpClient } from 'tonapi-sdk-js'
-import { delay } from '.'
+import { delay } from '../../../utils'
 
 export class HttpClientWrapper<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   private readonly debouncerDelay = 1000
