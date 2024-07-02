@@ -12,7 +12,7 @@
     "lint": "eslint ./src ./tests --fix",
     "migrations": "npx drizzle-kit",
     "drizzle:check-api-changes": "npm run migrations up",
-    "migrations:run": "npx tsx ./src/scripts/applyMigrations.ts",
+    "migrations:run": "npx tsx ./src/db/scripts/migrate.ts",
     "migrations:generate": "npm run drizzle:check-api-changes && npm run migrations check && npm run migrations generate",
     "migrations:down": "npm run migrations drop",
     "test": "tsx --test --test-reporter spec '**/tests/**/*.ts'"
@@ -37,8 +37,10 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.2",
     "express": "^4.19.2",
+    "postgres": "^3.4.4",
     "telegraf": "^4.16.3",
     "tonapi-sdk-js": "^1.0.11",
+    "tonweb": "^0.0.66",
     "winston": "^3.13.0"
   },
   "devDependencies": {

@@ -1,3 +1,5 @@
+import process from 'process';
+import 'dotenv/config'
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
@@ -5,6 +7,10 @@ export default defineConfig({
   out: './src/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: 'file://data/postgresql',
+    host: process.env.POSTGRES_HOST,
+    port: Number(process.env.POSTGRES_PORT),
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DATABASE!,
   },
 });

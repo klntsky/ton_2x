@@ -8,7 +8,7 @@ export type TNotificationHandle = {
   getUsersInDb: () => Promise<(typeof users.$inferSelect)[]>
   getPrice: (jetton: string) => Promise<number | undefined>
   getWalletsInDb: (userId: number) => Promise<(typeof wallets.$inferSelect)[]>
-  getJettonsFromDB: (wallet: string) => Promise<(typeof tokens.$inferSelect)[]>
+  getJettonsFromDB: (walletId: number) => Promise<(typeof tokens.$inferSelect)[]>
   getJettonsFromChain: (wallet: string) => Promise<
   {
     address: string
@@ -17,12 +17,9 @@ export type TNotificationHandle = {
   }[]
   >
   getLastAddressJettonPurchaseFromDB: (
-    address: string,
-    jetton: string,
+    jettonId: number,
   ) => Promise<typeof userPurchases.$inferSelect | undefined>
   getLastAddressNotificationFromDB: (
-    user: string,
-    jetton: string,
+    jettonId: number,
   ) => Promise<typeof userNotifications.$inferSelect | undefined>
-  deleteUserJetton: (user: string, jetton: string) => Promise<void>
 }

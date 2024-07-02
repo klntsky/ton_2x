@@ -29,7 +29,6 @@ describe('getNotifications', () => {
         mock.fn<TNotificationHandle['getLastAddressJettonPurchaseFromDB']>(),
       getLastAddressNotificationFromDB:
         mock.fn<TNotificationHandle['getLastAddressNotificationFromDB']>(),
-      deleteUserJetton: mock.fn<TNotificationHandle['deleteUserJetton']>(),
     }
     notifications.length = 0
   })
@@ -44,6 +43,7 @@ describe('getNotifications', () => {
     ])
     handle.getWalletsInDb.mock.mockImplementation(() => [
       {
+        id: 1,
         address: 'wallet1',
         userId: 1,
       },
@@ -53,19 +53,14 @@ describe('getNotifications', () => {
       {
         address: 'jetton1',
         symbol: 'JET',
+        decimals: 9,
       },
     ])
-    handle.getPrice.mock.mockImplementation(() => ({
-      price: 100,
-      timestamp: Date.now(),
-      wallet: 'wallet1',
-      jetton: 'jetton1',
-    }))
+    handle.getPrice.mock.mockImplementation(() => 100)
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
       timestamp: Date.now() - 10000,
       price: 100,
-      wallet: 'wallet1',
-      jetton: 'jetton1',
+      jettonId: 1,
     }))
     handle.getLastAddressNotificationFromDB.mock.mockImplementation(() => undefined)
 
@@ -76,11 +71,12 @@ describe('getNotifications', () => {
     assert.strictEqual(notifications.length, 1)
     assert.deepStrictEqual(notifications[0], {
       userId: 1,
-      wallet: 'wallet1',
+      walletId: 1,
       jetton: 'jetton1',
       symbol: 'JET',
       price: 100,
       action: ENotificationType.NEW_JETTON,
+      decimals: 9,
       // @ts-expect-error timestamp not everywhere
       timestamp: notifications[0].timestamp,
     })
@@ -104,7 +100,7 @@ describe('getNotifications', () => {
       {
         token: 'jetton1',
         ticker: 'JET',
-        wallet: 'wallet1',
+        walletId: 1,
       },
     ])
     handle.getJettonsFromChain.mock.mockImplementation(() => [
@@ -122,8 +118,7 @@ describe('getNotifications', () => {
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
       timestamp: Date.now() - 10000,
       price: 100,
-      wallet: 'wallet1',
-      jetton: 'jetton1',
+      jettonId: 1,
     }))
     handle.getLastAddressNotificationFromDB.mock.mockImplementation(() => undefined)
 
@@ -142,12 +137,14 @@ describe('getNotifications', () => {
         timestamp: 1,
       },
     ])
-    handle.getWalletsInDb.mock.mockImplementation(() => [{ address: 'wallet1' }])
-    handle.getJettonsFromDB.mock.mockImplementation(() => [{ token: 'jetton1', ticker: 'JET' }])
-    handle.getJettonsFromChain.mock.mockImplementation(() => [
-      { address: 'jetton1', symbol: 'JET' },
+    handle.getWalletsInDb.mock.mockImplementation(() => [{ id: 1, address: 'wallet1' }])
+    handle.getJettonsFromDB.mock.mockImplementation(() => [
+      { id: 1, token: 'jetton1', ticker: 'JET', walletId: 1 },
     ])
-    handle.getPrice.mock.mockImplementation(() => ({ price: 200, timestamp: Date.now() }))
+    handle.getJettonsFromChain.mock.mockImplementation(() => [
+      { address: 'jetton1', symbol: 'JET', decimals: 9 },
+    ])
+    handle.getPrice.mock.mockImplementation(() => 200)
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
       timestamp: Date.now() - 10000,
       price: 100,
@@ -161,8 +158,8 @@ describe('getNotifications', () => {
     assert.strictEqual(notifications.length, 1)
     assert.deepStrictEqual(notifications[0], {
       userId: 1,
-      wallet: 'wallet1',
-      jetton: 'jetton1',
+      walletId: 1,
+      jettonId: 1,
       symbol: 'JET',
       price: 200,
       action: ENotificationType.UP,
@@ -179,10 +176,12 @@ describe('getNotifications', () => {
         timestamp: 1,
       },
     ])
-    handle.getWalletsInDb.mock.mockImplementation(() => [{ address: 'wallet1' }])
-    handle.getJettonsFromDB.mock.mockImplementation(() => [{ token: 'jetton1', ticker: 'JET' }])
+    handle.getWalletsInDb.mock.mockImplementation(() => [{ id: 1, address: 'wallet1' }])
+    handle.getJettonsFromDB.mock.mockImplementation(() => [
+      { id: 1, token: 'jetton1', ticker: 'JET', walletId: 1 },
+    ])
     handle.getJettonsFromChain.mock.mockImplementation(() => [])
-    handle.getPrice.mock.mockImplementation(() => ({ price: 150, timestamp: Date.now() }))
+    handle.getPrice.mock.mockImplementation(() => 150)
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
       timestamp: Date.now() - 20000,
       price: 100,
@@ -199,8 +198,8 @@ describe('getNotifications', () => {
     assert.strictEqual(notifications.length, 1)
     assert.deepStrictEqual(notifications[0], {
       userId: 1,
-      wallet: 'wallet1',
-      jetton: 'jetton1',
+      walletId: 1,
+      jettonId: 1,
       symbol: 'JET',
       action: ENotificationType.NOT_HOLD_JETTON_ANYMORE,
     })
@@ -217,8 +216,9 @@ describe('getNotifications', () => {
     handle.getWalletsInDb.mock.mockImplementation(() => [{ address: 'wallet1' }])
     handle.getJettonsFromDB.mock.mockImplementation(() => [
       {
+        id: 1,
         token: 'jetton1',
-        wallet: 'wallet1',
+        walletId: 1,
         ticker: 'JET',
       },
     ])
@@ -226,9 +226,10 @@ describe('getNotifications', () => {
       {
         address: 'jetton1',
         symbol: 'JET',
+        decimals: 9,
       },
     ])
-    handle.getPrice.mock.mockImplementation(() => ({ price: 200, timestamp: Date.now() }))
+    handle.getPrice.mock.mockImplementation(() => 200)
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
       timestamp: Date.now() - 20000,
       price: 100,
@@ -250,12 +251,13 @@ describe('getNotifications', () => {
       {
         address: 'jetton1',
         symbol: 'JET',
+        decimals: 9,
       },
     ])
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getPrice.mock.mockImplementation(() => ({ price: 600, timestamp: Date.now() }))
+    handle.getPrice.mock.mockImplementation(() => 600)
     handle.getJettonsFromDB.mock.mockImplementation(() => [])
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => undefined)
     handle.getJettonsFromChain.mock.mockImplementation(() => [])
@@ -285,8 +287,9 @@ describe('getNotifications', () => {
     handle.getWalletsInDb.mock.mockImplementation(() => [{ address: 'wallet1' }])
     handle.getJettonsFromDB.mock.mockImplementation(() => [
       {
+        id: 1,
         token: 'jetton1',
-        wallet: 'wallet1',
+        walletId: 1,
         ticker: 'JET',
       },
     ])
@@ -294,9 +297,10 @@ describe('getNotifications', () => {
       {
         address: 'jetton1',
         symbol: 'JET',
+        decimals: 9,
       },
     ])
-    handle.getPrice.mock.mockImplementation(() => ({ price: 200, timestamp: Date.now() }))
+    handle.getPrice.mock.mockImplementation(() => 200)
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() => ({
       timestamp: Date.now() - 20000,
       price: 100,
@@ -318,16 +322,18 @@ describe('getNotifications', () => {
       {
         address: 'jetton1',
         symbol: 'JET',
+        decimals: 9,
       },
     ])
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
-    handle.getPrice.mock.mockImplementation(() => ({ price: 600, timestamp: Date.now() }))
+    handle.getPrice.mock.mockImplementation(() => 600)
     handle.getJettonsFromDB.mock.mockImplementation(() => [
       {
+        id: 1,
         token: 'jetton1',
-        wallet: 'wallet1',
+        walletId: 1,
         ticker: 'JET',
       },
     ])

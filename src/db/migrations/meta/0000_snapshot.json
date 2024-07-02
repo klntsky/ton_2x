@@ -1,5 +1,5 @@
 {
-  "id": "59d62833-8be5-4a6c-a877-906f813e04d5",
+  "id": "0d622e1c-9984-4e0a-a2aa-0bfc44325dd1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8,15 +8,21 @@
       "name": "tokens",
       "schema": "",
       "columns": {
-        "token": {
-          "name": "token",
-          "type": "varchar(128)",
+        "id": {
+          "name": "id",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
-        "wallet": {
-          "name": "wallet",
+        "token": {
+          "name": "token",
           "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wallet_id": {
+          "name": "wallet_id",
+          "type": "serial",
           "primaryKey": false,
           "notNull": true
         },
@@ -29,22 +35,22 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "tokens_wallet_wallets_address_fk": {
-          "name": "tokens_wallet_wallets_address_fk",
+        "tokens_wallet_id_wallets_id_fk": {
+          "name": "tokens_wallet_id_wallets_id_fk",
           "tableFrom": "tokens",
           "tableTo": "wallets",
-          "columnsFrom": ["wallet"],
-          "columnsTo": ["address"],
+          "columnsFrom": ["wallet_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "wallet-token": {
-          "name": "wallet-token",
+        "wallet_id-token_id": {
+          "name": "wallet_id-token_id",
           "nullsNotDistinct": false,
-          "columns": ["wallet", "token"]
+          "columns": ["wallet_id", "token"]
         }
       }
     },
@@ -52,15 +58,9 @@
       "name": "user_notifications",
       "schema": "",
       "columns": {
-        "address": {
-          "name": "address",
-          "type": "varchar(128)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "jetton": {
-          "name": "jetton",
-          "type": "varchar(128)",
+        "jetton_id": {
+          "name": "jetton_id",
+          "type": "serial",
           "primaryKey": false,
           "notNull": true
         },
@@ -72,29 +72,20 @@
         },
         "price": {
           "name": "price",
-          "type": "integer",
+          "type": "varchar(64)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "user_notifications_address_wallets_address_fk": {
-          "name": "user_notifications_address_wallets_address_fk",
-          "tableFrom": "user_notifications",
-          "tableTo": "wallets",
-          "columnsFrom": ["address"],
-          "columnsTo": ["address"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_notifications_jetton_tokens_token_fk": {
-          "name": "user_notifications_jetton_tokens_token_fk",
+        "user_notifications_jetton_id_tokens_id_fk": {
+          "name": "user_notifications_jetton_id_tokens_id_fk",
           "tableFrom": "user_notifications",
           "tableTo": "tokens",
-          "columnsFrom": ["jetton"],
-          "columnsTo": ["token"],
-          "onDelete": "no action",
+          "columnsFrom": ["jetton_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -105,15 +96,9 @@
       "name": "user_purchases",
       "schema": "",
       "columns": {
-        "address": {
-          "name": "address",
-          "type": "varchar(128)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "jetton": {
-          "name": "jetton",
-          "type": "varchar(128)",
+        "jetton_id": {
+          "name": "jetton_id",
+          "type": "serial",
           "primaryKey": false,
           "notNull": true
         },
@@ -125,29 +110,20 @@
         },
         "price": {
           "name": "price",
-          "type": "integer",
+          "type": "varchar(64)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "user_purchases_address_wallets_address_fk": {
-          "name": "user_purchases_address_wallets_address_fk",
-          "tableFrom": "user_purchases",
-          "tableTo": "wallets",
-          "columnsFrom": ["address"],
-          "columnsTo": ["address"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_purchases_jetton_tokens_token_fk": {
-          "name": "user_purchases_jetton_tokens_token_fk",
+        "user_purchases_jetton_id_tokens_id_fk": {
+          "name": "user_purchases_jetton_id_tokens_id_fk",
           "tableFrom": "user_purchases",
           "tableTo": "tokens",
-          "columnsFrom": ["jetton"],
-          "columnsTo": ["token"],
-          "onDelete": "no action",
+          "columnsFrom": ["jetton_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -160,8 +136,8 @@
       "columns": {
         "user_id": {
           "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
+          "type": "bigint",
+          "primaryKey": true,
           "notNull": true
         },
         "language_code": {
@@ -192,7 +168,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true
         },
@@ -218,15 +194,21 @@
       "name": "wallets",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "address": {
           "name": "address",
           "type": "varchar(128)",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         }

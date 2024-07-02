@@ -2,8 +2,8 @@ import type { ENotificationType } from '../../constants'
 
 type TBaseNotification = {
   userId: number
-  wallet: string
-  jetton: string
+  walletId: number
+  jettonId: number
   symbol: string
 }
 
@@ -12,7 +12,8 @@ export type TJettonRateNotification = TBaseNotification & {
   timestamp: number
   action: ENotificationType.UP | ENotificationType.DOWN
 }
-export type TNewJettonNotification = TBaseNotification & {
+export type TNewJettonNotification = Omit<TBaseNotification, 'jettonId'> & {
+  jetton: string
   price: number
   timestamp: number
   decimals: number

@@ -33,14 +33,15 @@ unknown,
 }
 > = async (req, res) => {
   const { id, address } = req.query
+  const userId = Number(id)
   console.log({ id, address })
   const db = await getDbConnection()
   await insertUserAdress(db, {
-    userId: Number(id),
+    userId,
     address,
   })
   await db.close()
-  const result = await api(address)
+  const result = await api(userId, address)
   return res.send(result)
 }
 

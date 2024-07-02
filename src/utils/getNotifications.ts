@@ -24,30 +24,21 @@ export async function* getNotifications(
           obj[jetton.address] = jetton
           return obj
         }, {})
-      const addressJettonsFromDb = await getJettonsFromDB(wallet.address)
+      const addressJettonsFromDb = await getJettonsFromDB(wallet.id)
       for (const jetton of addressJettonsFromDb) {
         if (!addressJettonsFromChainObj[jetton.token]) {
           yield {
             userId: user.id,
-            wallet: wallet.address,
-            jetton: jetton.token,
+            walletId: wallet.id,
+            jettonId: jetton.id,
             symbol: jetton.ticker,
             action: ENotificationType.NOT_HOLD_JETTON_ANYMORE,
           }
           continue
         }
-        delete addressJettonsFromChainObj[jetton.token]
-        const timestamp = Math.floor(Date.now() / 1000)
-        const price = await getPrice(jetton.token)
-        if (!price) {
-          continue
-        }
-        const lastPurchase = await getLastAddressJettonPurchaseFromDB(wallet.address, jetton.token)
-        const lastNotification = await getLastAddressNotificationFromDB(
-          wallet.address,
-          jetton.token,
-        )
-        console.log({ lastNotification, lastPurchase })
+        const lastPurchase = await getLastAddressJettonPurchaseFromDB(jetton.id)
+        const lastNotification = await getLastAddressNotificationFromDB(jetton.id)
+        console.log({ lastPurchase, lastNotification })
         const newestTransactionInDb =
           lastPurchase && lastNotification
             ? lastPurchase.timestamp > lastNotification.timestamp
@@ -57,12 +48,14 @@ export async function* getNotifications(
         if (!newestTransactionInDb) {
           continue
         }
+        delete addressJettonsFromChainObj[jetton.token]
+        const timestamp = Math.floor(Date.now() / 1000)
+        const price = await getPrice(jetton.token)
+        if (!price) {
+          continue
+        }
         const rate = price / Number(newestTransactionInDb.price)
-        console.log(123, {
-          rate,
-          price,
-          newestTransactionInDb: newestTransactionInDb.price,
-        })
+        console.log({ rate, price })
         const rateDirection =
           rate >= rates.top
             ? ENotificationType.UP
@@ -74,8 +67,8 @@ export async function* getNotifications(
         }
         yield {
           userId: user.id,
-          wallet: wallet.address,
-          jetton: jetton.token,
+          walletId: wallet.id,
+          jettonId: jetton.id,
           symbol: jetton.ticker,
           price: price,
           action: rateDirection,
@@ -90,7 +83,7 @@ export async function* getNotifications(
         }
         yield {
           userId: user.id,
-          wallet: wallet.address,
+          walletId: wallet.id,
           jetton: address,
           symbol: symbol,
           price: price,

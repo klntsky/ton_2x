@@ -12,7 +12,7 @@ What I do:
 
 If you have any questions, feel free to ask in the [chat](https://t.me/+mwwKEfMAbtQ3ZjNi)
 
-Connect your wallet to get started 👇
+Send an address you want to watch or connect your own 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
       `You no longer hold $${ticker}, notifications for this jetton have been stopped.`,

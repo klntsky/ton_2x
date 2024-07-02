@@ -1,0 +1,1 @@
+export { typeGuardByFields } from './typeGuardByFields'

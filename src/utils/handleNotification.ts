@@ -1,12 +1,12 @@
 import type { Telegraf } from 'telegraf'
 import { getJettonsByAddress, getNotifications } from '.'
-import { tokens, userPurchases, users, wallets } from '../db/schema'
+import { tokens, users, wallets } from '../db/schema'
 import { getDbConnection } from './getDbConnection'
 import type { TTelegrafContext } from '../types'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
+import TonWeb from 'tonweb'
 import { i18n } from '../i18n'
 import {
-  deleteJettonByWallet,
   insertUserNotification,
   insertUserPurchase,
   selectLastUserNotificationByWalletAndJetton,
@@ -34,32 +34,44 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
     },
     getUsersInDb: () => db.select().from(users),
     getWalletsInDb: userId => db.select().from(wallets).where(eq(wallets.userId, userId)),
-    getJettonsFromDB: wallet => db.select().from(tokens).where(eq(tokens.wallet, wallet)),
+    getJettonsFromDB: walletId => db.select().from(tokens).where(eq(tokens.walletId, walletId)),
     getJettonsFromChain: getJettonsByAddress,
-    getLastAddressJettonPurchaseFromDB: (address: string, jetton: string) =>
-      selectLastUserPurchaseByWalletAndJetton(db, address, jetton),
-    getLastAddressNotificationFromDB: (address: string, jetton: string) =>
-      selectLastUserNotificationByWalletAndJetton(db, address, jetton),
-    deleteUserJetton: (user: string, jetton: string) => deleteJettonByWallet(db, jetton, user),
+    getLastAddressJettonPurchaseFromDB: (jettonId: number) =>
+      selectLastUserPurchaseByWalletAndJetton(db, jettonId),
+    getLastAddressNotificationFromDB: (jettonId: number) =>
+      selectLastUserNotificationByWalletAndJetton(db, jettonId),
   }
   for await (const notification of getNotifications(handle)) {
+    if (['LP'].includes(notification.symbol)) {
+      continue
+    }
     console.log({ notification })
     const userSettings = await selectUserSettings(db, notification.userId)
     if (notification.action === ENotificationType.NEW_JETTON) {
       await upsertToken(db, {
         token: notification.jetton,
-        wallet: notification.wallet,
+        walletId: notification.walletId,
         ticker: notification.symbol,
-        decimals: notification.decimals,
       })
-      console.log('new_tokken', notification.price.toString())
-      await insertUserPurchase(db, {
-        wallet: notification.wallet,
+      const [jetton] = await db
+        .select()
+        .from(tokens)
+        .where(
+          and(eq(tokens.token, notification.jetton), eq(tokens.walletId, notification.walletId)),
+        )
+      const purchase = await insertUserPurchase(db, {
         timestamp: notification.timestamp,
-        jetton: notification.jetton,
-        price: notification.price.toString(),
+        jettonId: jetton.id,
+        price: `${notification.price}`,
       })
-      console.log(await db.select().from(tokens))
+      console.log(
+        { insertedJetton: jetton, purchase },
+        {
+          timestamp: notification.timestamp,
+          jettonId: jetton.id,
+          price: `${notification.price}`,
+        },
+      )
       await bot.telegram.sendMessage(
         notification.userId,
         i18n(userSettings?.languageCode).message.detectedNewJetton(notification.symbol),
@@ -67,30 +79,33 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
       continue
     }
     if (notification.action === ENotificationType.NOT_HOLD_JETTON_ANYMORE) {
-      await db.delete(tokens).where(eq(tokens.token, notification.jetton))
+      await db.delete(tokens).where(eq(tokens.id, notification.jettonId))
       await bot.telegram.sendMessage(
         notification.userId,
         i18n(userSettings?.languageCode).message.youNoLongerHaveJetton(notification.symbol),
       )
       continue
     }
+
+    const [wallet] = await db.select().from(wallets).where(eq(wallets.id, notification.walletId))
+    const address = new TonWeb.utils.Address(wallet.address)
+    const walletUserFriendly = address.toString(true, true, true)
     const text =
       notification.action === ENotificationType.UP
         ? i18n(userSettings?.languageCode).message.notification.x2(
           notification.symbol,
-          notification.wallet,
+          walletUserFriendly,
         )
         : i18n(userSettings?.languageCode).message.notification.x05(
           notification.symbol,
-          notification.wallet,
+          walletUserFriendly,
         )
     await bot.telegram.sendMessage(notification.userId, text, { parse_mode: 'Markdown' })
     console.log('rates', notification.price.toString())
     await insertUserNotification(db, {
       timestamp: notification.timestamp,
-      price: notification.price.toString(),
-      wallet: notification.wallet,
-      jetton: notification.jetton,
+      price: `${notification.price}`,
+      jettonId: notification.jettonId,
     })
   }
   await db.close()

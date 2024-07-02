@@ -7,6 +7,11 @@ type EnvKeys =
   | 'EXPRESS_PORT'
   | 'NOTIFICATION_RATE_UP'
   | 'NOTIFICATION_RATE_DOWN'
+  | 'POSTGRES_HOST'
+  | 'POSTGRES_PORT'
+  | 'POSTGRES_USER'
+  | 'POSTGRES_PASSWORD'
+  | 'POSTGRES_DB'
 
 declare global {
   namespace NodeJS {

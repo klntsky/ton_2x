@@ -1,19 +1,24 @@
 import process from 'process'
 import 'dotenv/config'
-import { Telegraf } from 'telegraf'
+import { Markup, Telegraf } from 'telegraf'
+import { message } from 'telegraf/filters'
+import TonWeb from 'tonweb'
 import {
   getDbConnection,
   getLogger,
-  getTelegramUser,
   handleNotification,
   logError,
   logUserAction,
   loopRetrying,
+  saveUser,
 } from '.'
 import type { TTelegrafContext } from '../types'
 import type { Logger } from 'winston'
 import { i18n } from '../i18n'
-import { upsertUser, upsertUserSettings } from '../db/queries'
+import { insertUserAdress } from '../db/queries'
+import { ECallback } from '../constants'
+import { typeGuardByFields } from '../typeguards'
+import type { CallbackQuery } from 'telegraf/typings/core/types/typegram'
 
 export const initBot = async (
   token: string,
@@ -29,32 +34,14 @@ export const initBot = async (
   })
 
   bot.start(async ctx => {
-    const { user } = getTelegramUser(ctx.from)
     const db = await getDbConnection()
-    await upsertUser(db, {
-      id: ctx.from.id,
-      timestamp: Math.floor(Date.now() / 1000),
-      username: user,
-    })
-    if (ctx.from.language_code) {
-      await upsertUserSettings(db, {
-        userId: ctx.from.id,
-        languageCode: ctx.from.language_code,
-      })
-    }
+    await saveUser(db, ctx)
     await db.close()
     const startMessage = await ctx.reply(ctx.i18n.message.start(), {
       parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: [
-          [
-            {
-              text: ctx.i18n.button.linkWallet(),
-              web_app: {
-                url: process.env.TELEGRAM_BOT_WEB_APP,
-              },
-            },
-          ],
+          [Markup.button.webApp(ctx.i18n.button.linkWallet(), process.env.TELEGRAM_BOT_WEB_APP)],
         ],
       },
     })
@@ -68,6 +55,34 @@ export const initBot = async (
     })
     await logUserAction(ctx, {
       start: ctx.payload || 1,
+    })
+  })
+
+  bot.on('callback_query', async ctx => {
+    if (!typeGuardByFields<CallbackQuery.DataQuery>(ctx.update.callback_query, ['data'])) return
+    if (ctx.update.callback_query.data === ECallback.SCENE_ADD_WALLET) {
+      await ctx.reply('Send to me your wallet address')
+      return
+    }
+  })
+
+  bot.on(message('text'), async ctx => {
+    const text = ctx.update.message.text
+    if (![48, 64, 66].includes(text.length)) {
+      throw new Error(`Not valid TON address: «${text}»`)
+    }
+    const address = new TonWeb.utils.Address(text)
+    const rawAddress = address.toString(false)
+    const db = await getDbConnection()
+    await insertUserAdress(db, {
+      userId: ctx.from.id,
+      address: rawAddress,
+    })
+    await db.close()
+    await ctx.reply('Wallet was linked successfully!', {
+      reply_parameters: {
+        message_id: ctx.update.message.message_id,
+      },
     })
   })
 
