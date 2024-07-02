@@ -1,4 +1,4 @@
-import { tonApiClient } from '../../constants'
+import { tonApiClient } from "../../services/bot/constants"
 
 export const getPriceAtTimestamp = async (jetton: string, timestamp: number) => {
   // TODO: culprit of the wrong .pnlPercentage (1000 -> 604800, as in src/utils/parseTxData/getChart.ts)

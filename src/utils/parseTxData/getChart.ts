@@ -1,4 +1,4 @@
-import { tonApiClient } from '../../constants'
+import { tonApiClient } from "../../services/bot/constants"
 
 export const getChart = async (jetton: string, timestamp: number) => {
   const chart: {

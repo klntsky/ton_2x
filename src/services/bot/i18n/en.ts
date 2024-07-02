@@ -37,6 +37,7 @@ I will notify you when any of them makes 2x or loses a half in price.
 `
     : 'No tokens found. Buy some?'
 }`,
+    walletConnectedAlready: () => `This wallet is already linked to your account`,
     error: () => `❌ Something went wrong. Please try again later.`,
   },
   button: {
