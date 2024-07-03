@@ -3,7 +3,7 @@ import { successfulWalletLinkNotificationCh } from '../../../constants/amqpChann
 import type { TSuccessfulWalletLinkNotificationCh } from '../../../types'
 import type { Telegraf } from 'telegraf'
 import type { TTelegrafContext } from '../types'
-import { selectUserSettings } from '../../../db/queries'
+import { countUserWallets, insertUserAdress, selectUserSettings } from '../../../db/queries'
 import { getDbConnection, getJettonsByAddress } from '../../../utils'
 import { i18n } from '../i18n'
 
@@ -22,14 +22,23 @@ export const handleSuccessfulWalletLinkNotification = async (bot: Telegraf<TTele
     const payload: TSuccessfulWalletLinkNotificationCh = JSON.parse(msg.content.toString())
     const db = await getDbConnection()
     const userSettings = await selectUserSettings(db, payload.userId)
+    const [userWallets] = await countUserWallets(db, payload.userId)
+    if (userWallets.count >= Number(process.env.LIMIT_WALLETS_FOR_USER)) {
+      await bot.telegram.sendMessage(
+        payload.userId,
+        i18n(userSettings?.languageCode).message.reachedMaxAmountOfWallets(),
+      )
+    } else {
+      const jettons = await getJettonsByAddress(payload.address)
+      await insertUserAdress(db, payload)
+      await bot.telegram.sendMessage(
+        payload.userId,
+        i18n(userSettings?.languageCode).message.newWalletConnected(
+          payload.address,
+          jettons.map(jetton => jetton.symbol),
+        ),
+      )
+    }
     await db.close()
-    const jettons = await getJettonsByAddress(payload.address)
-    await bot.telegram.sendMessage(
-      payload.userId,
-      i18n(userSettings?.languageCode).message.newWalletConnected(
-        payload.address,
-        jettons.map(jetton => jetton.symbol),
-      ),
-    )
   })
 }

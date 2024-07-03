@@ -1,4 +1,4 @@
-import { insertUserAdress, selectUserAdress } from '../../../db/queries'
+import { selectUserAdress } from '../../../db/queries'
 import { getDbConnection } from '../../../utils'
 import type { TRequestHandler } from '../types'
 import { handleSuccessfulWalletLinkNotification } from '../utils'
@@ -12,10 +12,6 @@ export const onPostUserWallet: TRequestHandler<{
   const db = await getDbConnection()
   const [wallet] = await selectUserAdress(db, address, userId)
   if (!wallet) {
-    await insertUserAdress(db, {
-      userId,
-      address,
-    })
     await handleSuccessfulWalletLinkNotification({
       userId,
       address,

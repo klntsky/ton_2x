@@ -1,6 +1,10 @@
-import { tonApiClient } from "../../services/bot/constants"
+import { tonApiClient } from '../../services/bot/constants'
 
-export const getPriceAtTimestamp = async (jetton: string, timestamp: number, lastPrice?: boolean) => {
+export const getPriceAtTimestamp = async (
+  jetton: string,
+  timestamp: number,
+  lastPrice?: boolean,
+) => {
   const chart: {
     points: [timestamp: number, price: number][]
   } = await tonApiClient.rates.getChartRates({

@@ -19,8 +19,9 @@ import { i18n } from '../i18n'
 import type { CallbackQuery } from 'telegraf/typings/core/types/typegram'
 import { typeGuardByFields } from '../../../typeguards'
 import { ECallback } from '../../../constants'
-import { insertUserAdress, selectUserAdress } from '../../../db/queries'
+import { countUserWallets, insertUserAdress, selectUserAdress } from '../../../db/queries'
 import { handleNotification, saveUser } from '.'
+import type { Address } from 'tonweb/dist/types/utils/address'
 
 export const initBot = async (
   token: string,
@@ -70,15 +71,39 @@ export const initBot = async (
 
   bot.on(message('text'), async ctx => {
     const text = ctx.update.message.text
-    if (![48, 64, 66].includes(text.length)) {
-      await ctx.reply(`Invalid TON address`)
+    let address: Address
+    try {
+      address = new TonWeb.utils.Address(text)
+    } catch (error) {
+      await ctx.reply(`Invalid TON address`, {
+        reply_parameters: {
+          message_id: ctx.update.message.message_id,
+        },
+      })
       return
     }
-    const address = new TonWeb.utils.Address(text)
     const rawAddress = address.toString(false)
     const db = await getDbConnection()
     const [wallet] = await selectUserAdress(db, rawAddress, ctx.from.id)
-    if (!wallet) {
+    try {
+      if (wallet) {
+        await ctx.reply(ctx.i18n.message.walletConnectedAlready(), {
+          reply_parameters: {
+            message_id: ctx.update.message.message_id,
+          },
+        })
+        return
+      }
+      const [userWallets] = await countUserWallets(db, ctx.from.id)
+      // TODO: split it
+      if (userWallets.count >= Number(process.env.LIMIT_WALLETS_FOR_USER)) {
+        await ctx.reply(ctx.i18n.message.reachedMaxAmountOfWallets(), {
+          reply_parameters: {
+            message_id: ctx.update.message.message_id,
+          },
+        })
+        return
+      }
       await insertUserAdress(db, {
         userId: ctx.from.id,
         address: rawAddress,
@@ -96,10 +121,9 @@ export const initBot = async (
           },
         },
       )
-    } else {
-      await ctx.reply(ctx.i18n.message.walletConnectedAlready())
+    } finally {
+      await db.close()
     }
-    await db.close()
   })
 
   bot.catch(async (err, ctx) => {

@@ -13,6 +13,7 @@ type EnvKeys =
   | 'POSTGRES_PASSWORD'
   | 'POSTGRES_DB'
   | 'AMQP_ENDPOINT'
+  | 'LIMIT_WALLETS_FOR_USER'
 
 declare global {
   namespace NodeJS {

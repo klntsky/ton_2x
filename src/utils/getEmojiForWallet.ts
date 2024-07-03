@@ -1,4 +1,4 @@
-import { emojiList } from "../constants"
+import { emojiList } from '../constants'
 
 export const getEmojiForWallet = (address: string): string => {
   const emojiArray = Array.from(emojiList)

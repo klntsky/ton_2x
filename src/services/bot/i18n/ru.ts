@@ -1,4 +1,4 @@
-import { getEmojiForWallet } from "../../../utils"
+import { getEmojiForWallet } from '../../../utils'
 
 export const ru = {
   message: {
@@ -19,7 +19,8 @@ export const ru = {
     detectedNewJetton: (ticker: string) =>
       `🆕 Обнаружен новый жетон $${ticker}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое`,
     notification: {
-      x2: (ticker: string, wallet: string) => `📈 Жетон $${ticker} сделал x2! Адрес: ${getEmojiForWallet(wallet)} \`${wallet}\``,
+      x2: (ticker: string, wallet: string) =>
+        `📈 Жетон $${ticker} сделал x2! Адрес: ${getEmojiForWallet(wallet)} \`${wallet}\``,
       x05: (ticker: string, wallet: string) =>
         `📉 Жетон $${ticker} подешевел вдвое. Адрес: ${getEmojiForWallet(wallet)} \`${wallet}\``,
     },
@@ -37,6 +38,8 @@ ${
 `
     : 'Токенов пока нет. Хотите их купить?'
 }`,
+    reachedMaxAmountOfWallets: () =>
+      `Вы достигли лимита на количество привязанных кошельков (${process.env.LIMIT_WALLETS_FOR_USER})`,
     walletConnectedAlready: () => `Данный кошелек уже привязан к вашему аккаунту.`,
     error: () => `❌ Что-то пошло не так. Пожалуйста, повторите попытку позже.`,
   },
