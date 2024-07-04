@@ -1,12 +1,26 @@
 import { AreaChart, Badge, BadgeDelta, Card, Flex } from '@tremor/react'
-import { badgeType, chartColor, formatDataToChart } from '../utils'
-import { useFetchRates } from '../hooks/useFetchRates'
-import { Loader } from './Loader'
+import { badgeType, chartColor, formatDataToChart } from '../../utils'
+import { useFetchRates } from '../../hooks/useFetchRates'
+import { Loader } from '..'
 import { useTranslation } from 'react-i18next'
+import s from './style.module.css'
+import { useEffect } from 'react'
+import { TGetWalletDataResponse } from '../../types'
 
-export const Chart = (props: { address: string; userId: number }) => {
+export const Charts = (props: {
+  /** Just to fetch again if the address changes */
+  address?: string
+  userId: number
+  onUpdate?: (data: TGetWalletDataResponse) => void
+}) => {
   const { t } = useTranslation()
   const { data, isLoading } = useFetchRates(props)
+
+  useEffect(() => {
+    if (props.onUpdate && data) {
+      props.onUpdate(data)
+    }
+  }, [data])
 
   if (isLoading) {
     return (
@@ -16,9 +30,17 @@ export const Chart = (props: { address: string; userId: number }) => {
     )
   }
 
-  if (!data?.length) {
+  if (!data) {
     return (
-      <Flex justifyContent="center" alignItems="center" className="h-screen">
+      <Flex justifyContent="center" alignItems="center">
+        <h2 className="text-2xl text-slate-600">{t('label.error')}</h2>
+      </Flex>
+    )
+  }
+
+  if (!data.jettons.length) {
+    return (
+      <Flex justifyContent="center" alignItems="center">
         <h2 className="text-2xl text-slate-600">{t('label.noJettons')}</h2>
       </Flex>
     )
@@ -26,12 +48,12 @@ export const Chart = (props: { address: string; userId: number }) => {
 
   if (data) {
     return (
-      <div>
+      <div className={s.charts}>
         <h1 className="w-full text-3xl text-slate-700 text-center">
           {t('label.yourJettons')}
         </h1>
         {data
-          ? data.map(obj => (
+          ? data.jettons.map(obj => (
               <Card className="max-w-[550px] mt-4" key={obj.address}>
                 <Flex justifyContent="between" alignItems="center">
                   <Flex

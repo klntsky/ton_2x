@@ -1,10 +1,14 @@
 import TonWeb from 'tonweb'
 import { deleteUserWallet, deleteUserWallets, selectUserWallets } from '../../../db/queries'
-import { getDbConnection, getEmojiForWallet } from '../../../utils'
+import { getEmojiForWallet } from '../../../utils'
 import type { TTelegrafContext } from '../types'
+import type { TDbConnection } from '../../../types'
 
-export const handleCommandDisconnect = async (ctx: TTelegrafContext, target: string) => {
-  const db = await getDbConnection()
+export const handleCommandDisconnect = async (
+  db: TDbConnection,
+  ctx: TTelegrafContext,
+  target: string,
+) => {
   if (!target) {
     const userWallets = await selectUserWallets(db, ctx.from.id)
     if (userWallets.length === 0) {
@@ -26,7 +30,7 @@ export const handleCommandDisconnect = async (ctx: TTelegrafContext, target: str
     const [deletedWallet] = await deleteUserWallet(db, ctx.from.id, Number(target))
     if (!deletedWallet) {
       await ctx.reply(ctx.i18n.message.error())
-      await handleCommandDisconnect(ctx, '')
+      await handleCommandDisconnect(db, ctx, '')
     }
     const address = new TonWeb.utils.Address(deletedWallet.address)
     const userFriendlyAddress = address.toString(true, true, true)

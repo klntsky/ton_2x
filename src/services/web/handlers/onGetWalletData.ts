@@ -17,6 +17,7 @@ unknown,
   console.log({ id })
   const db = await getDbConnection()
   const userWallets = await selectUserWallets(db, userId)
+  await db.close()
   const uniqJettonsObject: Awaited<ReturnType<typeof api>> = {}
   for (const wallet of userWallets) {
     const result = await api(wallet.address)
@@ -30,5 +31,8 @@ unknown,
     })
   }
   const response = Object.values(uniqJettonsObject).sort((a, b) => b.lastBuyTime - a.lastBuyTime)
-  return res.send(response)
+  return res.send({
+    walletsTotal: userWallets.length,
+    jettons: response,
+  })
 }

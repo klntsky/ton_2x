@@ -78,7 +78,9 @@ export const initBot = async (
     const text = ctx.update.message.text
     if (/^\/disconnect(_all|_\d+)?$/.test(text)) {
       const [_, target] = text.split('_')
-      await handleCommandDisconnect(ctx, target)
+      const db = await getDbConnection()
+      await handleCommandDisconnect(db, ctx, target)
+      await db.close()
       return
     }
     await handleAddingAddress(ctx)

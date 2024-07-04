@@ -5,5 +5,9 @@ export const en = {
     withoutChanges: 'No changes',
     profit: 'Profit {{percent}}%',
     loss: 'Loss {{percent}}%',
+    error: 'Some error has occurred',
+  },
+  button: {
+    linkAnotherWallet: 'Connect another wallet',
   },
 }

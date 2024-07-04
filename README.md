@@ -1,5 +1,9 @@
 # Ton 2x Bot
 
+<p align="center">
+    <img alt="Ton 2x Bot" src="./frontend/public/logo.png" />
+</p>
+
 Twice as simple. Trading tools for everyone!
 
 ## Description
@@ -21,13 +25,13 @@ It proactively notifies users of their gains via Telegram, making it easy to man
 
 ## Links
 
-- [Bot](https://t.me/ton_2x_bot)
+- [Telegram Bot](https://t.me/ton_2x_bot)
 - [Announcements](https://t.me/ton_2x_en)
 - [Announcements in Russian](https://t.me/ton_2x_ru)
 - [DoraHack: Ton 2x Bot](https://dorahacks.io/buidl/13230)
 
 ## Tests
 
-All tests are located in the [tests](./tests) directory. Currently, there is one unit test for the main business function:
+All tests are located in the [tests](./tests) directory. Currently, there is one unit test (with 6 scenarios) for the main business function:
 
 - [tests/getNotifications.test.ts](./tests/getNotifications.test.ts)

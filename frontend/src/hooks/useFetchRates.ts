@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query'
-import { TWalletData } from '../types'
+import { TGetWalletDataResponse } from '../types'
 
-const fetchRates = async (id: number): Promise<TWalletData[]> => {
+const fetchRates = async (id: number): Promise<TGetWalletDataResponse> => {
   const response = await fetch(`/getWalletData?id=${id}`)
   if (!response.ok) {
     throw new Error('error fetching data.')
@@ -9,8 +9,8 @@ const fetchRates = async (id: number): Promise<TWalletData[]> => {
   return response.json()
 }
 
-export const useFetchRates = (props: { userId: number }) => {
-  return useQuery(['walletData', props.userId], () => {
+export const useFetchRates = (props: { address?: string; userId: number }) => {
+  return useQuery(['walletData', props.address], () => {
     return fetchRates(props.userId)
   })
 }

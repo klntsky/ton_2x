@@ -1,4 +1,4 @@
-export type TWalletData = {
+export type TJettonData = {
   address: string
   symbol: string
   image?: string
