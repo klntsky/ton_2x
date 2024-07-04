@@ -2,9 +2,10 @@
 
 <p align="center">
     <img alt="Ton 2x Bot" src="./frontend/public/logo.png" style='width: 160px;' />
+    <br></br>
+    Twice as simple. Trading tools for everyone!
 </p>
 
-Twice as simple. Trading tools for everyone!
 
 ## Description
 
