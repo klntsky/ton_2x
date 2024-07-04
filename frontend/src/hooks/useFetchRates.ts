@@ -9,8 +9,11 @@ const fetchRates = async (id: number): Promise<TGetWalletDataResponse> => {
   return response.json()
 }
 
-export const useFetchRates = (props: { address?: string; userId: number }) => {
-  return useQuery(['walletData', props.address], () => {
+export const useFetchRates = (props: {
+  walletsCount: number
+  userId: number
+}) => {
+  return useQuery(['walletData', props.walletsCount], () => {
     return fetchRates(props.userId)
   })
 }

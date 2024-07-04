@@ -4,17 +4,29 @@ import { useFetchRates } from '../../hooks/useFetchRates'
 import { Loader } from '..'
 import { useTranslation } from 'react-i18next'
 import s from './style.module.css'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { TGetWalletDataResponse } from '../../types'
 
 export const Charts = (props: {
-  /** Just to fetch again if the address changes */
-  address?: string
+  walletsCount: number
   userId: number
   onUpdate?: (data: TGetWalletDataResponse) => void
 }) => {
   const { t } = useTranslation()
-  const { data, isLoading } = useFetchRates(props)
+  const walletsCountRef = useRef(0)
+  const { data, isLoading } = useFetchRates({
+    walletsCount: 0,
+    userId: props.userId,
+  })
+
+  useEffect(() => {
+    if (
+      walletsCountRef.current !== 0 ||
+      (walletsCountRef.current === 0 && props.walletsCount !== 0)
+    ) {
+      walletsCountRef.current = props.walletsCount
+    }
+  }, [props.walletsCount])
 
   useEffect(() => {
     if (props.onUpdate && data) {

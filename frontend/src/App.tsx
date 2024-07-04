@@ -73,7 +73,7 @@ export const App = () => {
   return (
     <div className="App">
       <Charts
-        address={tonConnectUI.account?.address}
+        walletsCount={walletsCount}
         userId={launchParams.initData.user.id}
         onUpdate={onUpdateChartsData}
       />
