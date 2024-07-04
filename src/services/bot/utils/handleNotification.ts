@@ -1,5 +1,5 @@
 import type { Telegraf } from 'telegraf'
-import { and, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import TonWeb from 'tonweb'
 import {
   insertUserNotification,
@@ -9,12 +9,14 @@ import {
   selectUserSettings,
   upsertToken,
 } from '../../../db/queries'
-import { ENotificationType, tonApiClient } from '../constants'
+import { ENotificationType } from '../constants'
 import type { TNotificationHandle, TTelegrafContext } from '../types'
 import { getDbConnection, getJettonsByAddress } from '../../../utils'
 import { tokens, users, wallets } from '../../../db/schema'
 import { i18n } from '../i18n'
 import { getNotifications } from '.'
+import { getPrice } from '../../../utils/parseTxData'
+import { hiddenTickers } from '../../../constants'
 
 export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
   const db = await getDbConnection()
@@ -23,14 +25,7 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
       top: Number(process.env.NOTIFICATION_RATE_UP),
       bottom: Number(process.env.NOTIFICATION_RATE_DOWN),
     },
-    getPrice: async (jetton: string) => {
-      const { rates } = await tonApiClient.rates.getRates({
-        tokens: [jetton],
-        currencies: ['usd'],
-      })
-      const price = rates[jetton].prices?.['USD']
-      return price
-    },
+    getPrice,
     getUsersInDb: () => db.select().from(users),
     getWalletsInDb: userId => db.select().from(wallets).where(eq(wallets.userId, userId)),
     getJettonsFromDB: walletId => db.select().from(tokens).where(eq(tokens.walletId, walletId)),
@@ -41,23 +36,17 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
       selectLastUserNotificationByWalletAndJetton(db, jettonId),
   }
   for await (const notification of getNotifications(handle)) {
-    if (['LP'].includes(notification.symbol)) {
+    if (hiddenTickers.includes(notification.symbol)) {
       continue
     }
     console.log({ notification })
     const userSettings = await selectUserSettings(db, notification.userId)
     if (notification.action === ENotificationType.NEW_JETTON) {
-      await upsertToken(db, {
+      const [jetton] = await upsertToken(db, {
         token: notification.jetton,
         walletId: notification.walletId,
         ticker: notification.symbol,
       })
-      const [jetton] = await db
-        .select()
-        .from(tokens)
-        .where(
-          and(eq(tokens.token, notification.jetton), eq(tokens.walletId, notification.walletId)),
-        )
       const purchase = await insertUserPurchase(db, {
         timestamp: notification.timestamp,
         jettonId: jetton.id,

@@ -11,7 +11,7 @@ What I do:
 - I'll notify you whenever a token you hold in your TON wallet makes x2 from the purchase price
 - I'll help you see the profit for your entire wallet or selected coin
 
-If you have any questions, feel free to ask in the [chat](https://t.me/+mwwKEfMAbtQ3ZjNi)
+If you have any questions, feel free to ask in the [chat](https://t.me/+mwwKEfMAbtQ3ZjNi).
 
 Send an address you want to watch or connect your own 👇
 `,
@@ -25,16 +25,13 @@ Send an address you want to watch or connect your own 👇
       x05: (ticker: string, wallet: string) =>
         `📉 $${ticker} has dropped in price by half from the moment you purchased it. Wallet: ${getEmojiForWallet(wallet)} \`${wallet}\``,
     },
-    newWalletConnected: (address: string, tickers: string[]) => `
+    newWalletConnected: (address: string, tickers: string) => `
 ✨ New wallet connected: ${getEmojiForWallet(address)} \`${address}\`
 
 ${
   tickers.length
-    ? `Tokens held: ${tickers.reduce((line, ticker) => {
-      if (line) return `${line}, $${ticker}`
-      return `$${ticker}`
-    })}
-s
+    ? `Tokens held: ${tickers}
+
 I will notify you when any of them makes 2x or loses a half in price.
 `
     : 'No tokens found. Buy some?'
@@ -42,10 +39,27 @@ I will notify you when any of them makes 2x or loses a half in price.
     reachedMaxAmountOfWallets: () =>
       `You have reached the limit on the number of linked wallets (${process.env.LIMIT_WALLETS_FOR_USER})`,
     walletConnectedAlready: () => `This wallet is already linked to your account.`,
-    error: () => `❌ Something went wrong. Please try again later.`,
+    error: () => `❌ Something went wrong.`,
+    errorTryToRepeatLater: () => `❌ Something went wrong. Please try again later.`,
+    disconnect: {
+      message: (disconnectCOmmandList: string) => `
+Select wallets that you want to stop watching:
+
+${disconnectCOmmandList}
+
+Or disconnect all wallets using /disconnect\\_all.
+`,
+      walletDisconnectedSuccessful: (address: string) =>
+        `${getEmojiForWallet(address)} Wallet disconnected successfully.`,
+      allWalletsDisconnectedSuccessful: () => `All wallets disconnected successfully.`,
+      noWallets: () => `You do not have linked wallets.`,
+    },
   },
   button: {
     linkWallet: () => 'Connect Wallet',
     link: () => 'Connect',
+  },
+  command: {
+    disconnect: () => `Menu for unlinking wallets`,
   },
 } as const

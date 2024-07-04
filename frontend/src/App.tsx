@@ -42,10 +42,6 @@ export const App = () => {
 
     tonConnectUI.onStatusChange(wallet => {
       const launchParams = retrieveLaunchParams()
-      console.log(123, {
-        id: launchParams.initData?.user?.id,
-        address: wallet?.account.address,
-      })
       if (!wallet?.account.address) return
       mutate({
         url: '/postUserWallet',

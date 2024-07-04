@@ -2,11 +2,9 @@ import process from 'process'
 import 'dotenv/config'
 import { Markup, Telegraf } from 'telegraf'
 import { message } from 'telegraf/filters'
-import TonWeb from 'tonweb'
 import {
   InfoMessage,
   getDbConnection,
-  getJettonsByAddress,
   getLogger,
   logError,
   logInfo,
@@ -19,9 +17,13 @@ import { i18n } from '../i18n'
 import type { CallbackQuery } from 'telegraf/typings/core/types/typegram'
 import { typeGuardByFields } from '../../../typeguards'
 import { ECallback } from '../../../constants'
-import { countUserWallets, insertUserAdress, selectUserAdress } from '../../../db/queries'
-import { handleNotification, saveUser } from '.'
-import type { Address } from 'tonweb/dist/types/utils/address'
+import {
+  handleAddingAddress,
+  handleCommandDisconnect,
+  handleNotification,
+  handleSuccessfulWalletLinkNotificationQueue,
+  saveUser,
+} from '.'
 
 export const initBot = async (
   token: string,
@@ -42,6 +44,9 @@ export const initBot = async (
     await db.close()
     const startMessage = await ctx.reply(ctx.i18n.message.start(), {
       parse_mode: 'Markdown',
+      link_preview_options: {
+        is_disabled: true,
+      },
       reply_markup: {
         inline_keyboard: [
           [Markup.button.webApp(ctx.i18n.button.linkWallet(), process.env.TELEGRAM_BOT_WEB_APP)],
@@ -71,59 +76,12 @@ export const initBot = async (
 
   bot.on(message('text'), async ctx => {
     const text = ctx.update.message.text
-    let address: Address
-    try {
-      address = new TonWeb.utils.Address(text)
-    } catch (error) {
-      await ctx.reply(`Invalid TON address`, {
-        reply_parameters: {
-          message_id: ctx.update.message.message_id,
-        },
-      })
+    if (/^\/disconnect(_all|_\d+)?$/.test(text)) {
+      const [_, target] = text.split('_')
+      await handleCommandDisconnect(ctx, target)
       return
     }
-    const rawAddress = address.toString(false)
-    const db = await getDbConnection()
-    const [wallet] = await selectUserAdress(db, rawAddress, ctx.from.id)
-    try {
-      if (wallet) {
-        await ctx.reply(ctx.i18n.message.walletConnectedAlready(), {
-          reply_parameters: {
-            message_id: ctx.update.message.message_id,
-          },
-        })
-        return
-      }
-      const [userWallets] = await countUserWallets(db, ctx.from.id)
-      // TODO: split it
-      if (userWallets.count >= Number(process.env.LIMIT_WALLETS_FOR_USER)) {
-        await ctx.reply(ctx.i18n.message.reachedMaxAmountOfWallets(), {
-          reply_parameters: {
-            message_id: ctx.update.message.message_id,
-          },
-        })
-        return
-      }
-      await insertUserAdress(db, {
-        userId: ctx.from.id,
-        address: rawAddress,
-      })
-      const jettons = await getJettonsByAddress(rawAddress)
-      const userFriendlyAddress = address.toString(true, true, true)
-      await ctx.reply(
-        ctx.i18n.message.newWalletConnected(
-          userFriendlyAddress,
-          jettons.map(jetton => jetton.symbol),
-        ),
-        {
-          reply_parameters: {
-            message_id: ctx.update.message.message_id,
-          },
-        },
-      )
-    } finally {
-      await db.close()
-    }
+    await handleAddingAddress(ctx)
   })
 
   bot.catch(async (err, ctx) => {
@@ -140,7 +98,7 @@ export const initBot = async (
         }
     // In case we catch errors when sending messages
     try {
-      await ctx.reply(ctx.i18n.message.error())
+      await ctx.reply(ctx.i18n.message.errorTryToRepeatLater())
     } finally {
       await logError(ctx.logger, error, { ctx: JSON.stringify(ctx.update) })
     }
@@ -149,6 +107,10 @@ export const initBot = async (
   loopRetrying(() => handleNotification(bot), {
     logger: logger,
     afterCallbackDelayMs: 10_000,
+    catchDelayMs: 10_000,
+  })
+  loopRetrying(() => handleSuccessfulWalletLinkNotificationQueue(bot), {
+    logger: logger,
     catchDelayMs: 10_000,
   })
 

@@ -4,5 +4,5 @@ export type TWalletData = {
   image?: string
   pnlPercentage: number
   chart: [timestamp: number, price: number][]
-  firstBuyTime: number
+  lastBuyTime: number
 }

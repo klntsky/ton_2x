@@ -1,4 +1,4 @@
-import { tonApiClient } from '../../services/bot/constants'
+import { tonApiClient } from '../../constants'
 
 export const getPriceAtTimestamp = async (
   jetton: string,

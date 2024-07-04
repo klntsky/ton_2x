@@ -1,0 +1,1 @@
+export const hiddenTickers = ['LP']

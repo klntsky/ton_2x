@@ -1,26 +1,29 @@
 import { getAddressPnL, getChart, getJettonsByAddress } from '.'
 
-export const api = async (userId: number, address: string) => {
+export const api = async (address: string) => {
   const jettons = await getJettonsByAddress(address)
-  const res: ((typeof jettons)[number] & {
+  const res: Record<
+  string,
+  (typeof jettons)[number] & {
     pnlPercentage?: number
     chart: [timestamp: number, price: number][]
-    firstBuyTime: number
-  })[] = []
+    lastBuyTime: number
+  }
+  > = {}
   for (const jettonInfo of jettons) {
     const addressPnl = await getAddressPnL(address, jettonInfo.address)
     if (!addressPnl) continue
-    const { pnlPercentage, firstBuyTime } = addressPnl
-    const chart = await getChart(jettonInfo.address, firstBuyTime)
-    const slicedChart = chart.filter(x => x[0] >= firstBuyTime)
-    // console.log(chart, firstBuyTime, slicedChart)
-    res.push({
+    const { pnlPercentage, lastBuyTime } = addressPnl
+    const chart = await getChart(jettonInfo.address, lastBuyTime)
+    const slicedChart = chart.filter(x => x[0] >= lastBuyTime)
+    // console.log(chart, lastBuyTime, slicedChart)
+    res[jettonInfo.symbol] = {
       ...jettonInfo,
       pnlPercentage,
       chart: (slicedChart.length >= 2 ? slicedChart : chart).reverse(),
-      firstBuyTime,
-    })
+      lastBuyTime,
+    }
   }
 
-  return res.sort((a, b) => a.firstBuyTime - b.firstBuyTime)
+  return res
 }

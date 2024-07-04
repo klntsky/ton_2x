@@ -14,6 +14,8 @@ services:
     container_name: ton2x-rabbitmq
     restart: unless-stopped
     ports:
-      - 5672:5673
+      - 5673:5673
+    environment:
+      - RABBITMQ_NODE_PORT=5673
     volumes:
       - ./data/rabbitmq:/var/lib/rabbitmq/mnesia

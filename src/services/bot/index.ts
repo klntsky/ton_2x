@@ -2,6 +2,7 @@ import process from 'process'
 import 'dotenv/config'
 import { initBot } from './utils'
 import { getLogger } from '../../utils'
+import { i18n } from './i18n'
 
 const start = async () => {
   const logger = getLogger('tg-bot')
@@ -26,7 +27,28 @@ const start = async () => {
     },
   })
 
-  // bot.telegram.setMyCommands([])
+  bot.telegram.setMyCommands(
+    [
+      {
+        command: 'disconnect',
+        description: i18n('ru').command.disconnect(),
+      },
+    ],
+    {
+      language_code: 'ru',
+    },
+  )
+  bot.telegram.setMyCommands(
+    [
+      {
+        command: 'disconnect',
+        description: i18n('en').command.disconnect(),
+      },
+    ],
+    {
+      language_code: 'en',
+    },
+  )
   // bot.telegram.setMyDescription(`Description`)
   // bot.telegram.setMyShortDescription(`Short description`)
   logger.info({ info: 'Telegram bot started' })
