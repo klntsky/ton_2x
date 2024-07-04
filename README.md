@@ -1,7 +1,7 @@
 # Ton 2x Bot
 
 <p align="center">
-    <img alt="Ton 2x Bot" src="./frontend/public/logo.png" />
+    <img alt="Ton 2x Bot" src="./frontend/public/logo.png" style='width: 160px;' />
 </p>
 
 Twice as simple. Trading tools for everyone!
