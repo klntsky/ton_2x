@@ -10,6 +10,7 @@ type TBaseNotification = {
 export type TJettonRateNotification = TBaseNotification & {
   price: number
   timestamp: number
+  decimals: number
   action: ENotificationType.UP | ENotificationType.DOWN
 }
 export type TNewJettonNotification = Omit<TBaseNotification, 'jettonId'> & {

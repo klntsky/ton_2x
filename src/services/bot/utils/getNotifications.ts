@@ -48,6 +48,7 @@ export async function* getNotifications(
         if (!newestTransactionInDb) {
           continue
         }
+        const decimals = addressJettonsFromChainObj[jetton.token].decimals
         delete addressJettonsFromChainObj[jetton.token]
         const timestamp = Math.floor(Date.now() / 1000)
         const price = await getPrice(jetton.token)
@@ -71,6 +72,7 @@ export async function* getNotifications(
           jettonId: jetton.id,
           symbol: jetton.ticker,
           price: price,
+          decimals,
           action: rateDirection,
           timestamp,
         }

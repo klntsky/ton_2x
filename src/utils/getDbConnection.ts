@@ -16,7 +16,7 @@ export const getDbConnection = async () => {
     })
   }
   const connection = drizzle(db, {
-    logger: true,
+    // logger: true,
   })
 
   // @ts-expect-error object restructuring didn't work that easy for types

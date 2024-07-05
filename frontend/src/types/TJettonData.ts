@@ -3,6 +3,6 @@ export type TJettonData = {
   symbol: string
   image?: string
   pnlPercentage: number
-  chart: [timestamp: number, price: number][]
+  chart: [timestamp: number, price: number | string][]
   lastBuyTime: number
 }

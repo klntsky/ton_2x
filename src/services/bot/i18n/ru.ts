@@ -16,19 +16,17 @@ export const ru = {
 Отправьте ваш адрес или привяжите кошелёк 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
-      `Вы больше не холдите $${jettonNamesWithSpecialCharacters[ticker] || ticker}, уведомления для этого жетона остановлены`,
+      `👋 Вы больше не холдите $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}, уведомления для этого жетона остановлены.`,
     detectedNewJetton: (ticker: string) =>
-      `🆕 Обнаружен новый жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое`,
+      `💎 Обнаружен новый жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое.`,
     notification: {
       x2: (ticker: string, wallet: string, price: number | string) => `
-📈 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker} сделал x2! Адрес:
+📈 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} сделал x2! Адрес:
 ${getEmojiForWallet(wallet)} \`${wallet}\`
-
 💵 Актуальная цена: $${price}`,
       x05: (ticker: string, wallet: string, price: number | string) => `
-📉 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker} подешевел вдвое. Адрес:
+📉 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} подешевел вдвое. Адрес:
 ${getEmojiForWallet(wallet)} \`${wallet}\`
-
 💵 Актуальная цена: $${price}`,
     },
     newWalletConnected: (address: string, tickers: string) => `

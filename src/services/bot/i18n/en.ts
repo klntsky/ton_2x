@@ -1,4 +1,5 @@
 import { getEmojiForWallet } from '../../../utils'
+import { jettonNamesWithSpecialCharacters } from '../constants'
 import type { TI18nLocalization } from './types'
 
 export const en: TI18nLocalization = {
@@ -16,20 +17,18 @@ If you have any questions, feel free to ask in the [chat](https://t.me/+mwwKEfMA
 Send an address you want to watch or connect your own 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
-      `You no longer hold $${ticker}, notifications for this jetton have been stopped.`,
+      `👋 You no longer hold $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}, notifications for this jetton have been stopped.`,
     detectedNewJetton: (ticker: string) =>
-      `🆕 New jetton found: $${ticker}. I will notify you when the price moves up or down by 2x`,
+      `💎 New jetton found: $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}. I will notify you when the price moves up or down by 2x.`,
     notification: {
       x2: (ticker: string, wallet: string, price: number | string) => `
-📈 $${ticker} made 2x! Wallet:
+📈 $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} made 2x! Wallet:
 ${getEmojiForWallet(wallet)} \`${wallet}\`
-
 💵 Current price: $${price}
 `,
       x05: (ticker: string, wallet: string, price: number | string) => `
-📉 $${ticker} has dropped in price by half from the moment you purchased it. Wallet:
+📉 $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} has dropped in price by half. Wallet:
 ${getEmojiForWallet(wallet)} \`${wallet}\`
-
 💵 Current price: $${price}
 `,
     },

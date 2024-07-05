@@ -37,12 +37,13 @@ export const chartColor = (arr: TChartData[]) => {
   }
 }
 
-export const formatDataToChart = (input: { chart: [number, number][] }) =>
+export const formatDataToChart = (input: {
+  chart: [number, number | string][]
+}) =>
   input.chart.map(arr => {
-    const price = arr[1] > 0.01 ? Number(arr[1].toFixed(2)) : arr[1].toFixed(20)
     return {
       date: timeConverter(arr[0]),
-      Price: price,
+      Price: arr[1],
     }
   })
 

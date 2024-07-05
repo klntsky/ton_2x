@@ -89,12 +89,12 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
         ? i18n(userSettings?.languageCode).message.notification.x2(
           notification.symbol,
           walletUserFriendly,
-          normalizePrice(notification.price),
+          normalizePrice(notification.price, notification.decimals),
         )
         : i18n(userSettings?.languageCode).message.notification.x05(
           notification.symbol,
           walletUserFriendly,
-          normalizePrice(notification.price),
+          normalizePrice(notification.price, notification.decimals),
         )
     await bot.telegram.sendMessage(notification.userId, text, { parse_mode: 'Markdown' })
     console.log('rates', notification.price.toString())
