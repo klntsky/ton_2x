@@ -2,10 +2,7 @@ import { asc, eq } from 'drizzle-orm'
 import { userPurchases } from '../../db/schema'
 import type { TDbConnection } from '../../types'
 
-export const selectFirstUserPurchaseByWalletAndJetton = async (
-  db: TDbConnection,
-  jettonId: number,
-) => {
+export const selectFirstUserPurchaseByJettonId = async (db: TDbConnection, jettonId: number) => {
   const [firstPurchase] = await db
     .select()
     .from(userPurchases)

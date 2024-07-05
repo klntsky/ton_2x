@@ -4,9 +4,9 @@ import TonWeb from 'tonweb'
 import {
   insertUserNotification,
   insertUserPurchase,
-  selectFirstUserPurchaseByWalletAndJetton,
-  selectLastUserNotificationByWalletAndJetton,
-  selectLastUserPurchaseByWalletAndJetton,
+  selectFirstUserPurchaseByJettonId,
+  selectLastUserNotificationByJettonId,
+  selectLastUserPurchaseByJettonId,
   selectUserSettings,
   upsertToken,
 } from '../../../db/queries'
@@ -32,11 +32,11 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
     getJettonsFromDB: walletId => db.select().from(tokens).where(eq(tokens.walletId, walletId)),
     getJettonsFromChain: getJettonsByAddress,
     getLastAddressJettonPurchaseFromDB: (jettonId: number) =>
-      selectLastUserPurchaseByWalletAndJetton(db, jettonId),
+      selectLastUserPurchaseByJettonId(db, jettonId),
     getLastAddressNotificationFromDB: (jettonId: number) =>
-      selectLastUserNotificationByWalletAndJetton(db, jettonId),
+      selectLastUserNotificationByJettonId(db, jettonId),
     getFirstAddressJettonPurchaseFromDB: (jettonId: number) =>
-      selectFirstUserPurchaseByWalletAndJetton(db, jettonId),
+      selectFirstUserPurchaseByJettonId(db, jettonId),
   }
   for await (const notification of getNotifications(handle)) {
     if (hiddenTickers.includes(notification.symbol)) {
