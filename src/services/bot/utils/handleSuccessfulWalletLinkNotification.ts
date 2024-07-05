@@ -13,6 +13,10 @@ import {
 import { i18n } from '../i18n'
 import { getJettonsByAddress } from '../../../utils'
 import { getPrice } from '../../../utils/parseTxData'
+import { filterHiddenJettons } from '.'
+import type { userPurchases } from '../../../db/schema'
+import { tokens } from '../../../db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export const handleSuccessfulWalletLinkNotification = async (
   bot: Telegraf<TTelegrafContext>,
@@ -32,19 +36,33 @@ export const handleSuccessfulWalletLinkNotification = async (
     )
   } else {
     const jettons = await getJettonsByAddress(payload.address)
-    const [wallet] = await insertUserAdress(db, payload)
+    const jettonsForDb: (Omit<typeof tokens.$inferInsert, 'walletId'> &
+    Omit<typeof userPurchases.$inferInsert, 'jettonId' | 'price'> & { price?: number })[] = []
     for (const jetton of jettons) {
-      const [insertedJetton] = await upsertToken(db, {
-        token: jetton.address,
-        walletId: wallet.id,
-        ticker: jetton.symbol,
-      })
       const price = await getPrice(jetton.address)
-      if (price) {
+      jettonsForDb.push({
+        token: jetton.address,
+        ticker: jetton.symbol,
+        price,
+        timestamp: Math.floor(Date.now() / 1000),
+      })
+    }
+    const [wallet] = await insertUserAdress(db, payload)
+    for (const jetton of jettonsForDb) {
+      await upsertToken(db, {
+        token: jetton.token,
+        walletId: wallet.id,
+        ticker: jetton.ticker,
+      })
+      if (jetton.price) {
+        const [insertedToken] = await db
+          .select()
+          .from(tokens)
+          .where(and(eq(tokens.token, jetton.token), eq(tokens.walletId, wallet.id)))
         await insertUserPurchase(db, {
           timestamp: Math.floor(Date.now() / 1000),
-          jettonId: insertedJetton.id,
-          price: `${price}`,
+          jettonId: insertedToken.id,
+          price: `${jetton.price}`,
         })
       }
     }
@@ -54,7 +72,9 @@ export const handleSuccessfulWalletLinkNotification = async (
       payload.userId,
       i18n(userSettings?.languageCode).message.newWalletConnected(
         userFriendlyAddress,
-        jettons.map(jetton => `$${jetton.symbol}`).join(', '),
+        filterHiddenJettons(jettons)
+          .map(jetton => `$${jetton.symbol}`)
+          .join(', '),
       ),
       {
         parse_mode: 'Markdown',

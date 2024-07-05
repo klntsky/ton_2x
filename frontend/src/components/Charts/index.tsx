@@ -61,7 +61,9 @@ export const Charts = (props: {
   if (data) {
     return (
       <div className={s.charts}>
-        <h1 className="w-full text-3xl text-slate-700 text-center">
+        <h1
+          className={`${s.yourJettonsHeader} w-full text-3xl text-slate-700 text-center`}
+        >
           {t('label.yourJettons')}
         </h1>
         {data
@@ -80,7 +82,9 @@ export const Charts = (props: {
                         className="shadow rounded-full max-w-full h-auto align-middle border-none"
                       />
                     </div>
-                    <h1 className="text-2xl text-slate-500 pl-2">
+                    <h1
+                      className={`${s.symbolHeader} text-2xl text-slate-500 pl-2`}
+                    >
                       {obj.symbol}
                     </h1>
                   </Flex>

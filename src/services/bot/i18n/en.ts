@@ -20,13 +20,22 @@ Send an address you want to watch or connect your own 👇
     detectedNewJetton: (ticker: string) =>
       `🆕 New jetton found: $${ticker}. I will notify you when the price moves up or down by 2x`,
     notification: {
-      x2: (ticker: string, wallet: string) =>
-        `📈 $${ticker} made 2x! Wallet: ${getEmojiForWallet(wallet)} \`${wallet}\``,
-      x05: (ticker: string, wallet: string) =>
-        `📉 $${ticker} has dropped in price by half from the moment you purchased it. Wallet: ${getEmojiForWallet(wallet)} \`${wallet}\``,
+      x2: (ticker: string, wallet: string, price: number | string) => `
+📈 $${ticker} made 2x! Wallet:
+${getEmojiForWallet(wallet)} \`${wallet}\`
+
+💵 Current price: $${price}
+`,
+      x05: (ticker: string, wallet: string, price: number | string) => `
+📉 $${ticker} has dropped in price by half from the moment you purchased it. Wallet:
+${getEmojiForWallet(wallet)} \`${wallet}\`
+
+💵 Current price: $${price}
+`,
     },
     newWalletConnected: (address: string, tickers: string) => `
-✨ New wallet connected: ${getEmojiForWallet(address)} \`${address}\`
+✨ New wallet connected:
+${getEmojiForWallet(address)} \`${address}\`
 
 ${
   tickers.length
@@ -54,6 +63,9 @@ Or disconnect all wallets using /disconnect\\_all.
       allWalletsDisconnectedSuccessful: () => `All wallets disconnected successfully.`,
       noWallets: () => `You do not have linked wallets.`,
     },
+    iDontUnderstand: () => `
+I don't understand. You can send me an address to watch, or open the Telegram mini app to view your portfolio performance.    
+`,
   },
   button: {
     linkWallet: () => 'Connect Wallet',

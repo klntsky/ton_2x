@@ -1,4 +1,5 @@
 import { getEmojiForWallet } from '../../../utils'
+import { jettonNamesWithSpecialCharacters } from '../constants'
 
 export const ru = {
   message: {
@@ -15,17 +16,24 @@ export const ru = {
 Отправьте ваш адрес или привяжите кошелёк 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
-      `Вы больше не холдите $${ticker}, уведомления для этого жетона остановлены`,
+      `Вы больше не холдите $${jettonNamesWithSpecialCharacters[ticker] || ticker}, уведомления для этого жетона остановлены`,
     detectedNewJetton: (ticker: string) =>
-      `🆕 Обнаружен новый жетон $${ticker}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое`,
+      `🆕 Обнаружен новый жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое`,
     notification: {
-      x2: (ticker: string, wallet: string) =>
-        `📈 Жетон $${ticker} сделал x2! Адрес: ${getEmojiForWallet(wallet)} \`${wallet}\``,
-      x05: (ticker: string, wallet: string) =>
-        `📉 Жетон $${ticker} подешевел вдвое. Адрес: ${getEmojiForWallet(wallet)} \`${wallet}\``,
+      x2: (ticker: string, wallet: string, price: number | string) => `
+📈 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker} сделал x2! Адрес:
+${getEmojiForWallet(wallet)} \`${wallet}\`
+
+💵 Актуальная цена: $${price}`,
+      x05: (ticker: string, wallet: string, price: number | string) => `
+📉 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker} подешевел вдвое. Адрес:
+${getEmojiForWallet(wallet)} \`${wallet}\`
+
+💵 Актуальная цена: $${price}`,
     },
     newWalletConnected: (address: string, tickers: string) => `
-✨ Кошелёк привязан: ${getEmojiForWallet(address)} \`${address}\`
+✨ Кошелёк привязан:
+${getEmojiForWallet(address)} \`${address}\`
 
 ${
   tickers.length
@@ -53,6 +61,9 @@ ${disconnectCOmmandList}
       allWalletsDisconnectedSuccessful: () => `Все кошельки успешно отключены.`,
       noWallets: () => `У вас нет привязанных кошельков.`,
     },
+    iDontUnderstand: () => `
+Я не понимаю. Вы можете отправить мне TON-адрес для наблюдения или открыть портфолио в мини-приложении Телеграм.    
+`,
   },
   button: {
     linkWallet: () => 'Подключить кошелёк',

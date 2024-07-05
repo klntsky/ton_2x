@@ -1,5 +1,5 @@
 import type { Telegraf } from 'telegraf'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import TonWeb from 'tonweb'
 import {
   insertUserNotification,
@@ -11,7 +11,7 @@ import {
 } from '../../../db/queries'
 import { ENotificationType } from '../constants'
 import type { TNotificationHandle, TTelegrafContext } from '../types'
-import { getDbConnection, getJettonsByAddress } from '../../../utils'
+import { getDbConnection, getJettonsByAddress, normalizePrice } from '../../../utils'
 import { tokens, users, wallets } from '../../../db/schema'
 import { i18n } from '../i18n'
 import { getNotifications } from '.'
@@ -42,11 +42,17 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
     console.log({ notification })
     const userSettings = await selectUserSettings(db, notification.userId)
     if (notification.action === ENotificationType.NEW_JETTON) {
-      const [jetton] = await upsertToken(db, {
+      await upsertToken(db, {
         token: notification.jetton,
         walletId: notification.walletId,
         ticker: notification.symbol,
       })
+      const [jetton] = await db
+        .select()
+        .from(tokens)
+        .where(
+          and(eq(tokens.token, notification.jetton), eq(tokens.walletId, notification.walletId)),
+        )
       const purchase = await insertUserPurchase(db, {
         timestamp: notification.timestamp,
         jettonId: jetton.id,
@@ -83,10 +89,12 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
         ? i18n(userSettings?.languageCode).message.notification.x2(
           notification.symbol,
           walletUserFriendly,
+          normalizePrice(notification.price),
         )
         : i18n(userSettings?.languageCode).message.notification.x05(
           notification.symbol,
           walletUserFriendly,
+          normalizePrice(notification.price),
         )
     await bot.telegram.sendMessage(notification.userId, text, { parse_mode: 'Markdown' })
     console.log('rates', notification.price.toString())

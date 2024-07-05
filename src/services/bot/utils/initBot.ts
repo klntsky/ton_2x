@@ -8,7 +8,6 @@ import {
   getLogger,
   logError,
   logInfo,
-  logUserAction,
   loopRetrying,
 } from '../../../utils'
 import type { TTelegrafContext } from '../types'
@@ -22,6 +21,7 @@ import {
   handleCommandDisconnect,
   handleNotification,
   handleSuccessfulWalletLinkNotificationQueue,
+  logUserAction,
   saveUser,
 } from '.'
 

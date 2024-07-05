@@ -18,7 +18,7 @@ export const handleAddingAddress = async (
   try {
     address = new TonWeb.utils.Address(text)
   } catch (error) {
-    await ctx.reply(`Invalid TON address`, {
+    await ctx.reply(ctx.i18n.message.iDontUnderstand(), {
       reply_parameters: {
         message_id: ctx.update.message.message_id,
       },

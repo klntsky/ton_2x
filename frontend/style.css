@@ -1,6 +1,7 @@
 
 html {
     background-color: var(--tg-theme-bg-color);
+    overflow: hidden;
 }
 
 #root {
