@@ -6,6 +6,7 @@ export async function* getNotifications(
   handle: TNotificationHandle,
 ): AsyncGenerator<TNotification> {
   const {
+    getFirstAddressJettonPurchaseFromDB,
     getLastAddressJettonPurchaseFromDB,
     getLastAddressNotificationFromDB,
     getJettonsFromChain,
@@ -27,6 +28,15 @@ export async function* getNotifications(
       const addressJettonsFromDb = await getJettonsFromDB(wallet.id)
       for (const jetton of addressJettonsFromDb) {
         if (!addressJettonsFromChainObj[jetton.token]) {
+          const firstPurchase = await getFirstAddressJettonPurchaseFromDB(jetton.id)
+          if (!firstPurchase) {
+            continue
+          }
+          const secondsFromPurchase = Date.now() / 1000 - firstPurchase.timestamp
+          // Estimated time to bypass a rollback
+          if (secondsFromPurchase <= 60) {
+            continue
+          }
           yield {
             userId: user.id,
             walletId: wallet.id,

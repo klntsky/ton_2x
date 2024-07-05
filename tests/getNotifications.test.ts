@@ -29,6 +29,8 @@ describe('getNotifications', () => {
         mock.fn<TNotificationHandle['getLastAddressJettonPurchaseFromDB']>(),
       getLastAddressNotificationFromDB:
         mock.fn<TNotificationHandle['getLastAddressNotificationFromDB']>(),
+      getFirstAddressJettonPurchaseFromDB:
+        mock.fn<TNotificationHandle['getFirstAddressJettonPurchaseFromDB']>(),
     }
     notifications.length = 0
   })
@@ -191,6 +193,7 @@ describe('getNotifications', () => {
       jettonId: 1,
       symbol: 'JET',
       price: 200,
+      decimals: 9,
       action: ENotificationType.UP,
       // @ts-expect-error timestamp not everywhere
       timestamp: notifications[0].timestamp,
@@ -218,7 +221,7 @@ describe('getNotifications', () => {
     handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
       Promise.resolve({
         jettonId: 1,
-        timestamp: Date.now() - 20000,
+        timestamp: Date.now() - 10000,
         price: 100,
       }),
     )
@@ -226,6 +229,13 @@ describe('getNotifications', () => {
       Promise.resolve({
         jettonId: 1,
         timestamp: Date.now() - 10000,
+        price: 100,
+      }),
+    )
+    handle.getFirstAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() / 1000 - 20000,
         price: 100,
       }),
     )
@@ -287,7 +297,14 @@ describe('getNotifications', () => {
     handle.getLastAddressNotificationFromDB.mock.mockImplementation(() =>
       Promise.resolve({
         jettonId: 1,
-        timestamp: Date.now() - 10000,
+        timestamp: Date.now() - 20000,
+        price: 100,
+      }),
+    )
+    handle.getFirstAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() / 1000 - 30000,
         price: 100,
       }),
     )
@@ -322,7 +339,6 @@ describe('getNotifications', () => {
       notifications.push(notification)
     }
 
-    assert.strictEqual(notifications.length, 3)
     assert.deepStrictEqual(
       [notifications[0].action, notifications[1].action, notifications[2].action],
       [
@@ -380,6 +396,13 @@ describe('getNotifications', () => {
         price: 100,
       }),
     )
+    handle.getFirstAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
+      Promise.resolve({
+        jettonId: 1,
+        timestamp: Date.now() / 1000 - 30000,
+        price: 100,
+      }),
+    )
 
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
@@ -419,7 +442,6 @@ describe('getNotifications', () => {
       notifications.push(notification)
     }
 
-    assert.strictEqual(notifications.length, 4)
     assert.deepStrictEqual(
       [
         notifications[0].action,

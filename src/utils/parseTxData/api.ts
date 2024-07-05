@@ -21,7 +21,9 @@ export const api = async (address: string) => {
     res[jettonInfo.symbol] = {
       ...jettonInfo,
       pnlPercentage,
-      chart: (slicedChart.length >= 2 ? slicedChart : chart).reverse().map(entity => [entity[0], normalizePrice(entity[1], jettonInfo.decimals)]),
+      chart: (slicedChart.length >= 2 ? slicedChart : chart)
+        .reverse()
+        .map(entity => [entity[0], normalizePrice(entity[1], jettonInfo.decimals)]),
       lastBuyTime,
     }
   }
