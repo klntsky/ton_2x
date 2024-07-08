@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1718803235050,
-      "tag": "0000_mature_dorian_gray",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1718987794549,
-      "tag": "0001_illegal_shadow_king",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1719403374093,
-      "tag": "0002_ordinary_puck",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1719509995995,
-      "tag": "0003_jittery_black_tom",
+      "when": 1719852645877,
+      "tag": "0000_curved_surge",
       "breakpoints": true
     }
   ]

@@ -1,9 +1,9 @@
-import type { TDbConnection } from '../../types'
+import type { TDbConnection, TDbTransaction } from '../../types'
 import { userPurchases } from '../schema'
 
-export const insertUserPurchase = async (
-  db: TDbConnection,
+export const insertUserPurchase = (
+  db: TDbConnection | TDbTransaction,
   values: typeof userPurchases.$inferInsert,
 ) => {
-  await db.insert(userPurchases).values(values)
+  return db.insert(userPurchases).values(values)
 }

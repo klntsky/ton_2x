@@ -5,5 +5,9 @@ export const ru = {
     withoutChanges: 'Без изменений',
     profit: 'Прибыль {{percent}}%',
     loss: 'Убыток {{percent}}%',
+    error: 'Произошла какая-то ошибка.',
+  },
+  button: {
+    linkAnotherWallet: 'Привязать другой кошелек',
   },
 }

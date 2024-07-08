@@ -1,21 +1,20 @@
-import { fetchWithAuth } from '.'
+import { tonApiClient } from '../../constants'
 
-export const getChart = async (jetton: string) => {
-  const timestamp = Math.floor(Date.now() / 1000 - 604800)
-
-  // console.info(timestamp);
-
-  const url =
-    'https://tonapi.io/v2/rates/chart?token=' +
-    jetton +
-    '&currency=usd' +
-    '&start_date=' +
-    timestamp +
-    '&points_count=100'
-
+export const getChart = async (jetton: string, timestamp: number) => {
   const chart: {
     points: [timestamp: number, price: number][]
-  } = await (await fetchWithAuth(url)).json()
+  } = await tonApiClient.rates.getChartRates({
+    token: jetton,
+    currency: 'usd',
+    start_date: timestamp,
+    end_date: Math.floor(Date.now() / 1000),
+    // points_count: 100,
+  })
+  // console.log({
+  //   start_date: new Date(timestamp * 1000),
+  //   firstPoint: chart.points.length ? new Date(chart.points[0][0] * 1000) : undefined,
+  //   lastPoint: chart.points.length ? new Date(chart.points.at(-1)![0] * 1000) : undefined,
+  // })
 
   return chart.points
 }

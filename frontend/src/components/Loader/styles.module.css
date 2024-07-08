@@ -1,22 +1,25 @@
 .loader {
-  width: 45px;
-  aspect-ratio: 0.75;
-  --c: no-repeat linear-gradient(#2c2594 0 0);
-  background: var(--c) 0% 50%, var(--c) 50% 50%, var(--c) 100% 50%;
-  background-size: 20% 50%;
-  animation: l6 1s infinite linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  overflow: hidden;
+  position: relative;
 }
-@keyframes l6 {
-  20% {
-    background-position: 0% 0%, 50% 50%, 100% 50%;
+
+.logo {
+  width: 100%;
+  height: auto;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(0.9);
   }
-  40% {
-    background-position: 0% 100%, 50% 0%, 100% 50%;
-  }
-  60% {
-    background-position: 0% 50%, 50% 100%, 100% 0%;
-  }
-  80% {
-    background-position: 0% 50%, 50% 50%, 100% 100%;
+  50% {
+    opacity: 0.5;
+    transform: scale(1);
   }
 }

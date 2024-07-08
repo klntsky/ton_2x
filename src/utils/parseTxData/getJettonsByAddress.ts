@@ -1,32 +1,31 @@
-import { fetchWithAuth } from '.'
+import { tonApiClient } from '../../constants'
+import { jettonNamesWithSpecialCharacters } from '../../services/bot/constants'
+import type { TJetton } from '../../types'
 
 export const getJettonsByAddress = async (address: string) => {
-  const url = 'https://tonapi.io/v2/accounts/' + encodeURIComponent(address) + '/jettons'
-
   try {
-    const jettons: {
-      address: string
-      symbol: string
-      image?: string
-    }[] = (await (await fetchWithAuth(url)).json()).balances
+    const jettons: TJetton[] = (
+      await tonApiClient.accounts.getAccountJettonsBalances(address)
+    ).balances
       .filter((x: { balance: string }) => x.balance !== '0')
       .map(
         (x: {
-          jetton?: {
-            address?: string
-            symbol?: string
+          jetton: {
+            address: string
+            symbol: string
+            decimals: number
             image?: string
           }
         }) => ({
-          address: x?.jetton?.address,
-          symbol: x?.jetton?.symbol,
-          image: x?.jetton?.image,
+          address: x.jetton.address,
+          symbol: jettonNamesWithSpecialCharacters[x.jetton.symbol] || x.jetton.symbol,
+          decimals: x.jetton.decimals,
+          image: x.jetton?.image,
         }),
       )
-
     return jettons
   } catch (e) {
-    console.error(e)
-    return []
+    console.error(`tonApiClient.accounts.getAccountJettonsBalances(${address})`, e)
+    throw e
   }
 }

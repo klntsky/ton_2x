@@ -1,6 +1,6 @@
+import type { Trace } from 'tonapi-sdk-js'
 import { collectFromGenerator, parseTransactionSwaps } from '.'
-import type { TTransaction } from '../../types'
 
-export const getAllSwaps = (tx: TTransaction) => {
+export const getAllSwaps = (tx: Trace) => {
   return collectFromGenerator(parseTransactionSwaps.bind(null, tx))
 }

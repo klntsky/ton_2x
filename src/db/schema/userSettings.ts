@@ -3,7 +3,6 @@ import { users } from '.'
 
 export const userSettings = pgTable('user_settings', {
   userId: bigint('user_id', { mode: 'number' })
-    .notNull()
     .references(() => users.id, {
       onDelete: 'cascade',
     })

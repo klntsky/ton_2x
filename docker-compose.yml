@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data/
+
+  rabbitmq:
+    image: rabbitmq:3
+    hostname: rabbitmq
+    container_name: ton2x-rabbitmq
+    restart: unless-stopped
+    ports:
+      - 5673:5673
+    environment:
+      - RABBITMQ_NODE_PORT=5673
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia

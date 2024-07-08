@@ -1,0 +1,1 @@
+export { handleSuccessfulWalletLinkNotification } from './handleSuccessfulWalletLinkNotification'

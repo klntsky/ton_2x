@@ -1,15 +1,19 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react'
+// TODO: replace '@tma.js/sdk-react' (deprecated) with '@telegram-apps/sdk-react'
 import {
   bindMiniAppCSSVars,
   bindThemeParamsCSSVars,
   useMiniApp,
   useThemeParams,
+  useViewport,
 } from '@tma.js/sdk-react'
 import { retrieveLaunchParams } from '@tma.js/sdk'
 
-import { Chart } from './components/Chart'
+import { Charts, Button } from './components'
 import { usePostData } from './hooks'
+import { useTranslation } from 'react-i18next'
+import { TGetWalletDataResponse } from './types'
 
 export const App = () => {
   const launchParams = retrieveLaunchParams()
@@ -20,8 +24,30 @@ export const App = () => {
   const [tonConnectUI] = useTonConnectUI()
   const themeParams = useThemeParams()
   const miniApp = useMiniApp()
+  const miniAppViewport = useViewport()
   const { mutate } = usePostData()
-  miniApp.ready()
+  const { t } = useTranslation()
+  const [walletsCount, setWalletsCount] = useState(0)
+
+  const onClickLinkAnothgerWalletButton = async () => {
+    if (tonConnectUI.connected) {
+      await tonConnectUI.disconnect()
+    }
+    modal.open()
+  }
+
+  const onUpdateChartsData = async (data: TGetWalletDataResponse) => {
+    setWalletsCount(data.walletsTotal)
+    if (data.walletsTotal === 0) {
+      modal.open()
+    }
+  }
+
+  useEffect(() => {
+    if (miniAppViewport) {
+      miniAppViewport.expand()
+    }
+  }, [miniAppViewport])
 
   useEffect(() => {
     return bindMiniAppCSSVars(miniApp, themeParams)
@@ -38,15 +64,11 @@ export const App = () => {
   // }, [modal.state.status]);
 
   useEffect(() => {
-    modal.open()
+    miniApp.ready()
 
     tonConnectUI.onStatusChange(wallet => {
-      const launchParams = retrieveLaunchParams()
-      console.log(123, {
-        id: launchParams.initData?.user?.id,
-        address: wallet?.account.address,
-      })
       if (!wallet?.account.address) return
+      const launchParams = retrieveLaunchParams()
       mutate({
         url: '/postUserWallet',
         data: {
@@ -55,15 +77,20 @@ export const App = () => {
         },
       })
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <div className="App">
-      {tonConnectUI.account?.address ? (
-        <Chart
-          address={tonConnectUI.account.address}
-          userId={launchParams.initData.user.id}
-        />
+      <Charts
+        walletsCount={walletsCount}
+        userId={launchParams.initData.user.id}
+        onUpdate={onUpdateChartsData}
+      />
+      {walletsCount > 0 ? (
+        <Button onClick={onClickLinkAnothgerWalletButton}>
+          {t('button.linkAnotherWallet')}
+        </Button>
       ) : null}
     </div>
   )

@@ -1,13 +1,8 @@
-import { integer, pgTable, varchar } from 'drizzle-orm/pg-core'
-import { tokens, wallets } from '.'
+import { integer, pgTable, serial, varchar } from 'drizzle-orm/pg-core'
+import { tokens } from '.'
 
 export const userNotifications = pgTable('user_notifications', {
-  wallet: varchar('wallet', { length: 128 })
-    .notNull()
-    .references(() => wallets.address, { onDelete: 'cascade' }),
-  jetton: varchar('jetton', { length: 128 })
-    .notNull()
-    .references(() => tokens.token),
+  jettonId: serial('jetton_id').references(() => tokens.id, { onDelete: 'cascade' }),
   timestamp: integer('timestamp').notNull(),
-  price: integer('price').notNull(),
+  price: varchar('price', { length: 64 }).notNull(),
 })
