@@ -81,10 +81,15 @@ export const handleSuccessfulWalletLinkNotification = async (
       {
         parse_mode: 'Markdown',
         reply_markup: {
-          inline_keyboard: [[
-            Markup.button.webApp(i18n(userSettings?.languageCode).button.openApp(), process.env.TELEGRAM_BOT_WEB_APP),
-          ]],
-        }
+          inline_keyboard: [
+            [
+              Markup.button.webApp(
+                i18n(userSettings?.languageCode).button.openApp(),
+                process.env.TELEGRAM_BOT_WEB_APP,
+              ),
+            ],
+          ],
+        },
       },
     )
     await bot.telegram.pinChatMessage(payload.userId, message.message_id)
@@ -96,7 +101,7 @@ export const handleSuccessfulWalletLinkNotification = async (
         web_app: {
           url: process.env.TELEGRAM_BOT_WEB_APP,
         },
-      }
+      },
     })
   }
   return true

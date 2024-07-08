@@ -29,11 +29,11 @@ export async function* getNotifications(
       const addressJettonsFromDb = await getJettonsFromDB(wallet.id)
       for (const jetton of addressJettonsFromDb) {
         if (!addressJettonsFromChainObj[jetton.token]) {
-          const firstPurchase = await getFirstAddressJettonPurchaseFromDB(jetton.id)
-          const secondsFromPurchase = Date.now() / 1000 - firstPurchase.timestamp
-          if (secondsFromPurchase <= secondForPossibleRollback) {
-            continue
-          }
+          // const firstPurchase = await getFirstAddressJettonPurchaseFromDB(jetton.id)
+          // const secondsFromPurchase = Date.now() / 1000 - firstPurchase.timestamp
+          // if (secondsFromPurchase <= secondForPossibleRollback) {
+          //   continue
+          // }
           yield {
             userId: user.id,
             walletId: wallet.id,

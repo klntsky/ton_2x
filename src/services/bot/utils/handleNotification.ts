@@ -75,17 +75,17 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
           notification.price,
         ),
         {
-          parse_mode: 'Markdown'
-        }
+          parse_mode: 'Markdown',
+        },
       )
       continue
     }
     if (notification.action === ENotificationType.NOT_HOLD_JETTON_ANYMORE) {
-      await db.delete(tokens).where(eq(tokens.id, notification.jettonId))
-      await bot.telegram.sendMessage(
-        notification.userId,
-        i18n(userSettings?.languageCode).message.youNoLongerHaveJetton(notification.symbol),
-      )
+      // await db.delete(tokens).where(eq(tokens.id, notification.jettonId))
+      // await bot.telegram.sendMessage(
+      //   notification.userId,
+      //   i18n(userSettings?.languageCode).message.youNoLongerHaveJetton(notification.symbol),
+      // )
       continue
     }
 
