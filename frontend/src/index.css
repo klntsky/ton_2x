@@ -9,7 +9,6 @@ html {
 .App {
   margin: 0 auto;
   padding: 1rem;
-  padding-bottom: 12px;
   max-width: 560px;
   width: 100%;
   min-height: 100%;
@@ -19,4 +18,10 @@ html {
   flex-direction: column;
   align-items: center;
   gap: 16px;
+}
+
+@media (any-pointer: coarse) {
+  .App {
+    padding-bottom: 64px;
+  }
 }
