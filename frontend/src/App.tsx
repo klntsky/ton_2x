@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useTonConnectModal, useTonConnectUI } from '@tonconnect/ui-react'
+// TODO: replace '@tma.js/sdk-react' (deprecated) with '@telegram-apps/sdk-react'
 import {
   bindMiniAppCSSVars,
   bindThemeParamsCSSVars,
   useMiniApp,
   useThemeParams,
+  useViewport,
 } from '@tma.js/sdk-react'
 import { retrieveLaunchParams } from '@tma.js/sdk'
 
@@ -22,10 +24,10 @@ export const App = () => {
   const [tonConnectUI] = useTonConnectUI()
   const themeParams = useThemeParams()
   const miniApp = useMiniApp()
+  const miniAppViewport = useViewport()
   const { mutate } = usePostData()
   const { t } = useTranslation()
   const [walletsCount, setWalletsCount] = useState(0)
-  miniApp.ready()
 
   const onClickLinkAnothgerWalletButton = async () => {
     if (tonConnectUI.connected) {
@@ -42,6 +44,12 @@ export const App = () => {
   }
 
   useEffect(() => {
+    if (miniAppViewport) {
+      miniAppViewport.expand()
+    }
+  }, [miniAppViewport])
+
+  useEffect(() => {
     return bindMiniAppCSSVars(miniApp, themeParams)
   }, [miniApp, themeParams])
 
@@ -56,6 +64,8 @@ export const App = () => {
   // }, [modal.state.status]);
 
   useEffect(() => {
+    miniApp.ready()
+
     tonConnectUI.onStatusChange(wallet => {
       if (!wallet?.account.address) return
       const launchParams = retrieveLaunchParams()

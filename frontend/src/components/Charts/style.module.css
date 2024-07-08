@@ -1,11 +1,3 @@
 .charts {
     width: 100%;
 }
-
-.yourJettonsHeader {
-    color: var(--tg-theme-text-color) !important;
-}
-
-.symbolHeader {
-    color: white !important;
-}

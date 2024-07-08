@@ -9,10 +9,11 @@ html {
 .App {
   margin: 0 auto;
   padding: 1rem;
+  padding-bottom: 12px;
   max-width: 560px;
   width: 100%;
-  min-height: 100vh;
-  overflow-x: hidden;
+  min-height: var(--tg-viewport-height);
+  /* overflow-x: hidden; */
   color: var(--tg-theme-text-color);
   display: flex;
   flex-direction: column;
