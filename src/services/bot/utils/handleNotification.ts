@@ -74,6 +74,9 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
           walletUserFriendly,
           notification.price,
         ),
+        {
+          parse_mode: 'Markdown'
+        }
       )
       continue
     }

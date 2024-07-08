@@ -1,4 +1,4 @@
-import type { Telegraf } from 'telegraf'
+import { Markup, type Telegraf } from 'telegraf'
 import TonWeb from 'tonweb'
 import type { TTelegrafContext } from '../types'
 import type { TDbConnection, TSuccessfulWalletLinkNotificationCh } from '../../../types'
@@ -70,7 +70,7 @@ export const handleSuccessfulWalletLinkNotification = async (
     })
     const address = new TonWeb.utils.Address(payload.address)
     const userFriendlyAddress = address.toString(true, true, true)
-    await bot.telegram.sendMessage(
+    const message = await bot.telegram.sendMessage(
       payload.userId,
       i18n(userSettings?.languageCode).message.newWalletConnected(
         userFriendlyAddress,
@@ -80,8 +80,24 @@ export const handleSuccessfulWalletLinkNotification = async (
       ),
       {
         parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [[
+            Markup.button.webApp(i18n(userSettings?.languageCode).button.openApp(), process.env.TELEGRAM_BOT_WEB_APP),
+          ]],
+        }
       },
     )
+    await bot.telegram.pinChatMessage(payload.userId, message.message_id)
+    await bot.telegram.setChatMenuButton({
+      chatId: payload.userId,
+      menuButton: {
+        type: 'web_app',
+        text: i18n(userSettings?.languageCode).button.open(),
+        web_app: {
+          url: process.env.TELEGRAM_BOT_WEB_APP,
+        },
+      }
+    })
   }
   return true
 }

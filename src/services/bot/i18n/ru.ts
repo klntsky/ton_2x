@@ -69,6 +69,8 @@ ${disconnectCOmmandList}
   },
   button: {
     linkWallet: () => 'Подключить кошелёк',
+    openApp: () => `Открыть приложение`,
+    open: () => `Открыть`,
     link: () => 'Подключить',
   },
   command: {

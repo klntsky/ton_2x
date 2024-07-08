@@ -71,6 +71,8 @@ I don't understand. You can send me an address to watch, or open the Telegram mi
   },
   button: {
     linkWallet: () => 'Connect Wallet',
+    openApp: () => `Open App`,
+    open: () => `Open`,
     link: () => 'Connect',
   },
   command: {

@@ -36,7 +36,7 @@ export const Charts = (props: {
 
   if (isLoading) {
     return (
-      <Flex justifyContent="center" alignItems="center" className="h-screen">
+      <Flex justifyContent="center" alignItems="center" className="h-dvh">
         <Loader />
       </Flex>
     )
@@ -45,7 +45,7 @@ export const Charts = (props: {
   if (!data) {
     return (
       <Flex justifyContent="center" alignItems="center">
-        <h2 className="text-2xl text-slate-600">{t('label.error')}</h2>
+        <h2 className="text-2xl">{t('label.error')}</h2>
       </Flex>
     )
   }
@@ -53,7 +53,7 @@ export const Charts = (props: {
   if (!data.jettons.length) {
     return (
       <Flex justifyContent="center" alignItems="center">
-        <h2 className="text-2xl text-slate-600">{t('label.noJettons')}</h2>
+        <h2 className="text-2xl">{t('label.noJettons')}</h2>
       </Flex>
     )
   }
@@ -61,9 +61,7 @@ export const Charts = (props: {
   if (data) {
     return (
       <div className={s.charts}>
-        <h1
-          className={`${s.yourJettonsHeader} w-full text-3xl text-slate-700 text-center`}
-        >
+        <h1 className={`${s.yourJettonsHeader} w-full text-3xl text-center`}>
           {t('label.yourJettons')}
         </h1>
         {data
@@ -82,15 +80,13 @@ export const Charts = (props: {
                         className="shadow rounded-full max-w-full h-auto align-middle border-none"
                       />
                     </div>
-                    <h1
-                      className={`${s.symbolHeader} text-2xl text-slate-500 pl-2`}
-                    >
+                    <h1 className={`${s.symbolHeader} text-2xl pl-2`}>
                       {obj.symbol}
                     </h1>
                   </Flex>
                   {obj.pnlPercentage !== 0 ? (
                     <div className="flex">
-                      <h3 className="text-xl text-slate-500 pr-2">{}</h3>
+                      <h3 className="text-xl pr-2">{}</h3>
                       <BadgeDelta
                         size="lg"
                         deltaType={badgeType(obj.pnlPercentage)}
