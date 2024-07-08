@@ -1,18 +1,22 @@
 import type { Telegraf } from 'telegraf'
-import { and, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import TonWeb from 'tonweb'
 import {
   insertUserNotification,
   insertUserPurchase,
-  selectLastUserNotificationByWalletAndJetton,
-  selectLastUserPurchaseByWalletAndJetton,
+  selectFirstUserPurchaseByJettonId,
+  selectLastUserNotificationByJettonId,
+  selectLastUserPurchaseByJettonId,
+  selectTokenByAddressAndWalletId,
   selectUserSettings,
+  selectUserWallets,
+  selectWalletById,
   upsertToken,
 } from '../../../db/queries'
 import { ENotificationType } from '../constants'
 import type { TNotificationHandle, TTelegrafContext } from '../types'
 import { getDbConnection, getJettonsByAddress, normalizePrice } from '../../../utils'
-import { tokens, users, wallets } from '../../../db/schema'
+import { tokens, users } from '../../../db/schema'
 import { i18n } from '../i18n'
 import { getNotifications } from '.'
 import { getPrice } from '../../../utils/parseTxData'
@@ -25,15 +29,18 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
       top: Number(process.env.NOTIFICATION_RATE_UP),
       bottom: Number(process.env.NOTIFICATION_RATE_DOWN),
     },
+    secondForPossibleRollback: Number(process.env.SECONDS_FROM_PURCHASE_WITH_ROLLBACK_POSSIBILITY),
     getPrice,
     getUsersInDb: () => db.select().from(users),
-    getWalletsInDb: userId => db.select().from(wallets).where(eq(wallets.userId, userId)),
+    getWalletsInDb: userId => selectUserWallets(db, userId),
     getJettonsFromDB: walletId => db.select().from(tokens).where(eq(tokens.walletId, walletId)),
     getJettonsFromChain: getJettonsByAddress,
     getLastAddressJettonPurchaseFromDB: (jettonId: number) =>
-      selectLastUserPurchaseByWalletAndJetton(db, jettonId),
+      selectLastUserPurchaseByJettonId(db, jettonId),
     getLastAddressNotificationFromDB: (jettonId: number) =>
-      selectLastUserNotificationByWalletAndJetton(db, jettonId),
+      selectLastUserNotificationByJettonId(db, jettonId),
+    getFirstAddressJettonPurchaseFromDB: (jettonId: number) =>
+      selectFirstUserPurchaseByJettonId(db, jettonId),
   }
   for await (const notification of getNotifications(handle)) {
     if (hiddenTickers.includes(notification.symbol)) {
@@ -42,46 +49,47 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
     console.log({ notification })
     const userSettings = await selectUserSettings(db, notification.userId)
     if (notification.action === ENotificationType.NEW_JETTON) {
+      const [wallet] = await selectWalletById(db, notification.walletId)
+      const address = new TonWeb.utils.Address(wallet.address)
+      const walletUserFriendly = address.toString(true, true, true)
       await upsertToken(db, {
         token: notification.jetton,
         walletId: notification.walletId,
         ticker: notification.symbol,
       })
-      const [jetton] = await db
-        .select()
-        .from(tokens)
-        .where(
-          and(eq(tokens.token, notification.jetton), eq(tokens.walletId, notification.walletId)),
-        )
-      const purchase = await insertUserPurchase(db, {
+      const [jetton] = await selectTokenByAddressAndWalletId(
+        db,
+        notification.jetton,
+        notification.walletId,
+      )
+      await insertUserPurchase(db, {
         timestamp: notification.timestamp,
         jettonId: jetton.id,
         price: `${notification.price}`,
       })
-      console.log(
-        { insertedJetton: jetton, purchase },
-        {
-          timestamp: notification.timestamp,
-          jettonId: jetton.id,
-          price: `${notification.price}`,
-        },
-      )
       await bot.telegram.sendMessage(
         notification.userId,
-        i18n(userSettings?.languageCode).message.detectedNewJetton(notification.symbol),
+        i18n(userSettings?.languageCode).message.detectedNewJetton(
+          notification.symbol,
+          walletUserFriendly,
+          notification.price,
+        ),
+        {
+          parse_mode: 'Markdown',
+        },
       )
       continue
     }
     if (notification.action === ENotificationType.NOT_HOLD_JETTON_ANYMORE) {
-      await db.delete(tokens).where(eq(tokens.id, notification.jettonId))
-      await bot.telegram.sendMessage(
-        notification.userId,
-        i18n(userSettings?.languageCode).message.youNoLongerHaveJetton(notification.symbol),
-      )
+      // await db.delete(tokens).where(eq(tokens.id, notification.jettonId))
+      // await bot.telegram.sendMessage(
+      //   notification.userId,
+      //   i18n(userSettings?.languageCode).message.youNoLongerHaveJetton(notification.symbol),
+      // )
       continue
     }
 
-    const [wallet] = await db.select().from(wallets).where(eq(wallets.id, notification.walletId))
+    const [wallet] = await selectWalletById(db, notification.walletId)
     const address = new TonWeb.utils.Address(wallet.address)
     const walletUserFriendly = address.toString(true, true, true)
     const text =

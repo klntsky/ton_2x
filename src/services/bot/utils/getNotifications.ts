@@ -6,8 +6,10 @@ export async function* getNotifications(
   handle: TNotificationHandle,
 ): AsyncGenerator<TNotification> {
   const {
+    getFirstAddressJettonPurchaseFromDB,
     getLastAddressJettonPurchaseFromDB,
     getLastAddressNotificationFromDB,
+    secondForPossibleRollback,
     getJettonsFromChain,
     getJettonsFromDB,
     getWalletsInDb,
@@ -27,6 +29,11 @@ export async function* getNotifications(
       const addressJettonsFromDb = await getJettonsFromDB(wallet.id)
       for (const jetton of addressJettonsFromDb) {
         if (!addressJettonsFromChainObj[jetton.token]) {
+          // const firstPurchase = await getFirstAddressJettonPurchaseFromDB(jetton.id)
+          // const secondsFromPurchase = Date.now() / 1000 - firstPurchase.timestamp
+          // if (secondsFromPurchase <= secondForPossibleRollback) {
+          //   continue
+          // }
           yield {
             userId: user.id,
             walletId: wallet.id,
@@ -39,15 +46,11 @@ export async function* getNotifications(
         const lastPurchase = await getLastAddressJettonPurchaseFromDB(jetton.id)
         const lastNotification = await getLastAddressNotificationFromDB(jetton.id)
         console.log({ lastPurchase, lastNotification })
-        const newestTransactionInDb =
-          lastPurchase && lastNotification
-            ? lastPurchase.timestamp > lastNotification.timestamp
-              ? lastPurchase
-              : lastNotification
-            : lastPurchase || lastNotification
-        if (!newestTransactionInDb) {
-          continue
-        }
+        const newestTransactionInDb = lastNotification
+          ? lastPurchase.timestamp > lastNotification.timestamp
+            ? lastPurchase
+            : lastNotification
+          : lastPurchase
         const decimals = addressJettonsFromChainObj[jetton.token].decimals
         delete addressJettonsFromChainObj[jetton.token]
         const timestamp = Math.floor(Date.now() / 1000)

@@ -1,5 +1,5 @@
 import { getAddressPnL, getChart, getJettonsByAddress } from '.'
-import { normalizePrice } from '..'
+import { filterHiddenJettons } from '../../services/bot/utils'
 
 export const api = async (address: string) => {
   const jettons = await getJettonsByAddress(address)
@@ -7,21 +7,25 @@ export const api = async (address: string) => {
   string,
   (typeof jettons)[number] & {
     pnlPercentage?: number
-    chart: [timestamp: number, price: number | string][]
+    chart: [timestamp: number, price: number][]
     lastBuyTime: number
   }
   > = {}
-  for (const jettonInfo of jettons) {
+  for (const jettonInfo of filterHiddenJettons(jettons)) {
     const addressPnl = await getAddressPnL(address, jettonInfo.address)
     if (!addressPnl) continue
     const { pnlPercentage, lastBuyTime } = addressPnl
     const chart = await getChart(jettonInfo.address, lastBuyTime)
     const slicedChart = chart.filter(x => x[0] >= lastBuyTime)
-    // console.log(chart, lastBuyTime, slicedChart)
+    if (slicedChart.length < 2) {
+      throw new Error(
+        `slicedChart.length < 2: ${JSON.stringify(chart)}. Wallet: ${jettonInfo.address}, lastBuyTime: ${lastBuyTime}`,
+      )
+    }
     res[jettonInfo.symbol] = {
       ...jettonInfo,
       pnlPercentage,
-      chart: (slicedChart.length >= 2 ? slicedChart : chart).reverse().map(entity => [entity[0], normalizePrice(entity[1], jettonInfo.decimals)]),
+      chart: slicedChart,
       lastBuyTime,
     }
   }

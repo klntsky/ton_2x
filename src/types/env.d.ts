@@ -14,6 +14,7 @@ type EnvKeys =
   | 'POSTGRES_DB'
   | 'AMQP_ENDPOINT'
   | 'LIMIT_WALLETS_FOR_USER'
+  | 'SECONDS_FROM_PURCHASE_WITH_ROLLBACK_POSSIBILITY'
 
 declare global {
   namespace NodeJS {

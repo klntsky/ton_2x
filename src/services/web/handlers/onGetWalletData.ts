@@ -1,4 +1,3 @@
-import { hiddenTickers } from '../../../constants'
 import { selectUserWallets } from '../../../db/queries'
 import { getDbConnection } from '../../../utils'
 import { api } from '../../../utils/parseTxData'
@@ -22,10 +21,7 @@ unknown,
   for (const wallet of userWallets) {
     const result = await api(wallet.address)
     Object.entries(result).forEach(([ticker, info]) => {
-      if (
-        !hiddenTickers.includes(info.symbol) &&
-        (!uniqJettonsObject[ticker] || uniqJettonsObject[ticker].lastBuyTime < info.lastBuyTime)
-      ) {
+      if (!uniqJettonsObject[ticker] || uniqJettonsObject[ticker].lastBuyTime < info.lastBuyTime) {
         uniqJettonsObject[ticker] = info
       }
     })

@@ -17,11 +17,15 @@ export const ru = {
 `,
     youNoLongerHaveJetton: (ticker: string) =>
       `👋 Вы больше не холдите $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}, уведомления для этого жетона остановлены.`,
-    detectedNewJetton: (ticker: string) =>
-      `💎 Обнаружен новый жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}. Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое.`,
+    detectedNewJetton: (ticker: string, wallet: string, price: number | string) => `
+💎 Обнаружен новый жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}. Кошелёк:
+${getEmojiForWallet(wallet)} \`${wallet}\`
+💵 Актуальная цена: $${price}
+📢 Вы получите уведомление, когда его цена сделает 2x или упадёт вдвое.
+`,
     notification: {
       x2: (ticker: string, wallet: string, price: number | string) => `
-📈 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} сделал x2! Адрес:
+🚀 Жетон $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} сделал x2! Адрес:
 ${getEmojiForWallet(wallet)} \`${wallet}\`
 💵 Актуальная цена: $${price}`,
       x05: (ticker: string, wallet: string, price: number | string) => `
@@ -65,6 +69,8 @@ ${disconnectCOmmandList}
   },
   button: {
     linkWallet: () => 'Подключить кошелёк',
+    openApp: () => `Открыть приложение`,
+    open: () => `Открыть`,
     link: () => 'Подключить',
   },
   command: {
