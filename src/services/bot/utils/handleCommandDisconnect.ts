@@ -31,6 +31,7 @@ export const handleCommandDisconnect = async (
     if (!deletedWallet) {
       await ctx.reply(ctx.i18n.message.error())
       await handleCommandDisconnect(db, ctx, '')
+      return
     }
     const address = new TonWeb.utils.Address(deletedWallet.address)
     const userFriendlyAddress = address.toString(true, true, true)

@@ -47,25 +47,27 @@ export const handleSuccessfulWalletLinkNotification = async (
         timestamp: Math.floor(Date.now() / 1000),
       })
     }
-    const [wallet] = await insertUserAdress(db, payload)
-    for (const jetton of jettonsForDb) {
-      await upsertToken(db, {
-        token: jetton.token,
-        walletId: wallet.id,
-        ticker: jetton.ticker,
-      })
-      if (jetton.price) {
-        const [insertedToken] = await db
-          .select()
-          .from(tokens)
-          .where(and(eq(tokens.token, jetton.token), eq(tokens.walletId, wallet.id)))
-        await insertUserPurchase(db, {
-          timestamp: Math.floor(Date.now() / 1000),
-          jettonId: insertedToken.id,
-          price: `${jetton.price}`,
+    await db.transaction(async tx => {
+      const [wallet] = await insertUserAdress(tx, payload)
+      for (const jetton of jettonsForDb) {
+        await upsertToken(tx, {
+          token: jetton.token,
+          walletId: wallet.id,
+          ticker: jetton.ticker,
         })
+        if (jetton.price) {
+          const [insertedToken] = await tx
+            .select()
+            .from(tokens)
+            .where(and(eq(tokens.token, jetton.token), eq(tokens.walletId, wallet.id)))
+          await insertUserPurchase(tx, {
+            timestamp: Math.floor(Date.now() / 1000),
+            jettonId: insertedToken.id,
+            price: `${jetton.price}`,
+          })
+        }
       }
-    }
+    })
     const address = new TonWeb.utils.Address(payload.address)
     const userFriendlyAddress = address.toString(true, true, true)
     await bot.telegram.sendMessage(

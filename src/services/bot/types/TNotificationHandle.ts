@@ -18,11 +18,11 @@ export type TNotificationHandle = {
   >
   getLastAddressJettonPurchaseFromDB: (
     jettonId: number,
-  ) => Promise<typeof userPurchases.$inferSelect | undefined>
+  ) => Promise<typeof userPurchases.$inferSelect>
   getLastAddressNotificationFromDB: (
     jettonId: number,
   ) => Promise<typeof userNotifications.$inferSelect | undefined>
   getFirstAddressJettonPurchaseFromDB: (
     jettonId: number,
-  ) => Promise<typeof userPurchases.$inferSelect | undefined>
+  ) => Promise<typeof userPurchases.$inferSelect>
 }

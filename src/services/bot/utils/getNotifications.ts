@@ -29,12 +29,11 @@ export async function* getNotifications(
       for (const jetton of addressJettonsFromDb) {
         if (!addressJettonsFromChainObj[jetton.token]) {
           const firstPurchase = await getFirstAddressJettonPurchaseFromDB(jetton.id)
-          if (!firstPurchase) {
-            continue
-          }
           const secondsFromPurchase = Date.now() / 1000 - firstPurchase.timestamp
-          // Estimated time to bypass a rollback
-          if (secondsFromPurchase <= 60) {
+          if (
+            secondsFromPurchase <=
+            Number(process.env.SECONDS_FROM_PURCHASE_WITH_ROLLBACK_POSSIBILITY)
+          ) {
             continue
           }
           yield {
@@ -49,15 +48,11 @@ export async function* getNotifications(
         const lastPurchase = await getLastAddressJettonPurchaseFromDB(jetton.id)
         const lastNotification = await getLastAddressNotificationFromDB(jetton.id)
         console.log({ lastPurchase, lastNotification })
-        const newestTransactionInDb =
-          lastPurchase && lastNotification
-            ? lastPurchase.timestamp > lastNotification.timestamp
-              ? lastPurchase
-              : lastNotification
-            : lastPurchase || lastNotification
-        if (!newestTransactionInDb) {
-          continue
-        }
+        const newestTransactionInDb = lastNotification
+          ? lastPurchase.timestamp > lastNotification.timestamp
+            ? lastPurchase
+            : lastNotification
+          : lastPurchase
         const decimals = addressJettonsFromChainObj[jetton.token].decimals
         delete addressJettonsFromChainObj[jetton.token]
         const timestamp = Math.floor(Date.now() / 1000)

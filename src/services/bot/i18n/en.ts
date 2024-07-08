@@ -18,11 +18,14 @@ Send an address you want to watch or connect your own 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
       `👋 You no longer hold $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}, notifications for this jetton have been stopped.`,
-    detectedNewJetton: (ticker: string) =>
-      `💎 New jetton found: $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}. I will notify you when the price moves up or down by 2x.`,
+    detectedNewJetton: (ticker: string, wallet: string, price: number | string) => `
+💎 New jetton found: $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}. Wallet:
+${getEmojiForWallet(wallet)} \`${wallet}\`
+💵 Current price: $${price}
+📢 I will notify you when the price moves up or down by 2x.`,
     notification: {
       x2: (ticker: string, wallet: string, price: number | string) => `
-📈 $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} made 2x! Wallet:
+🚀 $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()} made 2x! Wallet:
 ${getEmojiForWallet(wallet)} \`${wallet}\`
 💵 Current price: $${price}
 `,

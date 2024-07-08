@@ -33,6 +33,6 @@ It proactively notifies users of their gains via Telegram, making it easy to man
 
 ## Tests
 
-All tests are located in the [tests](./tests) directory. Currently, there is one unit test (with 6 scenarios) for the main business function:
+All tests are located in the [tests](./tests) directory. Currently, there is one unit test (with 7 scenarios) for the main business function:
 
 - [tests/getNotifications.test.ts](./tests/getNotifications.test.ts)
