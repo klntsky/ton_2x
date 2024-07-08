@@ -62,7 +62,7 @@ export const handleAddingAddress = async (
     await ctx.reply(
       ctx.i18n.message.newWalletConnected(
         userFriendlyAddress,
-        jettons.map(jetton => `$${jetton.symbol}`).join(', '),
+        jettons.map(jetton => `$${jetton.symbol.toUpperCase()}`).join(', '),
       ),
       {
         parse_mode: 'Markdown',

@@ -75,7 +75,7 @@ export const handleSuccessfulWalletLinkNotification = async (
       i18n(userSettings?.languageCode).message.newWalletConnected(
         userFriendlyAddress,
         filterHiddenJettons(jettons)
-          .map(jetton => `$${jetton.symbol}`)
+          .map(jetton => `$${jetton.symbol.toUpperCase()}`)
           .join(', '),
       ),
       {
