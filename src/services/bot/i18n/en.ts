@@ -9,12 +9,13 @@ Hello, I've been waiting for you 👋
 
 What I do:
 
-- I'll notify you whenever a token you hold in your TON wallet makes x2 from the purchase price
-- I'll help you see the profit for your entire wallet or selected coin
+📢 I'll notify you whenever a jetton you hold makes x2 from the purchase price
+📈 I'll help you see the profit for the jettons you hold
 
-If you have any questions, feel free to ask in the [chat](https://t.me/+mwwKEfMAbtQ3ZjNi).
+📰 Subscribe to [our channel](https://t.me/ton_2x_en)
+❓ Ask us anything in the [chat](https://t.me/+mwwKEfMAbtQ3ZjNi)
 
-Send an address you want to watch or connect your own 👇
+Send a TON address or connect your wallet 👇
 `,
     youNoLongerHaveJetton: (ticker: string) =>
       `👋 You no longer hold $${jettonNamesWithSpecialCharacters[ticker] || ticker.toUpperCase()}, notifications for this jetton have been stopped.`,
