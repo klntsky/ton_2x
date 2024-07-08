@@ -9,6 +9,7 @@ import {
   upsertToken,
 } from '../../../db/queries'
 import type { Message, Update } from 'telegraf/typings/core/types/typegram'
+import { filterHiddenJettons } from '.'
 
 export const handleAddingAddress = async (
   ctx: TTelegrafContext<Update.MessageUpdate<Message.TextMessage>>,
@@ -62,7 +63,9 @@ export const handleAddingAddress = async (
     await ctx.reply(
       ctx.i18n.message.newWalletConnected(
         userFriendlyAddress,
-        jettons.map(jetton => `$${jetton.symbol.toUpperCase()}`).join(', '),
+        filterHiddenJettons(jettons)
+          .map(jetton => `$${jetton.symbol.toUpperCase()}`)
+          .join(', '),
       ),
       {
         parse_mode: 'Markdown',
