@@ -1,3 +1,4 @@
+import { delay } from '../../../utils'
 import { ENotificationType } from '../constants'
 import type { TNotificationHandle } from '../types'
 import type { TNotification } from '../types/TNotifications'
@@ -6,10 +7,10 @@ export async function* getNotifications(
   handle: TNotificationHandle,
 ): AsyncGenerator<TNotification> {
   const {
-    getFirstAddressJettonPurchaseFromDB,
+    // getFirstAddressJettonPurchaseFromDB,
     getLastAddressJettonPurchaseFromDB,
     getLastAddressNotificationFromDB,
-    secondForPossibleRollback,
+    // secondForPossibleRollback,
     getJettonsFromChain,
     getJettonsFromDB,
     getWalletsInDb,
@@ -97,6 +98,7 @@ export async function* getNotifications(
           action: ENotificationType.NEW_JETTON,
         }
       }
+      await delay(3_000)
     }
   }
 }
