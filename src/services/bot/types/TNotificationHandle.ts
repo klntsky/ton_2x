@@ -5,6 +5,7 @@ export type TNotificationHandle = {
     top: number
     bottom: number
   }
+  secondForPossibleRollback: number
   getUsersInDb: () => Promise<(typeof users.$inferSelect)[]>
   getPrice: (jetton: string) => Promise<number | undefined>
   getWalletsInDb: (userId: number) => Promise<(typeof wallets.$inferSelect)[]>

@@ -6,11 +6,12 @@ import type { TNotification } from '../src/services/bot/types/TNotifications'
 import { ENotificationType } from '../src/services/bot/constants'
 import { getNotifications } from '../src/services/bot/utils'
 
-type THandleCallbackKeys = keyof Omit<TNotificationHandle, 'rates'>
+type THandleCallbackKeys = keyof Omit<TNotificationHandle, 'rates' | 'secondForPossibleRollback'>
 
 describe('getNotifications', () => {
   let handle: Record<THandleCallbackKeys, Mock<TNotificationHandle[THandleCallbackKeys]>> & {
     rates: TNotificationHandle['rates']
+    secondForPossibleRollback: TNotificationHandle['secondForPossibleRollback']
   }
   const notifications: TNotification[] = []
 
@@ -20,6 +21,7 @@ describe('getNotifications', () => {
         top: 2,
         bottom: 0.5,
       },
+      secondForPossibleRollback: 60,
       getPrice: mock.fn<TNotificationHandle['getPrice']>(),
       getUsersInDb: mock.fn<TNotificationHandle['getUsersInDb']>(),
       getWalletsInDb: mock.fn<TNotificationHandle['getWalletsInDb']>(),
@@ -479,16 +481,6 @@ describe('getNotifications', () => {
       ]),
     )
     handle.getPrice.mock.mockImplementation(() => Promise.resolve(100))
-    // handle.getLastAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
-    //   Promise.resolve(undefined),
-    // )
-    // handle.getLastAddressNotificationFromDB.mock.mockImplementation(() =>
-    //   Promise.resolve({
-    //     jettonId: 1,
-    //     timestamp: Date.now() / 1000 - 10000,
-    //     price: 100,
-    //   }),
-    // )
     for await (const notification of getNotifications(handle as unknown as TNotificationHandle)) {
       notifications.push(notification)
     }
@@ -510,8 +502,7 @@ describe('getNotifications', () => {
     handle.getFirstAddressJettonPurchaseFromDB.mock.mockImplementation(() =>
       Promise.resolve({
         jettonId: 1,
-        timestamp:
-          Date.now() / 1000 - Number(process.env.SECONDS_FROM_PURCHASE_WITH_ROLLBACK_POSSIBILITY),
+        timestamp: Date.now() / 1000 - handle.secondForPossibleRollback,
         price: 100,
       }),
     )

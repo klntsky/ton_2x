@@ -29,6 +29,7 @@ export const handleNotification = async (bot: Telegraf<TTelegrafContext>) => {
       top: Number(process.env.NOTIFICATION_RATE_UP),
       bottom: Number(process.env.NOTIFICATION_RATE_DOWN),
     },
+    secondForPossibleRollback: Number(process.env.SECONDS_FROM_PURCHASE_WITH_ROLLBACK_POSSIBILITY),
     getPrice,
     getUsersInDb: () => db.select().from(users),
     getWalletsInDb: userId => selectUserWallets(db, userId),

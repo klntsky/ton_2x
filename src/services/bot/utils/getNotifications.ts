@@ -9,6 +9,7 @@ export async function* getNotifications(
     getFirstAddressJettonPurchaseFromDB,
     getLastAddressJettonPurchaseFromDB,
     getLastAddressNotificationFromDB,
+    secondForPossibleRollback,
     getJettonsFromChain,
     getJettonsFromDB,
     getWalletsInDb,
@@ -30,10 +31,7 @@ export async function* getNotifications(
         if (!addressJettonsFromChainObj[jetton.token]) {
           const firstPurchase = await getFirstAddressJettonPurchaseFromDB(jetton.id)
           const secondsFromPurchase = Date.now() / 1000 - firstPurchase.timestamp
-          if (
-            secondsFromPurchase <=
-            Number(process.env.SECONDS_FROM_PURCHASE_WITH_ROLLBACK_POSSIBILITY)
-          ) {
+          if (secondsFromPurchase <= secondForPossibleRollback) {
             continue
           }
           yield {
