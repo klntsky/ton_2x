@@ -1,4 +1,4 @@
-# Ton 2x Bot
+# [@ton_2x_bot](https://t.me/ton_2x_bot)
 
 <p align="center">
     <img alt="Ton 2x Bot" src="./frontend/public/logo.png" style='width: 160px;' />
