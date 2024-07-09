@@ -20,8 +20,8 @@ It proactively notifies users of their gains via Telegram, making it easy to man
 
 ## How It Works
 
-1. Link your wallet to Ton 2x Bot.
-2. Receive proactive notifications in Telegram about your token gains.
+1. Link your wallet in the bot.
+2. Receive proactive notifications in Telegram about your token gains and losses.
 3. Make informed trading decisions with minimal effort.
 
 ## Links
